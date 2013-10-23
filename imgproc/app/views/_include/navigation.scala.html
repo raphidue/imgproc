@@ -1,0 +1,25 @@
+@(file: String)
+<!--[if lt IE 7]>
+    <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+    <!-- Fixed navbar -->
+   <div class="navbar navbar-inverse navbar-fixed-top custom-nav-color">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index">imgproc</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav custom-nav">
+            @if(file == "processing") { <li class="active"> } else { <li> } <a href='processing'>Processing</a></li>
+            @if(file == "documentation") { <li class="active"> } else { <li> } <a href='documentation'>Documentation</a></li>
+            @if(file == "about") { <li class="active"> } else { <li> } <a href='about'>About Us</a></li>
+            @if(file == "contact") { <li class="active"> } else { <li> } <a href='contact'>Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
