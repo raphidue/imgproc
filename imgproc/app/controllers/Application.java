@@ -8,6 +8,22 @@ import views.html.*;
 public class Application extends Controller {
     
     public static Result index() {
-        return ok(views.html.index.render(scripts.render()));
-    }    
+        return ok(views.html.index.render(scripts.render(), navigation.render("index")));
+    }
+    
+    public static Result processing() {
+        return ok(views.html.processing.render(scripts.render()));
+    }
+    
+    public static Result contact() {
+        return ok(views.html.contact.render(scripts.render()));
+    }
+    
+    public static Result about() {
+        return ok(views.html.about.render(scripts.render()));
+    }
+    
+    public static Result documentation() {
+        return ok(views.html.documentation.render(scripts.render()));
+    }
 }
