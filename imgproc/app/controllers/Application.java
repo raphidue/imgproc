@@ -15,8 +15,7 @@ public class Application extends Controller {
         return ok(views.html.processing.render(scripts.render()));
     }
     
-    public static Result contact() {
-        return ok(views.html.contact.render(scripts.render()));
+    public static Result contact() {        return ok(views.html.contact.render(scripts.render()));
     }
     
     public static Result about() {
