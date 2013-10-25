@@ -12,17 +12,19 @@ public class Application extends Controller {
     }
     
     public static Result processing() {
-        return ok(views.html.processing.render(scripts.render()));
+        return ok(views.html.processing.render(scripts.render(), navigation.render("processing")));
     }
     
-    public static Result contact() {        return ok(views.html.contact.render(scripts.render()));
+    public static Result contact() {        
+        return ok(views.html.contact.render(scripts.render(), navigation.render("contact")));
     }
     
     public static Result about() {
-        return ok(views.html.about.render(scripts.render()));
+        return ok(views.html.about.render(scripts.render(), navigation.render("about")));
     }
     
     public static Result documentation() {
-        return ok(views.html.documentation.render(scripts.render()));
+        return ok(views.html.documentation.render(scripts.render(), 
+            navigation.render("documentation")));
     }
 }
