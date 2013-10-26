@@ -79,3 +79,26 @@ fieldset[disabled] .btn-custom.active {
   border-color: #FFFFFF;
 }
 /*=========================================================================== */
+/*================================Sidebar==================================== */
+.table code {
+	font-size: 13px;
+	font-weight: normal;
+}
+.bs-sidebar.affix {
+	position: static;
+}
+.bs-sidenav {
+	margin-top: 30px;
+	margin-bottom: 30px;
+	padding-top:    10px;
+	padding-bottom: 10px;
+	text-shadow: 0 1px 0 #fff;
+	background-color: #D4EFF7;
+	border-radius: 5px;
+}
+.bs-sidebar .nav > li > a {
+	color: #6C7B7B;
+	display: block;
+	padding: 5px 20px;
+}
+/*=========================================================================== */
