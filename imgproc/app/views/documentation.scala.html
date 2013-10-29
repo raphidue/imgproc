@@ -1,4 +1,4 @@
-@(scripts: Html)(navigation: Html)
+@(scripts: Html)(navigation: Html)(footer: Html)
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -14,12 +14,9 @@
 	body {
 		position: relative;
 		padding-top: 50px;
-		padding-bottom: 20px;
-		/*
-		margin-left: 18% !important;
-		margin-right: 18% !important;*/
-		/* padding-left: 50px; */ 
-		/* eigentlich muss Text unter IPimgproc logo sein*/
+	}
+	#footer {
+		margin-top: 20px;
 	}
 	</style>
 	@scripts
@@ -256,15 +253,11 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div>		
 	</div>
-	<hr>
-	
-	<footer class="text-center">
-		<p>&copy; 2014 by imgproc, All rights reserved</p>
-	</footer>
-</div> 
-<!-- /container --> 
+	@footer
+</div><!-- /container --> 
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js">
 </script>
 <script>
