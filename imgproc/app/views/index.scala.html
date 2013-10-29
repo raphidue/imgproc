@@ -1,4 +1,4 @@
-@(scripts: Html)(navigation: Html)
+@(scripts: Html)(navigation: Html)(footer: Html)
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -13,7 +13,6 @@
 	<style>
 	body {
 		padding-top: 50px;
-		padding-bottom: 20px;
 	}
 	</style>
 	@scripts
@@ -58,11 +57,7 @@
 				</div>
 			</div>
 		</div>
-
-			<hr>
-
-			<footer class="text-center">
-				<p>&copy; 2014 by imgproc, All rights reserved</p>
-			</footer>
-		</body>
-		</html>
+		@footer
+		
+	</body>
+	</html>
