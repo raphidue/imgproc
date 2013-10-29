@@ -102,6 +102,14 @@ fieldset[disabled] .btn-custom.active {
 	padding: 5px 20px;
 }
 /*=========================================================================== */
+.proc-navi {
+	margin-top: 30px;	
+}
+.proc-navi button {
+	color: #2AB9CB;
+	background-color: #EAFAFF;
+}
+
 #footer {
 	padding-top: 20px;
 	background-color: #F5F5F5;
