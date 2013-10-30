@@ -1,1 +1,42 @@
+/************************Processing Buttons Action*****************************/
+$(function() {
+	$("#showImg").click(function() {
+        buttonClicked("#showImg");
+	});
+    $("#glaett").click(function() {
+        buttonClicked("#glaett");
+	});
+    $("#diff").click(function() {
+        buttonClicked("#diff");
+	});
+    $("#min").click(function() {
+        buttonClicked("#min");
+	});
+    $("#max").click(function() {
+        buttonClicked("#max");
+	});
+    $("#median").click(function() {
+        buttonClicked("#median");
+	});
+    $("#gewMedian").click(function() {
+        buttonClicked("#gewMedian");
+	});
+    $("#morph").click(function() {
+        buttonClicked("#morph");
+	});
+    $("#region").click(function() {
+        buttonClicked("#region");
+	});
+    $("#harri").click(function() {
+        buttonClicked("#harri");
+	});
+});
 
+// Check active buttons
+function buttonClicked(elementID) {
+    if($( elementID ).hasClass( "active" )) {
+        $( elementID ).removeClass( "active" )
+    } else {
+        $( elementID ).addClass( "active" );
+    }
+}
