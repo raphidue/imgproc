@@ -95,6 +95,7 @@ fieldset[disabled] .btn-custom.active {
 	text-shadow: 0 1px 0 #fff;
 	background-color: #EAFAFF;
 	border-radius: 5px;
+	position: fixed;
 }
 .bs-sidebar .nav > li > a {
 	color: #2AB9CB;
