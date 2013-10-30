@@ -34,9 +34,18 @@ $(function() {
 
 // Check active buttons
 function buttonClicked(elementID) {
+    $( ".btn" ).removeClass( "active" );
     if($( elementID ).hasClass( "active" )) {
         $( elementID ).removeClass( "active" )
     } else {
         $( elementID ).addClass( "active" );
     }
 }
+/******************************************************************************/
+// Check active docu links
+$(function() {
+    $(".bs-sidenav > li").click(function() {
+        $( ".bs-sidenav > li").removeClass( "sidenav-active" );
+        $(this).addClass( "sidenav-active" );
+    });
+});

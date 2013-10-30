@@ -102,6 +102,10 @@ fieldset[disabled] .btn-custom.active {
 	display: block;
 	padding: 5px 20px;
 }
+
+.sidenav-active {
+    font-weight: bold;
+}
 /*=========================================================================== */
 .proc-navi {
 	margin-top: 30px;	
