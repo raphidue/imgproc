@@ -1,9 +1,13 @@
-
-
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
-h2 { color: #5BC0DE; }
+h2 { 
+	color: #5BC0DE; 
+}
+body { 
+	color: gray !important;
+	font-family: "proxima-nova","helvetica neue",helvetica,arial; !important;
+}
 /*===================Custom Navbar styles==================================== */
 .navbar-inverse {
    border-color: #5BC0DE !important;
@@ -84,6 +88,7 @@ fieldset[disabled] .btn-custom.active {
 	font-size: 13px;
 	font-weight: normal;
 }
+
 .bs-sidebar.affix {
 	position: static;
 }
@@ -103,9 +108,6 @@ fieldset[disabled] .btn-custom.active {
 	padding: 5px 20px;
 }
 
-.sidenav-active {
-    font-weight: bold;
-}
 /*=========================================================================== */
 .proc-navi {
 	margin-top: 30px;	
@@ -116,7 +118,7 @@ fieldset[disabled] .btn-custom.active {
 }
 
 #footer {
-	padding-top: 20px;
+	padding-top: 10px;
 	background-color: #F5F5F5;
-	height: 60px;
+	height: 40px;
 }
