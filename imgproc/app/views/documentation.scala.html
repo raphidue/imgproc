@@ -15,20 +15,23 @@
 		position: relative;
 		padding-top: 50px;
 	}
+	.active {
+		font-weight: bold;
+	}
 	#footer {
 		margin-top: 20px;
 	}
 	</style>
 	@scripts
 </head>
-<body>
+<body data-spy="scroll" data-offset="90" data-target=".bs-sidebar">
 	@navigation
 	<div class="container">
 		<div class="row">
 			<div class="col-md-3">
-				<div class="bs-sidebar" role="complementary">
+				<div class="bs-sidebar">
 					<ul class="nav bs-sidenav">
-						<li>
+						<li class="active">
 							<a id="docHisto" href="#histogram">Histogram</a> 
 						</li>
 						<li>
@@ -53,7 +56,7 @@
 							<a id="docGewMed" href="#gewmedianfilter">Gewichteter Medianfilter</a> 
 						</li>
 						<li>
-							<a id="docMorph" href="#morphologischefilter">Morphologische Filter</a> 
+							<a id="docMorph" href="#morphologischerfilter">Morphologische Filter</a> 
 						</li>
 						<li>
 							<a id="docRegion" href="#regionalabeling">Regionalabeling</a> 
@@ -62,14 +65,13 @@
 							<a id="docHarri" href="#harrisdetektor">Harris Detektor</a> 
 						</li>
 					</ul>
+                    
 				</div>
 			</div>
-			<div class="col-md-9" role="main">
+			<div class="col-md-9" id="docu-content">
 				<!-- Histogram -->
 				<div class="bs-docs-section">
-					<div class="histogram">
-						<h2 id="histogram">Histogram</h2>
-					</div>
+					<h2 id="histogram">Histogram</h2>
 					<p>
 						Text about histogram
 					</p>
@@ -84,9 +86,7 @@
 				</div>
 				<!-- Kumulatives Histogram -->
 				<div class="bs-docs-section">
-					<div class="kumhistogram">
-						<h2 id="kumhistogram">Kumulatives Histogram</h2>
-					</div>
+					<h2 id="kumhistogram">Kumulatives Histogram</h2>
 					<p>
 						Text about Kumulatives Histogram
 					</p>
@@ -101,9 +101,7 @@
 				</div>
 				<!-- Glättungsfilter -->
 				<div class="bs-docs-section">
-					<div class="glaettungsfilter">
-						<h2 id="glaettungsfilter">Glättungsfilter</h2>
-					</div>
+					<h2 id="glaettungsfilter">Glättungsfilter</h2>
 					<p>
 						Text about Glättungsfilter
 					</p>
@@ -118,9 +116,7 @@
 				</div>
 				<!-- Differenzfilter  -->
 				<div class="bs-docs-section">
-					<div class="differenzfilter">
-						<h2 id="differenzfilter">Differenzfilter</h2>
-					</div>
+					<h2 id="differenzfilter">Differenzfilter</h2>
 					<p>
 						Text about Differenzfilter
 					</p>
@@ -135,9 +131,7 @@
 				</div>
 				<!-- Minimumfilter  -->
 				<div class="bs-docs-section">
-					<div class="minimumfilter">
-						<h2 id="minimumfilter">Minimumfilter</h2>
-					</div>
+					<h2 id="minimumfilter">Minimumfilter</h2>
 					<p>
 						Text about Minimumfilter
 					</p>
@@ -152,9 +146,7 @@
 				</div>
 				<!-- Maximumfilter  -->
 				<div class="bs-docs-section">
-					<div class="maximumfilter">
-						<h2 id="maximumfilter">Maximumfilter</h2>
-					</div>
+					<h2 id="maximumfilter">Maximumfilter</h2>
 					<p>
 						Text about Maximumfilter
 					</p>
@@ -169,9 +161,7 @@
 				</div>
 				<!-- Medianfilter  -->
 				<div class="bs-docs-section">
-					<div class="medianfilter">
-						<h2 id="medianfilter">Medianfilter</h2>
-					</div>
+					<h2 id="medianfilter">Medianfilter</h2>
 					<p>
 						Text about Medianfilter
 					</p>
@@ -186,9 +176,7 @@
 				</div>
 				<!-- Gewichteter Medianfilter  -->
 				<div class="bs-docs-section">
-					<div class="gewmedianfilter">
-						<h2 id="gewmedianfilter">Gewichteter Medianfilter</h2>
-					</div>
+					<h2 id="gewmedianfilter">Gewichteter Medianfilter</h2>
 					<p>
 						Text about Gewichteter Medianfilter
 					</p>
@@ -203,9 +191,7 @@
 				</div>
 				<!-- Morphologische Filter  -->
 				<div class="bs-docs-section">
-					<div class="morphologischefilter">
-						<h2 id="morphologischefilter">Morphologische Filter</h2>
-					</div>
+					<h2 id="morphologischerfilter">Morphologische Filter</h2>
 					<p>
 						Text about Morphologische Filter
 					</p>
@@ -220,9 +206,7 @@
 				</div>
 				<!-- Regionalabeling  -->
 				<div class="bs-docs-section">
-					<div class="regionalabeling">
-						<h2 id="regionalabeling">Regionalabeling</h2>
-					</div>
+					<h2 id="regionalabeling">Regionalabeling</h2>
 					<p>
 						Text about Regionalabeling
 					</p>
@@ -237,9 +221,7 @@
 				</div>
 				<!-- Harris Detektor  -->
 				<div class="bs-docs-section">
-					<div class="harrisdetektor">
-						<h2 id="harrisdetektor">Harris Detektor</h2>
-					</div>
+					<h2 id="harrisdetektor">Harris Detektor</h2>
 					<p>
 						Text about Harris Detektor
 					</p>
