@@ -45,7 +45,7 @@ function buttonClicked(elementID) {
 // Check active docu links
 $(function() {
     $(".bs-sidenav > li").click(function() {
-        $( ".bs-sidenav > li").removeClass( "sidenav-active" );
-        $(this).addClass( "sidenav-active" );
+        $( ".bs-sidenav > li").removeClass( "active" );
+        $(this).addClass( "active" );
     });
 });
