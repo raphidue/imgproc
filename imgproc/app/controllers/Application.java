@@ -27,4 +27,5 @@ public class Application extends Controller {
 		return ok(views.html.documentation.render(scripts.render(), 
 			navigation.render("documentation"), footer.render()));
 	}
+	
 }

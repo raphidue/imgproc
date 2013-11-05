@@ -15,9 +15,9 @@
 		padding-top: 50px;
 	}
 	.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open .dropdown-toggle.btn-default {
-	    background-color: #EBEBEB !important;
-	    border-color: #ADADAD !important;
-	    color: #2AB9CB !important;
+		background-color: #EBEBEB !important;
+		border-color: #ADADAD !important;
+		color: #2AB9CB !important;
 	}    
 	#footer {
 		width: 100%;
@@ -33,10 +33,17 @@
 		<div class="row">
 			<div class="col-md-3">
 				<div class="btn-group-vertical proc-navi">
-					<button class="btn btn-default" id="upImg" type="button">
+					<form action="/upload" method="POST" enctype="multipart/form-data">
+						<div style='height: 0px;width:0px; overflow:hidden;'>
+							<input id="upfile" type="file" name="picture" value="upload">
+						</div>
+						<input id="upfile-submit" type="submit">
+						
+					</form>
+					<button class="btn btn-default" id="upImg" type="button" onclick="getFile()">
 						<span class="glyphicon glyphicon-upload"></span>
-						 Upload Image
-					 </button>
+						Upload Image
+					</button>
 					<button class="btn btn-default" id="saveImg" type="button">
 						<span class="glyphicon glyphicon-save"></span>
 						Save Image
