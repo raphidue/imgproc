@@ -22,7 +22,7 @@ public class Image extends Controller {
         String myUploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + fileName;
         file.renameTo(new File(myUploadPath));
 		
-	    return ok("File uploaded");
+	    return ok(views.html.processing.render(scripts.render(), navigation.render("processing"), footer.render(), "uploads/" + fileName));
 	  } else {
 	    flash("error", "Missing file");
 	    return redirect(routes.Application.index());    
