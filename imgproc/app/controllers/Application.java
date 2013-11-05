@@ -12,7 +12,7 @@ public class Application extends Controller {
 	}
     
 	public static Result processing() {
-		return ok(views.html.processing.render(scripts.render(), navigation.render("processing"), footer.render()));
+		return ok(views.html.processing.render(scripts.render(), navigation.render("processing"), footer.render(), ""));
 	}
     
 	public static Result contact() {        
@@ -27,4 +27,5 @@ public class Application extends Controller {
 		return ok(views.html.documentation.render(scripts.render(), 
 			navigation.render("documentation"), footer.render()));
 	}
+	
 }

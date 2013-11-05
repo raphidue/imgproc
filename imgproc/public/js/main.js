@@ -49,3 +49,7 @@ $(function() {
         $(this).addClass( "active" );
     });
 });
+// For Uploadfile button
+function getFile(){
+     document.getElementById("upfile").click();
+ }
