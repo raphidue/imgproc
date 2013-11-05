@@ -1,7 +1,11 @@
 /************************Processing Buttons Action*****************************/
 $(function() {
 	$("#showImg").click(function() {
-        buttonClicked("#showImg");
+		if($( "#showImg" ).hasClass( "active" )) {
+			$( "#showImg").removeClass( "active" )
+		} else {
+			$( "#showImg" ).addClass( "active" );
+		}
 	});
     $("#glaett").click(function() {
         buttonClicked("#glaett");
@@ -34,7 +38,7 @@ $(function() {
 
 // Check active buttons
 function buttonClicked(elementID) {
-    $( ".btn" ).removeClass( "active" );
+    $( ".proc-button" ).removeClass( "active" );
     if($( elementID ).hasClass( "active" )) {
         $( elementID ).removeClass( "active" )
     } else {
