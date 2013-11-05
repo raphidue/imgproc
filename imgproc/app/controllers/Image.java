@@ -22,18 +22,6 @@ public class Image extends Controller {
         String myUploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + fileName;
         file.renameTo(new File(myUploadPath));
 		
-		/*
-		File debug = new File("sql.txt");
-		try{
-			FileWriter writer = new FileWriter(debug);
-
-			writer.write(myUploadPath);
-
-			writer.close();
-		}catch(IOException e){
-		  e.printStackTrace();
-		}
-			*/
 	    return ok("File uploaded");
 	  } else {
 	    flash("error", "Missing file");
