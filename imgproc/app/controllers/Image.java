@@ -6,7 +6,7 @@ import views.html._include.*;
 import views.html.*;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
-import java.io.*;
+import java.io.File;
 import play.*;
 
 public class Image extends Controller {
