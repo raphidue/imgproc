@@ -57,20 +57,16 @@ $(function() {
 function getFile(){
 	document.getElementById("upfile").click();
 }
-/*
-// Get Filename for route
-function getFileID() {
-var filename = $('#upfile').val();
-var ts = Math.round((new Date()).getTime() / 1000);
-$("#form_id").attr("action", "/processing/" + ts + ".jpg");
-$("#form_id").submit();
-}*/
-$(document).ready(function()
-{
+// Function for Post File to Image Controller
+$(function() {
 	$('#upfile').on('change', function()
 	{
-		$("#img-content").html('Uploading...');
-		//$("#img-content").html('<img src="@routes.Assets.at("images/ajax-loader.gif" alt="Uploading...."/>');
+		$("#img-content").html('');
+		$("#img-content").html('<img src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
+		// get File Name for Post to Image Controller
+		var filename = $('#upfile').val();
+		var ts = Math.round((new Date()).getTime() / 1000);
+		$("#form_id").attr("action", "/processing/" + ts + ".jpg");
 		$("#form_id").ajaxForm(
 			{
 				target: '#img-content'

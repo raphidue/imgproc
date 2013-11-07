@@ -1,2 +1,2 @@
 @(fileName: String)
-<img src='@routes.Assets.at("uploads/"+fileName)'/>
+<img src='@routes.FileService.getFile(fileName)'/>

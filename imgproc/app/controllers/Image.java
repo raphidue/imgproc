@@ -21,8 +21,8 @@ public class Image extends Controller {
 
         String myUploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id;
         file.renameTo(new File(myUploadPath));
-		
 	    return ok(views.html.image.render(id));
+		  //return ok(new File("public/uploads/"+id));
 	  } else {
 	    flash("error", "Missing file");
 	    return redirect(routes.Application.index());    
