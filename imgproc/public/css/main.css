@@ -116,6 +116,11 @@ fieldset[disabled] .btn-custom.active {
 	color: #2AB9CB;
 	background-color: #EAFAFF;
 }
+#ajax-loader {
+	position: absolute;
+	    left: 50%;
+	    top: 250px;
+}
 
 #footer {
 	padding-top: 10px;
