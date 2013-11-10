@@ -12,7 +12,11 @@ public class Application extends Controller {
 	}
     
 	public static Result processing() {
+<<<<<<< HEAD
 		return ok(views.html.processing.render(scripts.render(), navigation.render("processing"), footer.render(), ""));
+=======
+		return ok(views.html.processing.render(scripts.render(), navigation.render("processing")));
+>>>>>>> origin/master
 	}
     
 	public static Result contact() {        
