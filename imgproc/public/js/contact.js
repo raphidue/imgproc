@@ -12,9 +12,8 @@ $(function() {
 			"message": message
 		};
 
-		jQuery.post("app_contact_test.html", json, function(data) {
-			alert("Name: " + data['name'] + "\nEmail: " + data['email']
-				+ "\nMessage: " + data['message']);
+		jQuery.post("app_contact_sendEmail.html", json, function(data) {
+			console.log("Email sending status: " + data['status']);
 		}, "json");
 
 

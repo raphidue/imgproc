@@ -24,7 +24,7 @@ import views.html._include.*;
 public class Contact extends Controller {
 
 
-	public static Result test() {
+	public static Result sendEmail() {
 		
 		DynamicForm data = Form.form().bindFromRequest();
 		ObjectNode respJSON = Json.newObject();
@@ -33,13 +33,13 @@ public class Contact extends Controller {
 		String email = data.get("email");
 		String imessage = data.get("message");
 
-		
+
 		final String username = "imgproc.contact@gmail.com";
 		final String password = "imgproc.mailpass";
 		final String recipient = "imgproc.contact@gmail.com";
+		String subject = "Name: " + name + " Email: " + email;
 		
-		
-		
+
 		  //Get the session object  
 		Properties props = new Properties();  
 		props.put("mail.smtp.host", "smtp.gmail.com");  
@@ -48,32 +48,32 @@ public class Contact extends Controller {
 			"javax.net.ssl.SSLSocketFactory");  
 		props.put("mail.smtp.auth", "true");  
 		props.put("mail.smtp.port", "465");  
-		
-		Session session = Session.getDefaultInstance(props,  
+
+		Session session = Session.getInstance(props,  
 			new javax.mail.Authenticator() {  
 				protected PasswordAuthentication getPasswordAuthentication() {  
 					return new PasswordAuthentication(username,password);
 				}  
-			});  
-		
+			});
+
 		  //compose message  
 		try {  
 			MimeMessage message = new MimeMessage(session);  
 			message.setFrom(new InternetAddress(username));
-			message.addRecipient(Message.RecipientType.TO,new InternetAddress(recipient));  
-			message.setSubject("Hello");  
-			message.setText("Testing.......");  
-			
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));  
+			message.setSubject(subject);  
+			message.setText("You have got the following message from your contact form:\n"
+			+ imessage);  
+
 		   //send message  
-			Transport.send(message);   
+			Transport.send(message);
+			respJSON.put("status", "success");
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}  
 		
 
-		respJSON.put("name", name);
-		respJSON.put("email", email);
-		respJSON.put("message", imessage);
+		
 		return ok(respJSON);
 	}
 }

@@ -44,24 +44,24 @@
     border-radius:8px;    
     display:none;  
   }  
-  
+
   #errors li {  
     padding:2px;  
     list-style:none;      
   }  
-  
+
   #errors li:before {  
     content: ' - ';      
   }  
-  
+
   #errors #info {  
     font-weight:bold;  
   }  
-  
+
   #errors #info:before {  
     content: '';      
   }  
-  
+
   #success {  
     border:solid 1px #83D186;  
     padding:25px 10px;  
@@ -74,7 +74,7 @@
     font-weight:bold;  
     display:none;  
   }  
-  
+
   #errors.visible, #success.visible {  
     display:block;      
   }      
@@ -84,7 +84,7 @@
 <body>
   @navigation
   <div class="container clearfix" id="contact-form">
-    
+
 
     <h2 id="aboutus">Contact</h2>
     <ul id="errors" class="">  
@@ -93,7 +93,7 @@
     <p id="success" class="">
       Message sent. We're trying to respond as fast as possible.
     </p>  
-    <form class="form-horizontal"  method="POST" action="/app_contact_test.html" enctype="multipart/form-data">
+    <form class="form-horizontal"  method="POST" action="/app_contact_sendEmail.html" enctype="multipart/form-data">
       <div class="row">      
        <div class="form-group">
          <label for="inputName" class="col-lg-2 control-label">Name <span class="required">*</span></label>
