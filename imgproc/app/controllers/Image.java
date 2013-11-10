@@ -36,5 +36,5 @@ public class Image extends Controller {
 			flash("error", "Missing file");
 			return redirect(routes.Application.index());    
 		}
-	}
+	}	
 }
