@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-@(scripts: Html)(navigation: Html)(footer: Html)(fileName: String)
-=======
 @(scripts: Html)(navigation: Html)
->>>>>>> origin/master
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -45,19 +41,10 @@
 		<div class="row">
 			<div class="col-md-3">
 				<div class="btn-group-vertical proc-navi">
-<<<<<<< HEAD
-					<form action="/upload" method="POST" enctype="multipart/form-data">
-						<div style='height: 0px;width:0px; overflow:hidden;'>
-							<input id="upfile" type="file" name="picture" value="upload">
-						</div>
-						<input id="upfile-submit" type="submit">
-						
-=======
 					<form id="form_id" action="/processing/" method="POST" enctype="multipart/form-data">
 						<div style='height: 0px;width:0px; overflow:hidden;'>
 							<input id="upfile" type="file" name="picture">
-						</div>		
->>>>>>> origin/master
+						</div>
 					</form>
 					<button class="btn btn-default" id="upImg" type="button" onclick="getFile()">
 						<span class="glyphicon glyphicon-upload"></span>
@@ -84,19 +71,8 @@
 				</div>
 			</div>
 			<div id="img-content" class="col-md-9">
-<<<<<<< HEAD
-				@if(fileName.isEmpty()) {				
-				} else {
-					<img src="@routes.Assets.at(fileName)" alt="@fileName" />
-				}
 			</div>
 		</div> <!-- /row -->
 	</div>
-	@footer
-=======
-			</div>
-		</div> <!-- /row -->
-	</div>
->>>>>>> origin/master
 </body>
 </html>

@@ -11,24 +11,7 @@ import play.*;
 
 public class Image extends Controller {
 	
-<<<<<<< HEAD
-	public static Result upload() {
-	  MultipartFormData body = request().body().asMultipartFormData();
-	  FilePart picture = body.getFile("picture");
-	  if (picture != null) {
-	    String fileName = picture.getFilename();
-	    String contentType = picture.getContentType(); 
-	    File file = picture.getFile();
 
-        String myUploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + fileName;
-        file.renameTo(new File(myUploadPath));
-		
-	    return ok(views.html.processing.render(scripts.render(), navigation.render("processing"), footer.render(), "uploads/" + fileName));
-	  } else {
-	    flash("error", "Missing file");
-	    return redirect(routes.Application.index());    
-	  }
-=======
 	public static Result upload(String id) {
 		MultipartFormData body = request().body().asMultipartFormData();
 		FilePart picture = body.getFile("picture");
@@ -53,6 +36,5 @@ public class Image extends Controller {
 			flash("error", "Missing file");
 			return redirect(routes.Application.index());    
 		}
->>>>>>> origin/master
 	}
 }

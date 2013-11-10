@@ -48,17 +48,6 @@ function buttonClicked(elementID) {
 /******************************************************************************/
 // Check active docu links
 $(function() {
-<<<<<<< HEAD
-    $(".bs-sidenav > li").click(function() {
-        $( ".bs-sidenav > li").removeClass( "active" );
-        $(this).addClass( "active" );
-    });
-});
-// For Uploadfile button
-function getFile(){
-     document.getElementById("upfile").click();
- }
-=======
 	$(".bs-sidenav > li").click(function() {
 		$( ".bs-sidenav > li").removeClass( "active" );
 		$(this).addClass( "active" );
@@ -84,4 +73,3 @@ $(function() {
 			}).submit();
 	});
 }); 
->>>>>>> origin/master
