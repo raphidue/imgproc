@@ -16,7 +16,7 @@ public class Image extends Controller {
 		MultipartFormData body = request().body().asMultipartFormData();
 		FilePart picture = body.getFile("picture");
 		
-		File theDir = new File(Play.application().path().getAbsolutePath() + "/public" + uploads);
+		File theDir = new File(Play.application().path().getAbsolutePath() + "/public/uploads");
 
 		// erstelle Ordner uploads wenn nicht existiert
 		if (!theDir.exists()) {

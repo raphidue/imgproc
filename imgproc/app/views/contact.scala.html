@@ -14,60 +14,120 @@
     body {
       padding-top: 50px;
     }
-	.row p {
-	    font-size: 16px !important;
-	    line-height: 22px !important; 
-	}
-	#footer {
-		bottom: 0;
-		width: 100%;
-		position: absolute;
-	}
-  </style>
-  @scripts
+    .row p {
+     font-size: 16px !important;
+     line-height: 22px !important; 
+   }
+   #footer {
+    bottom: 0;
+    width: 100%;
+    position: absolute;
+  }
+  #contact-form input:focus,   
+  #contact-form select:focus,   
+  #contact-form textarea:focus {  
+    border: 1px solid #AFCDD8;  
+    background-color: #EBF2F4;  
+  }
+  #contact-form .required {  
+    font-weight:bold;  
+    color:#F00;      
+  }
+  #errors {  
+    border:solid 1px #E58E8E;  
+    padding:10px;  
+    margin:25px 0px;  
+    display:block;  
+    width:437px;  
+    -webkit-border-radius:8px;  
+    -moz-border-radius:8px;  
+    border-radius:8px;    
+    display:none;  
+  }  
+  
+  #errors li {  
+    padding:2px;  
+    list-style:none;      
+  }  
+  
+  #errors li:before {  
+    content: ' - ';      
+  }  
+  
+  #errors #info {  
+    font-weight:bold;  
+  }  
+  
+  #errors #info:before {  
+    content: '';      
+  }  
+  
+  #success {  
+    border:solid 1px #83D186;  
+    padding:25px 10px;  
+    margin:25px 0px;  
+    display:block;  
+    width:437px;  
+    -webkit-border-radius:8px;  
+    -moz-border-radius:8px;  
+    border-radius:8px;   
+    font-weight:bold;  
+    display:none;  
+  }  
+  
+  #errors.visible, #success.visible {  
+    display:block;      
+  }      
+</style>
+@scripts
 </head>
 <body>
   @navigation
-  <div class="container">
+  <div class="container clearfix" id="contact-form">
     
 
-      <h2 id="aboutus">Contact</h2>
-
-      <form class="form-horizontal" role="form">
+    <h2 id="aboutus">Contact</h2>
+    <ul id="errors" class="">  
+      <li id="info">Error</li>   
+    </ul>  
+    <p id="success" class="">
+      Message sent. We're trying to respond as fast as possible.
+    </p>  
+    <form class="form-horizontal"  method="POST" action="/app_contact_test.html" enctype="multipart/form-data">
       <div class="row">      
        <div class="form-group">
-         <label for="inputName" class="col-lg-2 control-label">Name</label>
+         <label for="inputName" class="col-lg-2 control-label">Name <span class="required">*</span></label>
          <div class="col-lg-6">
           <input type="name" class="form-control" id="inputName" placeholder="Name">
         </div>
       </div>
       <div class="form-group">
-        <label for="inputEmail" class="col-lg-2 control-label">Email</label>
+        <label for="inputEmail" class="col-lg-2 control-label">Email <span class="required">*</span></label>
         <div class="col-lg-6">
           <input type="email" class="form-control" id="inputEmail" placeholder="Email">
         </div>
       </div>
       <div class="form-group">
-        <label for="inputMessage" class="col-lg-2 control-label">Message</label>
+        <label for="inputMessage" class="col-lg-2 control-label">Message <span class="required">*</span></label>
         <div class="col-lg-6">
           <textarea id="inputMessage" class="form-control" rows="3"></textarea>
         </div>
       </div>
       <div class="form-group">
         <div class="col-lg-offset-2 col-lg-6">
-          <button type="submit" class="btn btn-default">Submit</button>
+          <button type="submit" id="send" class="btn btn-default">Submit</button>
         </div>
       </div>
-      </div>
-    </form>
+    </div>
+  </form>
 
 
   
 </div>
 @footer
-</div> <!-- /container -->        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+</div> <!-- /container -->      
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
-
+<script src="@routes.Assets.at("js/contact.js")" type="text/javascript"></script>
 
 <script>
   var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
