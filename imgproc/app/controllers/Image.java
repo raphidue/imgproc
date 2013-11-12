@@ -11,12 +11,17 @@ import play.*;
 
 public class Image extends Controller {
 	
+
 	public static Result upload(String id) {
 		MultipartFormData body = request().body().asMultipartFormData();
 		FilePart picture = body.getFile("picture");
 		String path = Play.application().path().getAbsolutePath() + "/public/uploads";
 		
+<<<<<<< HEAD
 		File theDir = new File(path);
+=======
+		File theDir = new File(Play.application().path().getAbsolutePath() + "/public/uploads");
+>>>>>>> origin/ivan_0.1
 
 		// erstelle Ordner uploads wenn nicht existiert
 		if (!theDir.exists()) {
@@ -36,5 +41,5 @@ public class Image extends Controller {
 			flash("error", "Missing file");
 			return redirect(routes.Application.index());    
 		}
-	}
+	}	
 }

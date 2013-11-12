@@ -13,6 +13,7 @@ public class Application extends Controller {
     
 	public static Result processing() {
 		return ok(views.html.processing.render(scripts.render(), navigation.render("processing")));
+
 	}
     
 	public static Result contact() {        
