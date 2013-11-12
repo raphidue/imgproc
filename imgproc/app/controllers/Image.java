@@ -14,8 +14,9 @@ public class Image extends Controller {
 	public static Result upload(String id) {
 		MultipartFormData body = request().body().asMultipartFormData();
 		FilePart picture = body.getFile("picture");
+		String path = Play.application().path().getAbsolutePath() + "/public/uploads";
 		
-		File theDir = new File(Play.application().path().getAbsolutePath() + "/public" + uploads);
+		File theDir = new File(path);
 
 		// erstelle Ordner uploads wenn nicht existiert
 		if (!theDir.exists()) {
@@ -28,7 +29,7 @@ public class Image extends Controller {
 			String contentType = picture.getContentType(); 
 			File file = picture.getFile();
 
-			String myUploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id;
+			String myUploadPath = path + "/" + id;
 			file.renameTo(new File(myUploadPath));
 			return ok(views.html.image.render(id));
 		} else {
