@@ -17,11 +17,7 @@ public class Image extends Controller {
 		FilePart picture = body.getFile("picture");
 		String path = Play.application().path().getAbsolutePath() + "/public/uploads";
 		
-<<<<<<< HEAD
 		File theDir = new File(path);
-=======
-		File theDir = new File(Play.application().path().getAbsolutePath() + "/public/uploads");
->>>>>>> origin/ivan_0.1
 
 		// erstelle Ordner uploads wenn nicht existiert
 		if (!theDir.exists()) {
