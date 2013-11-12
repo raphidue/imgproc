@@ -9,7 +9,15 @@ GET     /about                      controllers.Application.about()
 GET     /contact                    controllers.Application.contact()
 POST    /processing/:id         	controllers.Image.upload(id: String)
 
+#for contact form
+POST	/app_contact_sendEmail.html		controllers.Contact.sendEmail()
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
 GET     /files/*file           		controllers.FileService.getFile(file: String)
 GET     /webjars/*file              controllers.WebJarAssets.at(file)
+
+
+
+

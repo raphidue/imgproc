@@ -11,6 +11,7 @@ import play.*;
 
 public class Image extends Controller {
 	
+
 	public static Result upload(String id) {
 		MultipartFormData body = request().body().asMultipartFormData();
 		FilePart picture = body.getFile("picture");
@@ -36,5 +37,5 @@ public class Image extends Controller {
 			flash("error", "Missing file");
 			return redirect(routes.Application.index());    
 		}
-	}
+	}	
 }
