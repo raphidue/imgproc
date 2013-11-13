@@ -121,6 +121,11 @@ fieldset[disabled] .btn-custom.active {
 	    left: 50%;
 	    top: 250px;
 }
+#uploadedImage {
+	display: block; 
+	margin-left: auto; 
+	margin-right: auto;
+}
 
 #footer {
 	padding-top: 10px;

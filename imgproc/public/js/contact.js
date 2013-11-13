@@ -13,7 +13,8 @@ $(function() {
 		};
 
 		jQuery.post("app_contact_sendEmail.html", json, function(data) {
-			console.log("Email sending status: " + data['status']);
+			//("Email sending status: " + data['status'])
+			$('#myModal').modal();
 		}, "json");
 
 
