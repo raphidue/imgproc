@@ -2,7 +2,7 @@
 $(function() {
 	$("#showImg").click(function() {
 		if($( "#showImg" ).hasClass( "active" )) {
-			$( "#showImg").removeClass( "active" )
+			$( "#showImg").removeClass( "active" );
 		} else {
 			$( "#showImg" ).addClass( "active" );
 		}
