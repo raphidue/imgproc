@@ -9,8 +9,16 @@ import play.mvc.Http.MultipartFormData.FilePart;
 import java.io.File;
 import play.*;
 
+//for buffered image
+import java.awt.*;
+import java.awt.image.*;
+import java.io.*;
+import javax.imageio.*;
+
 public class Image extends Controller {
 	
+	private static BufferedImage img = null;
+	private static File fileToConvert = null;
 
 	public static Result upload(String id) {
 		MultipartFormData body = request().body().asMultipartFormData();
@@ -30,12 +38,29 @@ public class Image extends Controller {
 			String contentType = picture.getContentType(); 
 			File file = picture.getFile();
 
+
+
 			String myUploadPath = path + "/" + id;
 			file.renameTo(new File(myUploadPath));
+			fileToConvert = file;
+
 			return ok(views.html.image.render(id));
 		} else {
 			flash("error", "Missing file");
 			return redirect(routes.Application.index());    
 		}
-	}	
+	}
+
+	private static void convertBufImage() {
+		try {
+			img = ImageIO.read(fileToConvert);
+		} catch (IOException e){ 
+			//to do
+		}
+	}
+
+	public BufferedImage getBufImage() {
+		return img;
+	}
+
 }

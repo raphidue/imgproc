@@ -1,6 +1,7 @@
 logs
 project/project
 project/target
+public/uploads/*.jpg
 target
 tmp
 .history
