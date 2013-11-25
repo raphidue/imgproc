@@ -3,8 +3,10 @@ $(function() {
 	$("#showImg").click(function() {
 		if($( "#showImg" ).hasClass( "active" )) {
 			$( "#showImg").removeClass( "active" );
+			$( "#hist-content" ).fadeOut();
 		} else {
 			$( "#showImg" ).addClass( "active" );
+			$( "#hist-content" ).fadeIn();
 		}
 	});
 	$("#glaett").click(function() {
@@ -57,6 +59,7 @@ $(function() {
 function getFile(){
 	document.getElementById("upfile").click();
 }
+
 // Function for Post File to Image Controller
 $(function() {
 	$('#upfile').on('change', function()

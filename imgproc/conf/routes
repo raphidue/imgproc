@@ -7,7 +7,7 @@ GET     /processing             	controllers.Application.processing()
 GET     /documentation              controllers.Application.documentation()
 GET     /about                      controllers.Application.about()
 GET     /contact                    controllers.Application.contact()
-POST    /processing/:id         	controllers.Image.upload(id: String)
+POST    /processing/:id	        	controllers.Image.upload(id: String)
 
 #for contact form
 POST	/app_contact_sendEmail.html		controllers.Contact.sendEmail()
