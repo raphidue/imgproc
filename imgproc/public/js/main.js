@@ -72,7 +72,15 @@ $(function() {
 		$("#form_id").attr("action", "/processing/" + ts + ".jpg");
 		$("#form_id").ajaxForm(
 			{
-				target: '#img-content'
+				target: '#img-content',
+			    success: function() {
+					var img = document.createElement("img");
+					img.src = "/files/" + ts + ".jpg";
+					img.className = "thumbnail";
+					img.id = "uploadedImage";
+					$("#img-content").html(img);
+					showHistogram(ts + ".jpg");
+			    }
 			}).submit();
 	});
 }); 

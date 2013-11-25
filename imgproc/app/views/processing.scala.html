@@ -79,17 +79,20 @@
 				<canvas id="canvas" height="" width=""></canvas>
 				
 				<script>
-			        $.ajax({
-			            type: "GET",
-			            url: "processing"
-			        }).done(function(jsonData) {
-			            //jsonData = $.parseJSON(jsonData);
-			            if (jsonData.Duy != "test") {
-			                console.log("Der Eintrag wurde vielleicht gelöscht, vielleicht auch nicht.")
-			            } else {
-			                console.log("Der Eintrag wurde erfolgreich gelöscht");
-			            }
-			        });
+				function showHistogram(filename) {
+				
+					$.ajax({
+						type: "GET",
+						url: "processing",
+						dataType: "json"
+					}).done(function(jsonData) {
+						if (jsonData.test != "Hallo") {
+							console.log("OHHHH Entschuldigung! Da lief wohl etwas gewaltig schief");
+						} else {
+							console.log("Ihre Wetterdaten wurden gespeichert und in die untere Tabelle aufgenommen.");
+						}
+					});
+				}
 				var array = new Array(256);
 				for(var i = 0; i < 256; i++) {
 					array[i] = "";

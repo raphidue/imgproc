@@ -11,7 +11,6 @@ import play.*;
 import play.libs.Json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import javax.script.*;
 
 //for buffered image
 import java.awt.Graphics2D; 
@@ -29,6 +28,7 @@ public class Image extends Controller {
 		FilePart picture = body.getFile("picture");
 		String path = Play.application().path().getAbsolutePath() + "/public/uploads";
 		File theDir = new File(path);
+		ObjectNode respJSON = Json.newObject();
 				
 		// erstelle Ordner uploads wenn nicht existiert
 		if (!theDir.exists()) {
@@ -68,27 +68,13 @@ public class Image extends Controller {
 						H[i] = H[i] + 1;						
 					}
 				}
-				toJS(H);
+				respJSON.put("test", "Hallo");
 			} catch(IOException ioe) {
 			}			
-			return ok(views.html.image.render(id));
+			return ok(respJSON);
 		} else {
 			flash("error", "Missing file");
 			return redirect(routes.Application.index());    
-		}
-	}
-	
-	public static void toJS(int[] array) {
-		try {
-			ScriptEngineManager manager = new ScriptEngineManager();
-			ScriptEngine engine = manager.getEngineByName("javascript");
- 
-			engine.eval("var x = 10;");
-			engine.eval("var y = 20;");
-			engine.eval("var z = x + y;");
-			engine.eval("console.log(z)");
-		} catch(ScriptException se) {
-		
 		}
 	}
 }
