@@ -28,7 +28,6 @@ public class Image extends Controller {
 		FilePart picture = body.getFile("picture");
 		String path = Play.application().path().getAbsolutePath() + "/public/uploads";
 		File theDir = new File(path);
-		ObjectNode respJSON = Json.newObject();
 				
 		// erstelle Ordner uploads wenn nicht existiert
 		if (!theDir.exists()) {
@@ -68,13 +67,18 @@ public class Image extends Controller {
 						H[i] = H[i] + 1;						
 					}
 				}
-				respJSON.put("test", "Hallo");
 			} catch(IOException ioe) {
 			}			
-			return ok(respJSON);
+			return ok(views.html.image.render(id));
 		} else {
 			flash("error", "Missing file");
 			return redirect(routes.Application.index());    
 		}
+	}
+	
+	public static Result display(String id) {
+		ObjectNode respJSON = Json.newObject();
+		respJSON.put("test", "Hllo");
+		return ok(respJSON);	
 	}
 }

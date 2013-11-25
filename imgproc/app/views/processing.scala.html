@@ -83,7 +83,7 @@
 				
 					$.ajax({
 						type: "GET",
-						url: "processing",
+						url: "processing/" + filename,
 						dataType: "json"
 					}).done(function(jsonData) {
 						if (jsonData.test != "Hallo") {
