@@ -18,8 +18,6 @@ import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 public class Image extends Controller {
 
@@ -50,23 +48,13 @@ public class Image extends Controller {
 				// in 8bit Bild konvertieren 
 				BufferedImage im = new BufferedImage(input.getWidth(), input.getHeight(), BufferedImage.TYPE_BYTE_GRAY); 
 				Graphics2D g2d = im.createGraphics();
+				
 				// Bild rendern
 				g2d.drawImage(input,0,0,null);
+				
 				// das resultierende Bild Speichern
 				ImageIO.write(im,"JPG",new File(myUploadPath));
 				
-				// Histogramm erstellen
-				int[] H = new int[256];
-				int w = im.getWidth();
-				int h = im.getHeight();			
-				
-				for (int v = 0; v < h; v++) {
-					for (int u = 0; u < w; u++) {
-						// Pixel abspeichern 
-						int i = im.getRaster().getPixel(u, v, (int[]) null)[0];
-						H[i] = H[i] + 1;						
-					}
-				}
 			} catch(IOException ioe) {
 			}			
 			return ok(views.html.image.render(id));
@@ -78,7 +66,37 @@ public class Image extends Controller {
 	
 	public static Result display(String id) {
 		ObjectNode respJSON = Json.newObject();
-		respJSON.put("test", "Hllo");
+		int[] H = new int[256];
+		String tmp;
+		Integer tmpInt;
+		
+		try {
+			// Bild einlesen
+			BufferedImage im = ImageIO.read(new File(Play.application().path().getAbsolutePath() + "/public/uploads/" + id));
+		
+			// Histogramm erstellen
+			int w = im.getWidth();
+			int h = im.getHeight();			
+		
+			for (int v = 0; v < h; v++) {
+				for (int u = 0; u < w; u++) {
+					// Pixel abspeichern 
+					int i = im.getRaster().getPixel(u, v, (int[]) null)[0];
+					H[i] = H[i] + 1;						
+				}
+			}
+			
+			// Histogramm in JSON Object verpacken
+			for (int i = 0; i < H.length; i++) {	
+				tmpInt = new Integer(i);
+				tmp = tmpInt.toString();			
+				respJSON.put(tmp, new Integer(H[i]));
+			}
+			
+		} catch(IOException ioe) {
+			respJSON.put("error", "Error on creating histogram...");
+		}
+				
 		return ok(respJSON);	
 	}
 }
