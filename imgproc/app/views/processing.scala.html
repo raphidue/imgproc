@@ -32,6 +32,15 @@
 	#img-content {
 		margin-top: 30px;
 	}
+	#hist-content {
+		margin-top: 30px;
+	}
+	
+    canvas{
+        width: 100% !important;
+        max-width: 800px;
+        height: auto !important;
+    }
 	</style>
 	@scripts
 </head>
@@ -54,7 +63,7 @@
 						<span class="glyphicon glyphicon-save"></span>
 						Save Image
 					</button>
-					<button class="btn btn-default" id="showImg" type="button">
+					<button class="btn btn-default active" id="showImg" type="button">
 						<span class="glyphicon glyphicon-signal"></span>
 						Show Histogram
 					</button>
@@ -70,10 +79,10 @@
 					<button class="btn btn-default proc-button" id="harri" type="button">Harris Detector</button>
 				</div>
 			</div>
-			<div id="img-content" class="col-md-7">
-			</div>
+			<div id="img-content" class="col-md-7">				
+			</div>			
 			<div id="hist-content" class="col-md-3">
-            histogram
+				<canvas id="canvas" height="" width=""></canvas>
 			</div>
 		</div> <!-- /row -->
 	</div>
