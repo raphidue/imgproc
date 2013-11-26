@@ -64,7 +64,7 @@ public class Image extends Controller {
 		}
 	}
 	
-	public static Result display(String id) {
+	public static Result showHist(String id) {
 		ObjectNode respJSON = Json.newObject();
 		int[] H = new int[256];
 		String tmp;
