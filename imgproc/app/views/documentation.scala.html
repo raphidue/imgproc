@@ -26,6 +26,9 @@
 	}
 	</style>
 	@scripts
+
+
+
 </head>
 <body data-spy="scroll" data-offset="90" data-target=".bs-sidebar">
 	@navigation
@@ -81,10 +84,20 @@
 					</p>
 					<div class="bs-example"><p>histogram example</p></div>
 					<div class="highlight">
-						<pre>
-							<code class="html">
-								histogram pseudocode
-							</code>
+						<pre class="brush: java">
+public void run(ImageProcessor ip) {
+	int[] H = new int[256]; // histogram array
+	int w = ip.getWidth();
+	int h = ip.getHeight();
+
+	for (int v = 0; v < h; v++) {
+		for (int u = 0; u < w; u++) {
+			int i = ip.getPixel(u,v);
+			H[i] = H[i] + 1;
+		}
+	}
+	... //histogram H[] can now be used
+}
 						</pre>
 					</div>
 				</div>
@@ -113,10 +126,35 @@
 					</p>
 					<div class="bs-example"><p>Smoothing filter example</p></div>
 					<div class="highlight">
-						<pre>
-							<code class="html">
-								Smoothing filter pseudocode
-							</code>
+						<pre class="brush: java">
+public void run(ImageProcessor orig) {
+	int w = orig.getWidth();
+	int h = orig.getHeight();
+	// 3 × 3 filter matrix
+	double[][] filter = {
+		{0.075, 0.125, 0.075},
+		{0.125, 0.200, 0.125},
+		{0.075, 0.125, 0.075}
+	};
+	ImageProcessor copy = orig.duplicate();
+
+	for (int v=1; v<=h-2; v++) {
+		for (int u=1; u<=w-2; u++) {
+			// compute filter result for position (u, v)
+			double sum = 0;
+			for (int j=-1; j<=1; j++) {
+				for (int i=-1; i<=1; i++) {
+					int p = copy.getPixel(u+i,v+j);
+					// get the corresponding filter coefficient:
+					double c = filter[j+1][i+1];
+					sum = sum + c * p;
+				}
+			}
+			int q = (int) Math.round(sum);
+			orig.putPixel(u,v,q);
+		}
+	}
+}
 						</pre>
 					</div>
 				</div>
@@ -145,10 +183,41 @@
 					</p>
 					<div class="bs-example"><p>Minimum filter example</p></div>
 					<div class="highlight">
-						<pre>
-							<code class="html">
-								Minimum filter pseudocode
-							</code>
+						<pre class="brush: java">
+/**
+ * A filter which replcaes each pixel by the mimimum of itself and its eight neightbours.
+ */
+public class MinimumFilter extends WholeImageFilter {
+	
+	public MinimumFilter() {
+	}
+	
+	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
+		int index = 0;
+		int[] outPixels = new int[width * height];
+
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int pixel = 0xffffffff;
+				for (int dy = -1; dy <= 1; dy++) {
+					int iy = y+dy;
+					int ioffset;
+					if (0 <= iy && iy < height) {
+						ioffset = iy*width;
+						for (int dx = -1; dx <= 1; dx++) {
+							int ix = x+dx;
+							if (0 <= ix && ix < width) {
+								pixel = PixelUtils.combinePixels(pixel, inPixels[ioffset+ix], PixelUtils.MIN);
+							}
+						}
+					}
+				}
+				outPixels[index++] = pixel;
+			}
+		}
+		return outPixels;
+	}
+}
 						</pre>
 					</div>
 				</div>
@@ -161,10 +230,46 @@
 					</p>
 					<div class="bs-example"><p>Maximum filter example</p></div>
 					<div class="highlight">
-						<pre>
-							<code class="html">
-								Maximum filter pseudocode
-							</code>
+						<pre class="brush: java">
+/**
+ * A filter which replcaes each pixel by the maximum of itself and its eight neightbours.
+ */
+public class MaximumFilter extends WholeImageFilter {
+
+	public MaximumFilter() {
+	}
+
+	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
+		int index = 0;
+		int[] outPixels = new int[width * height];
+
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int pixel = 0xff000000;
+				for (int dy = -1; dy <= 1; dy++) {
+					int iy = y+dy;
+					int ioffset;
+					if (0 <= iy && iy < height) {
+						ioffset = iy*width;
+						for (int dx = -1; dx <= 1; dx++) {
+							int ix = x+dx;
+							if (0 <= ix && ix < width) {
+								pixel = PixelUtils.combinePixels(pixel, inPixels[ioffset+ix], PixelUtils.MAX);
+							}
+						}
+					}
+				}
+				outPixels[index++] = pixel;
+			}
+		}
+		return outPixels;
+	}
+
+	public String toString() {
+		return "Blur/Maximum";
+	}
+
+}
 						</pre>
 					</div>
 				</div>
@@ -177,10 +282,31 @@
 					</p>
 					<div class="bs-example"><p>Median filter example</p></div>
 					<div class="highlight">
-						<pre>
-							<code class="html">
-								Median filter pseudocode
-							</code>
+						<pre class="brush: java">
+public void run(ImageProcessor orig) {
+	int w = orig.getWidth();
+	int h = orig.getHeight();
+	ImageProcessor copy = orig.duplicate();
+	//vector to hold pixels from 3x3 neighborhood
+	int[] P = new int[9];
+
+	for (int v=1; v<=h-2; v++) {
+		for (int u=1; u<=w-2; u++) {
+
+		//fill the pixel vector P for filter position (u,v)
+		int k = 0;
+		for (int j=-1; j<=1; j++) {
+			for (int i=-1; i<=1; i++) {
+				P[k] = copy.getPixel(u+i,v+j);
+				k++;
+			}
+		}
+		//sort the pixel vector and take center element
+		Arrays.sort(P);
+		orig.putPixel(u,v,P[4]);
+		}
+	}
+}
 						</pre>
 					</div>
 				</div>
@@ -252,6 +378,9 @@
 		</div>		
 	</div>
 	@footer
-</div><!-- /container --> 
+</div><!-- /container -->
+<script type="text/javascript">
+     SyntaxHighlighter.all()
+</script> 
 </body>
 </html>
