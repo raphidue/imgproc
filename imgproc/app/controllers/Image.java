@@ -117,7 +117,8 @@ public class Image extends Controller {
 
 				for (int v = 0; v < h; v++) {
 					for (int u = 0; u < w; u++) {
-					    //raster.setSample(w,h,0,value);    
+						int i = im.getRaster().getPixel(u, v, (int[]) null)[0];
+					    raster.setSample(u,v,0,i);    
 					}
 				}
 				ImageIO.write(im,"JPG",new File(uploadPath)); 
