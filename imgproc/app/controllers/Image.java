@@ -99,4 +99,32 @@ public class Image extends Controller {
 				
 		return ok(respJSON);	
 	}
+	
+	public static Result smoothing() {
+		JsonNode json = request().body().asJson();
+		if(json == null) {
+			return badRequest("Expecting Json data");
+		} else {
+			String id = json.findPath("id").toString();
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
+			try {
+				BufferedImage im = ImageIO.read(new File(uploadPath));
+				// Histogramm erstellen
+				int w = im.getWidth();
+				int h = im.getHeight();
+
+				WritableRaster raster = im.getRaster();
+
+				for (int v = 0; v < h; v++) {
+					for (int u = 0; u < w; u++) {
+					    //raster.setSample(w,h,0,value);    
+					}
+				}
+				ImageIO.write(im,"JPG",new File(uploadPath)); 
+			} catch(IOException ioe) {
+					
+			}
+			return ok("test");
+		}
+	}
 }

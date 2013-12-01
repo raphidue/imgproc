@@ -1,3 +1,4 @@
+var global_ID = null;
 /************************Processing Buttons Action*****************************/
 $(function() {
 	$("#showImg").click(function() {
@@ -10,7 +11,18 @@ $(function() {
 		}
 	});
 	$("#glaett").click(function() {
-		buttonClicked("#glaett");
+		if(global_ID == null) {
+			alert("bitte zuerst");
+		} else {
+			buttonClicked("#glaett");
+			$.ajax({
+			    type: 'POST',
+			    data: JSON.stringify({id: global_ID}),
+			    contentType: 'application/json',
+			    dataType: 'json',
+				url: '/smoothing'
+			});
+		}
 	});
 	$("#diff").click(function() {
 		buttonClicked("#diff");
@@ -69,6 +81,7 @@ $(function() {
 		// get File Name for Post to Image Controller
 		var filename = $('#upfile').val();
 		var ts = Math.round((new Date()).getTime() / 1000);
+		global_ID = ts;
 		$("#form_id").attr("action", "/processing/" + ts + ".jpg");
 		$("#form_id").ajaxForm(
 			{

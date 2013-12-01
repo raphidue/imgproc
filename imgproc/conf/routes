@@ -9,6 +9,7 @@ GET     /about                      controllers.Application.about()
 GET     /contact                    controllers.Application.contact()
 POST   	/processing/:id	        	controllers.Image.upload(id: String)
 GET		/processing/:id				controllers.Image.showHist(id: String)
+POST	/smoothing					controllers.Image.smoothing()
 
 #for contact form
 POST	/app_contact_sendEmail.html		controllers.Contact.sendEmail()
