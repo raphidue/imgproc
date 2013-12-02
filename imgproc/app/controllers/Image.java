@@ -109,23 +109,50 @@ public class Image extends Controller {
 			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
+				
 				// Histogramm erstellen
 				int w = im.getWidth();
 				int h = im.getHeight();
-
+				
+				// 3x3 Filtermatrix
+				double[][] filter = {
+					{0.075, 0.125, 0.075},
+					{0.125, 1, 0.125},
+					{0.075, 0.125, 0.075}
+				};
+				
+				// Kopie des Bildes
+				BufferedImage copy = im;
 				WritableRaster raster = im.getRaster();
 
-				for (int v = 0; v < h; v++) {
-					for (int u = 0; u < w; u++) {
-						int i = im.getRaster().getPixel(u, v, (int[]) null)[0];
-					    raster.setSample(u,v,0,i);    
+				for (int v = 1; v <= h-2; v++) {
+					for (int u = 1; u <= w-2; u++) {
+						double sum = 0;
+						for (int j = -1; j <= 1; j++) {
+							for (int i = -1; i <= 1; i++) {
+								int p = copy.getRaster().getPixel(u+i, v+j, (int[]) null)[0];
+								double c = filter[j+1][i+1];
+								sum = sum + c * p;
+							}
+						}
+						
+						int q = (int) Math.round(sum);
+						q = checkPixel(q);
+					    raster.setSample(u,v,0,q);    
 					}
 				}
 				ImageIO.write(im,"JPG",new File(uploadPath)); 
 			} catch(IOException ioe) {
 					
 			}
-			return ok("test");
+			return ok();
 		}
+	}
+	public static int checkPixel(int pixel) {
+		if (pixel > 255)
+			pixel = 255;
+		if (pixel < 0)
+			pixel = 0; 
+		return pixel;
 	}
 }
