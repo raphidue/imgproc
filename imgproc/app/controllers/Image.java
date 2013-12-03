@@ -162,26 +162,20 @@ public class Image extends Controller {
 		
 			// Kopie des Bildes sowie randbehandlung des bildes
 			BufferedImage copy = new BufferedImage(w+2, h+2, BufferedImage.TYPE_BYTE_GRAY);
-					try {
+			
 			for (int v = 0; v < h+2; v++) {
 				for (int u = 0; u < w+2; u++) {
 					copy.getRaster().setSample(u, v, 0, 255);
 				}
 			} 
-			ImageIO.write(copy,"JPG",new File("public/uploads/zuerst.jpg"));
 		
 			for (int v = 0; v < h; v++) {
 				for (int u = 0; u < w; u++) {
 					copy.getRaster().setSample(u+1, v+1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
 				}
 			} 
-			ImageIO.write(copy,"JPG",new File("public/uploads/zweites.jpg"));	
-				
-		} catch(IOException ioe) {
-		
-		}
-		return copy;
-		
+
+		return copy;		
 	}
 	
 	// Pixelgrenzen beachten 
