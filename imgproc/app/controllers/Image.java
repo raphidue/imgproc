@@ -119,12 +119,13 @@ public class Image extends Controller {
 				// 3x3 Filtermatrix
 				double[][] filter = {
 					{0.075, 0.125, 0.075},
-					{0.125, 1, 0.125},
-					{0.075, 0.125, 0.075}
+						{0.125, 1, 0.125},
+							{0.075, 0.125, 0.075}
 				};
 				
-				// Kopie des Bildes
-				BufferedImage copy = im;
+				BufferedImage copy;
+				copy = copyImage(im);
+				
 				WritableRaster raster = im.getRaster();
 
 				for (int v = 1; v <= h-2; v++) {
@@ -140,7 +141,7 @@ public class Image extends Controller {
 						
 						int q = (int) Math.round(sum);
 						q = checkPixel(q);
-					    raster.setSample(u,v,0,q);    
+						raster.setSample(u,v,0,q);    
 					}
 				}
 				ImageIO.write(im,"JPG",new File(uploadPath)); 
@@ -153,11 +154,37 @@ public class Image extends Controller {
 		}
 	}
 	
-	public static Result smoo(String id) {
-		return ok(views.html.image.render(id));	
+	// speichert das Bild in einen vergrößertes Bild
+	public static BufferedImage copyImage(BufferedImage src) {
+
+			int w = src.getWidth();
+			int h = src.getHeight();
+		
+			// Kopie des Bildes sowie randbehandlung des bildes
+			BufferedImage copy = new BufferedImage(w+2, h+2, BufferedImage.TYPE_BYTE_GRAY);
+					try {
+			for (int v = 0; v < h+2; v++) {
+				for (int u = 0; u < w+2; u++) {
+					copy.getRaster().setSample(u, v, 0, 255);
+				}
+			} 
+			ImageIO.write(copy,"JPG",new File("public/uploads/zuerst.jpg"));
+		
+			for (int v = 0; v < h; v++) {
+				for (int u = 0; u < w; u++) {
+					copy.getRaster().setSample(u+1, v+1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+				}
+			} 
+			ImageIO.write(copy,"JPG",new File("public/uploads/zweites.jpg"));	
+				
+		} catch(IOException ioe) {
+		
+		}
+		return copy;
+		
 	}
 	
-	// check pixel bounds
+	// Pixelgrenzen beachten 
 	public static int checkPixel(int pixel) {
 		if (pixel > 255)
 			pixel = 255;
