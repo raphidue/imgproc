@@ -14,14 +14,21 @@ $(function() {
 		if(global_ID == null) {
 			$("#img-content").html('<div class="alert alert-danger">Oh Snap! Upload a image first and then select the filter again.</div>');		
 		} else {
-				buttonClicked("#glaett");
-				$.ajax({
-					type: 'POST',
-					data: JSON.stringify({id: global_ID}),
-					contentType: 'application/json',
-					dataType: 'json',
-					url: '/smoothing'
-				});
+			buttonClicked("#glaett");
+			$.ajax({
+				type: 'POST',
+				data: JSON.stringify({id: global_ID}),
+				contentType: 'application/json',
+				dataType: 'json',
+				url: '/smoothing'
+			});
+			
+			// refreshing image after use filter
+			window.setTimeout( 
+				function(){
+					var img = document.getElementById("uploadedImage");
+					img.setAttribute('src', img.getAttribute('src') + "?ts=" + new Date().getTime());
+				}, 1000);
 			}
 		});
 		$("#diff").click(function() {
@@ -60,6 +67,7 @@ $(function() {
 		}
 	}
 	/******************************************************************************/
+	
 	// Check active docu links
 	$(function() {
 		$(".bs-sidenav > li").click(function() {
@@ -67,6 +75,7 @@ $(function() {
 			$(this).addClass( "active" );
 		});
 	});
+	
 	// For Uploadfile button
 	function getFile(){
 		document.getElementById("upfile").click();
@@ -92,32 +101,7 @@ $(function() {
 				}).submit();
 			});
 		});
-		/*
-		// function to update the image after selecting filteroperation
-		$(function() {
-			$('#upfile').on('change', function()
-			{
-				$("#img-content").html('');
-				$("#img-content").html('<img id="ajax-loader" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
-				// get File Name for Post to Image Controller
-				var filename = $('#upfile').val();
-				var ts = Math.round((new Date()).getTime() / 1000);
-				global_ID = ts;
-				$("#form_id").attr("action", "/processing/" + ts + ".jpg");
-				$("#form_id").ajaxForm(
-					{
-						target: '#img-content',
-						success: function() {
-							var img = document.createElement("img");
-							img.src = "/files/" + ts + ".jpg";
-							img.className = "thumbnail";
-							img.id = "uploadedImage";
-							$("#img-content").html(img);
-						}
-					}).submit();
-				});
-			}); 
-*/
+			
 		function saveImage() {
 			var hiddenIFrameID = 'hiddenDownloader',
 			iframe = document.getElementById(hiddenIFrameID);

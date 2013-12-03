@@ -119,7 +119,7 @@ fieldset[disabled] .btn-custom.active {
 #ajax-loader {
 	position: absolute;
 	    left: 50%;
-	    top: 250px;
+	    top: 200px;
 }
 #uploadedImage {
 	display: block; 

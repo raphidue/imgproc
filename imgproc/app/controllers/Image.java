@@ -101,7 +101,9 @@ public class Image extends Controller {
 	}
 	
 	public static Result smoothing() {
+		ObjectNode respJSON = Json.newObject();
 		JsonNode json = request().body().asJson();
+		
 		if(json == null) {
 			return badRequest("Expecting Json data");
 		} else {
@@ -143,11 +145,19 @@ public class Image extends Controller {
 				}
 				ImageIO.write(im,"JPG",new File(uploadPath)); 
 			} catch(IOException ioe) {
-					
+				respJSON.put("error", "Error on processing smoothing filter...");
 			}
-			return ok();
+			respJSON.put("id", id);
+			return ok(respJSON);
+			
 		}
 	}
+	
+	public static Result smoo(String id) {
+		return ok(views.html.image.render(id));	
+	}
+	
+	// check pixel bounds
 	public static int checkPixel(int pixel) {
 		if (pixel > 255)
 			pixel = 255;
