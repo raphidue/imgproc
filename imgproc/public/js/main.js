@@ -17,10 +17,9 @@ $(function() {
 		} else {
 			buttonClicked("#glaett");
 			
-			// ID an path: smoothing senden
+			// ID an path: smoothing senden und Histogramm erstellen
 			sendJson("POST", "/smoothing", JSON.stringify({id: global_ID}));
-
-			//showHistogram("POST", "smoothing");
+			showHistogram("GET", "smoothing/" + global_ID + ".jpg");
 			
 			// refreshing image after use filter
 			refreshImage();
@@ -182,7 +181,7 @@ $(function() {
 					scaleLineWidth : 1,
 
 					//Boolean - Whether to show labels on the scale	
-					scaleShowLabels : true,
+					scaleShowLabels : false,
 
 					//Interpolated JS string - can access value
 					scaleLabel : "<%=value%>",
@@ -200,7 +199,7 @@ $(function() {
 					scaleFontColor : "#666",	
 
 					///Boolean - Whether grid lines are shown across the chart
-					scaleShowGridLines : true,
+					scaleShowGridLines : false,
 
 					//String - Colour of the grid lines
 					scaleGridLineColor : "rgba(0,0,0,.05)",
