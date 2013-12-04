@@ -11,116 +11,137 @@ $(function() {
 		}
 	});
 	$("#glaett").click(function() {
+		// Wenn kein Bild hochgeladen wurde
 		if(global_ID == null) {
 			$("#img-content").html('<div class="alert alert-danger">Oh Snap! Upload a image first and then select the filter again.</div>');		
 		} else {
 			buttonClicked("#glaett");
-			$.ajax({
-				type: 'POST',
-				data: JSON.stringify({id: global_ID}),
-				contentType: 'application/json',
-				dataType: 'json',
-				url: '/smoothing'
-			});
+			
+			// ID an path: smoothing senden
+			sendJson("POST", "/smoothing", JSON.stringify({id: global_ID}));
+
+			//showHistogram("POST", "smoothing");
 			
 			// refreshing image after use filter
-			window.setTimeout( 
-				function(){
-					var img = document.getElementById("uploadedImage");
-					img.setAttribute('src', img.getAttribute('src') + "?ts=" + new Date().getTime());
-				}, 1000);
-			}
-		});
-		$("#diff").click(function() {
-			buttonClicked("#diff");
-		});
-		$("#min").click(function() {
-			buttonClicked("#min");
-		});
-		$("#max").click(function() {
-			buttonClicked("#max");
-		});
-		$("#median").click(function() {
-			buttonClicked("#median");
-		});
-		$("#gewMedian").click(function() {
-			buttonClicked("#gewMedian");
-		});
-		$("#morph").click(function() {
-			buttonClicked("#morph");
-		});
-		$("#region").click(function() {
-			buttonClicked("#region");
-		});
-		$("#harri").click(function() {
-			buttonClicked("#harri");
-		});
-	});
-
-	// Check active buttons
-	function buttonClicked(elementID) {
-		$( ".proc-button" ).removeClass( "active" );
-		if($( elementID ).hasClass( "active" )) {
-			$( elementID ).removeClass( "active" )
-		} else {
-			$( elementID ).addClass( "active" );
+			refreshImage();
+			buttonReset("#glaett");			
 		}
+	});
+	$("#diff").click(function() {
+		buttonClicked("#diff");
+	});
+	$("#min").click(function() {
+		buttonClicked("#min");
+	});
+	$("#max").click(function() {
+		buttonClicked("#max");
+	});
+	$("#median").click(function() {
+		buttonClicked("#median");
+	});
+	$("#gewMedian").click(function() {
+		buttonClicked("#gewMedian");
+	});
+	$("#morph").click(function() {
+		buttonClicked("#morph");
+	});
+	$("#region").click(function() {
+		buttonClicked("#region");
+	});
+	$("#harri").click(function() {
+		buttonClicked("#harri");
+	});
+});
+
+// Check active buttons
+function buttonClicked(elementID) {
+	$( ".proc-button" ).removeClass( "active" );
+	if($( elementID ).hasClass( "active" )) {
+		$( elementID ).removeClass( "active" )
+	} else {
+		$( elementID ).addClass( "active" );
 	}
-	/******************************************************************************/
+}
+
+// Reset button states
+function buttonReset(elementID) {
+	if($( elementID ).hasClass( "active" )) {
+		$( elementID ).removeClass( "active" );
+	}
+}
+/******************************************************************************/
 	
-	// Check active docu links
-	$(function() {
-		$(".bs-sidenav > li").click(function() {
-			$( ".bs-sidenav > li").removeClass( "active" );
-			$(this).addClass( "active" );
+// Check active docu links
+$(function() {
+	$(".bs-sidenav > li").click(function() {
+		$( ".bs-sidenav > li").removeClass( "active" );
+		$(this).addClass( "active" );
+	});
+});
+	
+// For Uploadfile button
+function getFile(){
+	document.getElementById("upfile").click();
+}
+
+// Function for Post File to Image Controller
+$(function() {
+	$('#upfile').on('change', function()
+	{
+		$("#img-content").html('');
+		$("#img-content").html('<img id="ajax-loader" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
+		// get File Name for Post to Image Controller
+		var filename = $('#upfile').val();
+		var ts = Math.round((new Date()).getTime() / 1000);
+		global_ID = ts;
+		$("#form_id").attr("action", "/processing/" + ts + ".jpg");
+		$("#form_id").ajaxForm(
+			{
+				target: '#img-content',
+				success: function() {
+					showHistogram("GET", "processing/" + ts+ ".jpg");
+				}
+			}).submit();
 		});
 	});
-	
-	// For Uploadfile button
-	function getFile(){
-		document.getElementById("upfile").click();
-	}
-
-	// Function for Post File to Image Controller
-	$(function() {
-		$('#upfile').on('change', function()
-		{
-			$("#img-content").html('');
-			$("#img-content").html('<img id="ajax-loader" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
-			// get File Name for Post to Image Controller
-			var filename = $('#upfile').val();
-			var ts = Math.round((new Date()).getTime() / 1000);
-			global_ID = ts;
-			$("#form_id").attr("action", "/processing/" + ts + ".jpg");
-			$("#form_id").ajaxForm(
-				{
-					target: '#img-content',
-					success: function() {
-						showHistogram(ts + ".jpg");
-					}
-				}).submit();
-			});
-		});
 			
-		function saveImage() {
-			var hiddenIFrameID = 'hiddenDownloader',
-			iframe = document.getElementById(hiddenIFrameID);
-			if (iframe === null) {
-				iframe = document.createElement('iframe');
-				iframe.id = hiddenIFrameID;
-				iframe.style.display = 'none';
-				document.body.appendChild(iframe);
-			}
-			iframe.src = document.getElementById("uploadedImage").src;
+	function saveImage() {
+		var hiddenIFrameID = 'hiddenDownloader',
+		iframe = document.getElementById(hiddenIFrameID);
+		if (iframe === null) {
+			iframe = document.createElement('iframe');
+			iframe.id = hiddenIFrameID;
+			iframe.style.display = 'none';
+			document.body.appendChild(iframe);
+		}
+		iframe.src = document.getElementById("uploadedImage").src;
+	}
+		
+	function refreshImage() {
+		window.setTimeout( 
+			function(){
+				var img = document.getElementById("uploadedImage");
+				img.setAttribute('src', img.getAttribute('src') + "?ts=" + new Date().getTime());
+			}, 1000);
+		}
+		
+		function sendJson(typ, path, data) {
+			$.ajax({
+				type: typ,
+				data: data,
+				contentType: 'application/json',
+				dataType: 'json',
+				url: path
+			});
 		}
 
-		function showHistogram(filename) {
+		function showHistogram(typ, path) {
 			var data = new Array(256);
 			var array = new Array(256);
 	
 			$.ajax({
-				type: "GET",
-				url: "processing/" + filename,
+				type: typ,
+				url: path,
 				dataType: "json"
 			}).done(function(jsonData) {
 				for(i in jsonData) {
