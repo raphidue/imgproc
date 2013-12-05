@@ -91,15 +91,14 @@ public class Image extends Controller {
 				// 3x3 Filtermatrix
 				double[][] filter = {
 					{0.075, 0.125, 0.075},
-					{0.125, 1, 0.125},
-					{0.075, 0.125, 0.075}
+						{0.125, 0.200, 0.125},
+							{0.075, 0.125, 0.075}
 				};
 				
 				BufferedImage copy;
-				copy = copyImage(im);
-				
-				WritableRaster raster = im.getRaster();
-				
+				// copyImage() function?!
+				copy = im;
+			
 				// Filteroperation
 				for (int v = 1; v <= h-2; v++) {
 					for (int u = 1; u <= w-2; u++) {
@@ -114,7 +113,7 @@ public class Image extends Controller {
 						
 						int q = (int) Math.round(sum);
 						q = checkPixel(q);
-						raster.setSample(u,v,0,q);    
+						im.getRaster().setSample(u,v,0,q);    
 					}
 				}
 				ImageIO.write(im,"JPG",new File(uploadPath)); 

@@ -19,7 +19,11 @@ $(function() {
 			
 			// ID an path: smoothing senden und Histogramm erstellen
 			sendJson("POST", "/smoothing", JSON.stringify({id: global_ID}));
-			showHistogram("GET", "smoothing/" + global_ID + ".jpg");
+			
+			// warten bis Filteroperation angewendet wurde
+			setTimeout(function () { 
+				showHistogram("GET", "smoothing/" + global_ID + ".jpg");		
+			}, 1000);
 			
 			// refreshing image after use filter
 			refreshImage();
