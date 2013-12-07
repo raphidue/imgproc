@@ -80,6 +80,7 @@ public class Image extends Controller {
 			return badRequest("Expecting Json data");
 		} else {
 			String id = json.findPath("id").toString();
+			//String test = json.findPath("r2c3").toString();			
 			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
