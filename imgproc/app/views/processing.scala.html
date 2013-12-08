@@ -24,6 +24,9 @@
 		border-color: #ADADAD !important;
 		color: #2AB9CB !important;
 	}    
+	label {
+		font-weight: normal !important;
+	}
 	#footer {
 		width: 100%;
 		bottom: 0;
@@ -36,11 +39,11 @@
 		margin-top: 30px;
 	}
 	
-    canvas{
-        width: 100% !important;
-        max-width: 800px;
-        height: auto !important;
-    }
+	canvas{
+		width: 100% !important;
+		max-width: 800px;
+		height: auto !important;
+	}
 	</style>
 	@scripts
 </head>
@@ -80,9 +83,50 @@
 				</div>
 			</div>
 			<div id="img-content" class="col-md-7">				
-			</div>			
-			<div id="hist-content" class="col-md-3">
-				<canvas id="canvas" height="" width=""></canvas>
+			</div>
+			<div class="col-md-3">	
+				<div id="hist-content">
+					<label id="histo-label" style="display: none;">Histogram</label>		
+					<canvas id="canvas" height="" width=""></canvas>
+				</div>
+				<label id="filter-label" style="display: none;">Filter matrix</label>		
+				<div id="matrix-content" class="" style="display: none;">
+					<form id="form_matrix" class="form-inline" role="form" style="margin-left: -15px;">
+						<div class="form-group">
+							<div class="col-xs-4">
+								<input type="text" class="form-control" id="r1c1" placeholder="0.075">
+							</div>
+							<div class="col-xs-4">
+								<input type="text" class="form-control" id="r1c2" placeholder="0.125">
+							</div>
+							<div class="col-xs-4">
+								<input type="text" class="form-control" id="r1c3" placeholder="0.075">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-xs-4">
+								<input type="text" class="form-control" id="r2c1" placeholder="0.125">
+							</div>
+							<div class="col-xs-4">
+								<input type="text" class="form-control" id="r2c2" placeholder="0.200">
+							</div>
+							<div class="col-xs-4">
+								<input type="text" class="form-control" id="r2c3" placeholder="0.125">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-xs-4">
+								<input type="text" class="form-control" id="r3c1" placeholder="0.075">
+							</div>
+							<div class="col-xs-4">
+								<input type="text" class="form-control" id="r3c2" placeholder="0.125">
+							</div>
+							<div class="col-xs-4">
+								<input type="text" class="form-control" id="r3c3" placeholder="0.075">
+							</div>
+						</div>
+					</form>
+				</div>
 			</div>
 		</div> <!-- /row -->
 	</div>

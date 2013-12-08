@@ -15,8 +15,7 @@ $(function() {
 		if(global_ID == null) {
 			$("#img-content").html('<div class="alert alert-danger">Oh Snap! Upload a image first and then select the filter again.</div>');		
 		} else {
-			buttonClicked("#glaett");
-			
+				
 			// ID an path: smoothing senden und Histogramm erstellen
 			sendJson("POST", "/smoothing", JSON.stringify({id: global_ID}));
 			
@@ -27,7 +26,6 @@ $(function() {
 			
 			// refreshing image after use filter
 			refreshImage();
-			buttonReset("#glaett");			
 		}
 	});
 	$("#diff").click(function() {
@@ -91,6 +89,10 @@ function getFile(){
 $(function() {
 	$('#upfile').on('change', function()
 	{
+		setTimeout(function () { 
+			$("#filter-label").fadeIn();
+			$("#matrix-content").fadeIn();	
+		}, 1000);
 		$("#img-content").html('');
 		$("#img-content").html('<img id="ajax-loader" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
 		// get File Name for Post to Image Controller
@@ -128,7 +130,23 @@ $(function() {
 			}, 1000);
 		}
 		
+		// sendet die filtermatrix und id des zu bearbeitenden bildes als JSON 
 		function sendJson(typ, path, data) {
+			
+			// r für row c für column
+			var r1c1 = $('#r1c1').val();
+			var r1c2 = $('#r1c2').val();
+			var r1c3 = $('#r1c3').val();
+			var r2c1 = $('#r2c1').val();
+			var r2c2 = $('#r2c2').val();
+			var r2c3 = $('#r2c3').val();
+			var r3c1 = $('#r3c1').val();
+			var r3c2 = $('#r3c2').val();
+			var r3c3 = $('#r3c3').val();
+			
+			// zusammenfügen von array und id
+			data = '[' + data + ', {"r1c1":' + r1c1 +'},{"r1c2":' + r1c2 + '}, {"r1c3":' + r1c3 + '}, {"r2c1":' + r2c1 + '}, {"r2c2":' + r2c2 + '}, {"r2c3":' + r2c3 + '}, {"r3c1":' + r3c1 + '}, {"r3c2":' + r3c2 + '}, {"r3c3":' + r3c3 + '}]';	
+			console.log(data);
 			$.ajax({
 				type: typ,
 				data: data,
@@ -139,6 +157,7 @@ $(function() {
 		}
 
 		function showHistogram(typ, path) {
+			$("#histo-label").fadeIn();
 			var data = new Array(256);
 			var array = new Array(256);
 	
