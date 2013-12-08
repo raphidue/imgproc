@@ -79,8 +79,9 @@ public class Image extends Controller {
 		if(json == null) {
 			return badRequest("Expecting Json data");
 		} else {
+			double[][] filter;
 			String id = json.findPath("id").toString();
-			//String test = json.findPath("r2c3").toString();			
+			filter = convert2Matrix(json);
 			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
@@ -88,14 +89,7 @@ public class Image extends Controller {
 				// Histogramm erstellen
 				int w = im.getWidth();
 				int h = im.getHeight();
-				
-				// 3x3 Filtermatrix
-				double[][] filter = {
-					{0.075, 0.125, 0.075},
-						{0.125, 0.200, 0.125},
-							{0.075, 0.125, 0.075}
-				};
-				
+
 				BufferedImage copy;
 				// copyImage() function?!
 				copy = im;
@@ -186,6 +180,20 @@ public class Image extends Controller {
 			}
 		} 
 		return copy;		
+	}
+	// Wandelt ein JSON in eine Matrix
+	public static double[][] convert2Matrix(JsonNode json) {
+		double[][] filter = new double[3][3];
+
+		for (int r = 1; r <= 3; r++) {
+			for (int c = 1; c <= 3; c++) {
+				String str = "r" + r + "c" + c;
+				double tmp = Double.parseDouble(json.findPath(str).toString());
+				filter[r-1][c-1] = tmp;
+			}
+		}
+
+		return filter;
 	}
 	
 	// Pixelgrenzen beachten 
