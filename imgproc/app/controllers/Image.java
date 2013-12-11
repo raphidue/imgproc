@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
+import java.util.Arrays;
 
 public class Image extends Controller {
 
@@ -90,8 +91,9 @@ public class Image extends Controller {
 				int w = im.getWidth();
 				int h = im.getHeight();
 
-				BufferedImage copy;
+				//from here---------------------------------------------
 				// copyImage() function?!
+				BufferedImage copy;
 				copy = im;
 			
 				// Filteroperation
@@ -100,7 +102,9 @@ public class Image extends Controller {
 						double sum = 0;
 						for (int j = -1; j <= 1; j++) {
 							for (int i = -1; i <= 1; i++) {
+								//int p = copy.getPixel(u+i,v+j);
 								int p = copy.getRaster().getPixel(u+i, v+j, (int[]) null)[0];
+								// get the corresponding filter coefficient:
 								double c = filter[j+1][i+1];
 								sum = sum + c * p;
 							}
@@ -108,9 +112,62 @@ public class Image extends Controller {
 						
 						int q = (int) Math.round(sum);
 						q = checkPixel(q);
-						im.getRaster().setSample(u,v,0,q);    
+						im.getRaster().setSample(u,v,0,q);
+						//orig.putPixel(u,v,q);
 					}
 				}
+
+
+				ImageIO.write(im,"JPG",new File(uploadPath)); 
+				
+				// Histogramm erstellen
+				respJSON = generateHisto(id + ".jpg");
+			} catch(IOException ioe) {
+				respJSON.put("error", "Error on processing smoothing filter...");
+			}
+			return ok(respJSON);			
+		}
+	}
+
+	public static Result median(){
+		ObjectNode respJSON = Json.newObject();
+		JsonNode json = request().body().asJson();
+		if(json == null) {
+			return badRequest("Expecting Json data");
+		} else {
+			String id = json.findPath("id").toString();
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
+			try {
+				BufferedImage im = ImageIO.read(new File(uploadPath));
+				
+				// Histogramm erstellen
+				int w = im.getWidth();
+				int h = im.getHeight();
+
+				//-----------------to here
+				BufferedImage copy;
+				copy = im;
+				// Filteroperation
+				int[] P = new int[9];
+
+			    for (int v=1; v<=h-2; v++) {
+			        for (int u=1; u<=w-2; u++) {
+			 
+				        //fill the pixel vector P for filter position (u,v)
+				        int k = 0;
+				        for (int j=-1; j<=1; j++) {
+				            for (int i=-1; i<=1; i++) {
+				                P[k] = copy.getRaster().getPixel(u+i, v+j, (int[]) null)[0];
+				                k++;
+				            }
+				        }
+				        //sort the pixel vector and take center element
+				        Arrays.sort(P);
+				        im.getRaster().setSample(u,v,0,P[4]);
+			        }
+			    }
+
+
 				ImageIO.write(im,"JPG",new File(uploadPath)); 
 				
 				// Histogramm erstellen
