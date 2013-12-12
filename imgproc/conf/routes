@@ -13,7 +13,10 @@ POST	/smoothing					controllers.Image.smoothing()
 GET		/smoothing/:id				controllers.Image.showHist(id: String)
 POST	/median						controllers.Image.median()
 GET		/median/:id					controllers.Image.showHist(id: String)
-
+POST	/minimum					controllers.Image.minimum()
+GET		/minimum/:id				controllers.Image.showHist(id: String)
+POST	/maximum					controllers.Image.maximum()
+GET		/maximum/:id				controllers.Image.showHist(id: String)
 
 #for contact form
 POST	/app_contact_sendEmail.html		controllers.Contact.sendEmail()

@@ -11,11 +11,10 @@ $(function() {
 		}
 	});
 	$("#glaett").click(function() {
-		// Wenn kein Bild hochgeladen wurde
-		if(global_ID == null) {
-			$("#img-content").html('<div class="alert alert-danger">Oh Snap! Upload a image first and then select the filter again.</div>');		
-		} else {
-				
+		buttonClicked("#glaett");
+
+		
+		if(checkIfImageIsUploaded()) {
 			// ID an path: smoothing senden und Histogramm erstellen
 			sendJson("POST", "/smoothing", JSON.stringify({id: global_ID}));
 			
@@ -25,7 +24,7 @@ $(function() {
 			}, 1000);
 			
 			// refreshing image after use filter
-			refreshImage();
+			refreshImage();	
 		}
 	});
 	$("#diff").click(function() {
@@ -33,15 +32,37 @@ $(function() {
 	});
 	$("#min").click(function() {
 		buttonClicked("#min");
+
+		if(checkIfImageIsUploaded()) {
+			// ID an path: smoothing senden und Histogramm erstellen
+			//sendJson("POST", "/minimum", JSON.stringify({id: global_ID}));
+			
+
+			$.ajax({
+				type: "POST",
+				data: JSON.stringify({id: global_ID}),
+				contentType: 'application/json',
+				dataType: 'json',
+				url: "/minimum"
+			});
+			console.log("minimum filter is alive");
+			// warten bis Filteroperation angewendet wurde
+			setTimeout(function () { 
+				showHistogram("GET", "minimum/" + global_ID + ".jpg");		
+			}, 10000);
+			
+			// refreshing image after use filter
+			refreshImage();
+		}
 	});
 	$("#max").click(function() {
 		buttonClicked("#max");
 	});
 	$("#median").click(function() {
-		// Wenn kein Bild hochgeladen wurde
-		if(global_ID == null) {
-			$("#img-content").html('<div class="alert alert-danger">Oh Snap! Upload a image first and then select the filter again.</div>');		
-		} else {
+		
+		buttonClicked("#median");
+
+		if(checkIfImageIsUploaded()) {
 			// ID an path: smoothing senden und Histogramm erstellen
 			sendJson("POST", "/median", JSON.stringify({id: global_ID}));
 			
@@ -67,6 +88,16 @@ $(function() {
 		buttonClicked("#harri");
 	});
 });
+
+function checkIfImageIsUploaded(){
+	if(global_ID == null) {
+			// Wenn kein Bild hochgeladen wurde
+			$("#img-content").html('<div class="alert alert-danger">Oh Snap! Upload a image first and then select the filter again.</div>');
+			return false;
+	} else {
+		return true;
+	}
+}
 
 // Check active buttons
 function buttonClicked(elementID) {
@@ -159,7 +190,9 @@ function sendJson(typ, path, data) {
 	var r3c3 = $('#r3c3').val();
 	
 	// zusammenfügen von array und id
-	data = '[' + data + ', {"r1c1":' + r1c1 +'},{"r1c2":' + r1c2 + '}, {"r1c3":' + r1c3 + '}, {"r2c1":' + r2c1 + '}, {"r2c2":' + r2c2 + '}, {"r2c3":' + r2c3 + '}, {"r3c1":' + r3c1 + '}, {"r3c2":' + r3c2 + '}, {"r3c3":' + r3c3 + '}]';	
+	data = '[' + data + ', {"r1c1":' + r1c1 +'},{"r1c2":' + r1c2 + '}, {"r1c3":' +
+			 r1c3 + '}, {"r2c1":' + r2c1 + '}, {"r2c2":' + r2c2 + '}, {"r2c3":' +
+			  r2c3 + '}, {"r3c1":' + r3c1 + '}, {"r3c2":' + r3c2 + '}, {"r3c3":' + r3c3 + '}]';	
 	console.log(data);
 	$.ajax({
 		type: typ,
