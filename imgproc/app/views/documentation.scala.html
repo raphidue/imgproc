@@ -85,19 +85,19 @@
 					<div class="bs-example"><p>histogram example</p></div>
 					<div class="highlight">
 						<pre class="brush: java">
-public void run(ImageProcessor ip) {
-	int[] H = new int[256]; // histogram array
-	int w = ip.getWidth();
-	int h = ip.getHeight();
+							public void run(ImageProcessor ip) {
+								int[] H = new int[256]; // histogram array
+								int w = ip.getWidth();
+								int h = ip.getHeight();
 
-	for (int v = 0; v < h; v++) {
-		for (int u = 0; u < w; u++) {
-			int i = ip.getPixel(u,v);
-			H[i] = H[i] + 1;
-		}
-	}
-	... //histogram H[] can now be used
-}
+								for (int v = 0; v < h; v++) {
+									for (int u = 0; u < w; u++) {
+										int i = ip.getPixel(u,v);
+										H[i] = H[i] + 1;
+									}
+								}
+								... //histogram H[] can now be used
+							}
 						</pre>
 					</div>
 				</div>
@@ -127,34 +127,34 @@ public void run(ImageProcessor ip) {
 					<div class="bs-example"><p>Smoothing filter example</p></div>
 					<div class="highlight">
 						<pre class="brush: java">
-public void run(ImageProcessor orig) {
-	int w = orig.getWidth();
-	int h = orig.getHeight();
-	// 3 × 3 filter matrix
-	double[][] filter = {
-		{0.075, 0.125, 0.075},
-		{0.125, 0.200, 0.125},
-		{0.075, 0.125, 0.075}
-	};
-	ImageProcessor copy = orig.duplicate();
+							public void run(ImageProcessor orig) {
+								int w = orig.getWidth();
+								int h = orig.getHeight();
+								// 3 × 3 filter matrix
+								double[][] filter = {
+									{0.075, 0.125, 0.075},
+									{0.125, 0.200, 0.125},
+									{0.075, 0.125, 0.075}
+								};
+								ImageProcessor copy = orig.duplicate();
 
-	for (int v=1; v<=h-2; v++) {
-		for (int u=1; u<=w-2; u++) {
-			// compute filter result for position (u, v)
-			double sum = 0;
-			for (int j=-1; j<=1; j++) {
-				for (int i=-1; i<=1; i++) {
-					int p = copy.getPixel(u+i,v+j);
-					// get the corresponding filter coefficient:
-					double c = filter[j+1][i+1];
-					sum = sum + c * p;
-				}
-			}
-			int q = (int) Math.round(sum);
-			orig.putPixel(u,v,q);
-		}
-	}
-}
+								for (int v=1; v<=h-2; v++) {
+									for (int u=1; u<=w-2; u++) {
+										// compute filter result for position (u, v)
+										double sum = 0;
+										for (int j=-1; j<=1; j++) {
+											for (int i=-1; i<=1; i++) {
+												int p = copy.getPixel(u+i,v+j);
+												// get the corresponding filter coefficient:
+												double c = filter[j+1][i+1];
+												sum = sum + c * p;
+											}
+										}
+										int q = (int) Math.round(sum);
+										orig.putPixel(u,v,q);
+									}
+								}
+							}
 						</pre>
 					</div>
 				</div>
@@ -184,40 +184,40 @@ public void run(ImageProcessor orig) {
 					<div class="bs-example"><p>Minimum filter example</p></div>
 					<div class="highlight">
 						<pre class="brush: java">
-/**
- * A filter which replcaes each pixel by the mimimum of itself and its eight neightbours.
- */
-public class MinimumFilter extends WholeImageFilter {
+							/**
+							* A filter which replcaes each pixel by the mimimum of itself and its eight neightbours.
+							*/
+							public class MinimumFilter extends WholeImageFilter {
 	
-	public MinimumFilter() {
-	}
+								public MinimumFilter() {
+								}
 	
-	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
-		int index = 0;
-		int[] outPixels = new int[width * height];
+								protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
+									int index = 0;
+									int[] outPixels = new int[width * height];
 
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				int pixel = 0xffffffff;
-				for (int dy = -1; dy <= 1; dy++) {
-					int iy = y+dy;
-					int ioffset;
-					if (0 <= iy && iy < height) {
-						ioffset = iy*width;
-						for (int dx = -1; dx <= 1; dx++) {
-							int ix = x+dx;
-							if (0 <= ix && ix < width) {
-								pixel = PixelUtils.combinePixels(pixel, inPixels[ioffset+ix], PixelUtils.MIN);
+									for (int y = 0; y < height; y++) {
+										for (int x = 0; x < width; x++) {
+											int pixel = 0xffffffff;
+											for (int dy = -1; dy <= 1; dy++) {
+												int iy = y+dy;
+												int ioffset;
+												if (0 <= iy && iy < height) {
+													ioffset = iy*width;
+													for (int dx = -1; dx <= 1; dx++) {
+														int ix = x+dx;
+														if (0 <= ix && ix < width) {
+															pixel = PixelUtils.combinePixels(pixel, inPixels[ioffset+ix], PixelUtils.MIN);
+														}
+													}
+												}
+											}
+											outPixels[index++] = pixel;
+										}
+									}
+									return outPixels;
+								}
 							}
-						}
-					}
-				}
-				outPixels[index++] = pixel;
-			}
-		}
-		return outPixels;
-	}
-}
 						</pre>
 					</div>
 				</div>
@@ -231,45 +231,45 @@ public class MinimumFilter extends WholeImageFilter {
 					<div class="bs-example"><p>Maximum filter example</p></div>
 					<div class="highlight">
 						<pre class="brush: java">
-/**
- * A filter which replcaes each pixel by the maximum of itself and its eight neightbours.
- */
-public class MaximumFilter extends WholeImageFilter {
+							/**
+							* A filter which replcaes each pixel by the maximum of itself and its eight neightbours.
+							*/
+							public class MaximumFilter extends WholeImageFilter {
 
-	public MaximumFilter() {
-	}
+								public MaximumFilter() {
+								}
 
-	protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
-		int index = 0;
-		int[] outPixels = new int[width * height];
+								protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
+									int index = 0;
+									int[] outPixels = new int[width * height];
 
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				int pixel = 0xff000000;
-				for (int dy = -1; dy <= 1; dy++) {
-					int iy = y+dy;
-					int ioffset;
-					if (0 <= iy && iy < height) {
-						ioffset = iy*width;
-						for (int dx = -1; dx <= 1; dx++) {
-							int ix = x+dx;
-							if (0 <= ix && ix < width) {
-								pixel = PixelUtils.combinePixels(pixel, inPixels[ioffset+ix], PixelUtils.MAX);
+									for (int y = 0; y < height; y++) {
+										for (int x = 0; x < width; x++) {
+											int pixel = 0xff000000;
+											for (int dy = -1; dy <= 1; dy++) {
+												int iy = y+dy;
+												int ioffset;
+												if (0 <= iy && iy < height) {
+													ioffset = iy*width;
+													for (int dx = -1; dx <= 1; dx++) {
+														int ix = x+dx;
+														if (0 <= ix && ix < width) {
+															pixel = PixelUtils.combinePixels(pixel, inPixels[ioffset+ix], PixelUtils.MAX);
+														}
+													}
+												}
+											}
+											outPixels[index++] = pixel;
+										}
+									}
+									return outPixels;
+								}
+
+								public String toString() {
+									return "Blur/Maximum";
+								}
+
 							}
-						}
-					}
-				}
-				outPixels[index++] = pixel;
-			}
-		}
-		return outPixels;
-	}
-
-	public String toString() {
-		return "Blur/Maximum";
-	}
-
-}
 						</pre>
 					</div>
 				</div>
@@ -283,30 +283,30 @@ public class MaximumFilter extends WholeImageFilter {
 					<div class="bs-example"><p>Median filter example</p></div>
 					<div class="highlight">
 						<pre class="brush: java">
-public void run(ImageProcessor orig) {
-	int w = orig.getWidth();
-	int h = orig.getHeight();
-	ImageProcessor copy = orig.duplicate();
-	//vector to hold pixels from 3x3 neighborhood
-	int[] P = new int[9];
+							public void run(ImageProcessor orig) {
+								int w = orig.getWidth();
+								int h = orig.getHeight();
+								ImageProcessor copy = orig.duplicate();
+								//vector to hold pixels from 3x3 neighborhood
+								int[] P = new int[9];
 
-	for (int v=1; v<=h-2; v++) {
-		for (int u=1; u<=w-2; u++) {
+								for (int v=1; v<=h-2; v++) {
+									for (int u=1; u<=w-2; u++) {
 
-		//fill the pixel vector P for filter position (u,v)
-		int k = 0;
-		for (int j=-1; j<=1; j++) {
-			for (int i=-1; i<=1; i++) {
-				P[k] = copy.getPixel(u+i,v+j);
-				k++;
-			}
-		}
-		//sort the pixel vector and take center element
-		Arrays.sort(P);
-		orig.putPixel(u,v,P[4]);
-		}
-	}
-}
+										//fill the pixel vector P for filter position (u,v)
+										int k = 0;
+										for (int j=-1; j<=1; j++) {
+											for (int i=-1; i<=1; i++) {
+												P[k] = copy.getPixel(u+i,v+j);
+												k++;
+											}
+										}
+										//sort the pixel vector and take center element
+										Arrays.sort(P);
+										orig.putPixel(u,v,P[4]);
+									}
+								}
+							}
 						</pre>
 					</div>
 				</div>
@@ -347,14 +347,62 @@ public void run(ImageProcessor orig) {
 				<div class="bs-docs-section">
 					<h2>Region labeling</h2>
 					<p>
-						Text about region labeling
+						The sequential region labeling is a classic, non-recursive
+						technology, also known as "Region Labeling" in the literature.
+						The algorithm consists of two main steps:<br> 
+						(1) Temporarily label the regions<br>
+						(2) Resolution of multiple labels in the same region<br>
+						The method (especially in the second step) is relatively complex, 
+						but because of its moderate	Memory requirements quite common.
 					</p>
 					<div class="bs-example"><p>Region labeling example</p></div>
 					<div class="highlight">
-						<pre>
-							<code class="html">
-								Region labeling pseudocode
-							</code>
+						<pre class="brush: java">
+							SEQUENTIALLABELING(I) - I: binary image (0 = background, 1 = foreground)
+							
+							
+							PASS 1 – ASSIGN IINITIAL LABELS:
+							Initialize m ← 2 (the value of the next label to be assigned).
+							Create an empty set C to hold the collisions: C ← {}.
+							for v ← 0 ... H−1 do (H = height of image I)
+								for u ← 0 ... W−1 do (W = width of image I)
+								if I(u, v) = 1 then do one of:
+									if all neighbors are background pixels (all ni = 0) then
+										I(u, v) ← m.
+										m ← m +1.
+									else if exactly one of the neighbors has a label value nk > 1 then
+										set I(u, v) ← nk
+									else if several neighbors have label values nj > 1 then
+										Select one of them as the new label: I(u, v) ← k ∈ {nj}.
+										for all other neighbors with label values ni>1 and ni!=k do
+											register the pair ni, k as a label collision:
+											C ← C ∪{ni, k}.
+							Remark: The image I now contains label values 0, 2, . . .m−1.
+								
+							PASS 2 – RESOLVE LABEL COLLISIONS:
+							Let L = {2, 3, . . . m−1} be the set of preliminary region labels.
+							Create a partitioning of L as a vector of sets, one set for each label
+								value: R ← [R2,R3, . . . ,Rm−1] = [{2}, {3}, {4}, . . . , {m−1}], so
+								Ri = {i} for all i ∈ L.
+							for all collisions (a, b) ∈ C do
+							 	Find in R the sets Ra, Rb containing the labels a, b, resp.:
+									Ra ← the set which currently contains label a
+									Rb ← the set which currently contains label b
+							 	if Ra != Rb (a and b are contained in different sets) then
+							 		Merge sets Ra and Rb by moving all elements of Rb to Ra:
+									Ra ← Ra ∪ Rb
+									Rb ← {}
+							Remark: All equivalent label values (i.e., all labels of pixels in the
+							same region) are now contained in the same sets within R.
+							
+							PASS 3: RELABEL THE IMAGE:
+							Iterate through all image pixels (u, v):
+								if I(u, v) > 1 then
+									Find the set Ri in R which contains label I(u, v).
+									Choose one unique, representative element k from the set Ri
+									(e.g., the minimum value, k ← min(S)).
+									Replace the image label: I(u, v) ← k.
+							return the labeled image I.
 						</pre>
 					</div>
 				</div>
@@ -380,7 +428,7 @@ public void run(ImageProcessor orig) {
 	@footer
 </div><!-- /container -->
 <script type="text/javascript">
-     SyntaxHighlighter.all()
+SyntaxHighlighter.all()
 </script> 
 </body>
 </html>
