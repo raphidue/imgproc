@@ -40,9 +40,11 @@
 						<li class="active">
 							<a id="docHisto" href="#histogram">Histogram</a> 
 						</li>
+						<!--
 						<li>
 							<a id="docKumHisto" href="#kumhistogram">Cumulative histogram</a> 
 						</li>
+							-->
 						<li>
 							<a id="docGlaett" href="#glaettungsfilter">Smoothing filter</a> 
 						</li>
@@ -67,9 +69,11 @@
 						<li>
 							<a id="docRegion" href="#regionalabeling">Region labeling</a> 
 						</li>
+						<!--
 						<li>
 							<a id="docHarri" href="#harrisdetektor">Harris Detector</a> 
 						</li>
+						-->
 					</ul>
                     
 				</div>
@@ -80,9 +84,8 @@
 				<div class="bs-docs-section">
 					<h2>Histogram</h2>
 					<p>
-						Text about histogram
+						An image histogram is a type of histogram that acts as a graphical representation of the tonal distribution in a digital image. It plots the number of pixels for each tonal value. By looking at the histogram for a specific image a viewer will be able to judge the entire tonal distribution at a glance.
 					</p>
-					<div class="bs-example"><p>histogram example</p></div>
 					<div class="highlight">
 						<pre class="brush: java">
 							public void run(ImageProcessor ip) {
@@ -102,6 +105,7 @@
 					</div>
 				</div>
 				<!-- Kumulatives Histogram -->
+				<!--
 				<div id="kumhistogram" class="space"></div>
 				<div class="bs-docs-section">
 					<h2>Cumulative histogram</h2>
@@ -117,6 +121,7 @@
 						</pre>
 					</div>
 				</div>
+			-->
 				<!-- Glättungsfilter = smoothing filter -->
 				<div id="glaettungsfilter" class="space"></div>
 				<div class="bs-docs-section">
@@ -179,14 +184,10 @@
 				<div class="bs-docs-section">
 					<h2>Minimum filter</h2>
 					<p>
-						Text about minimum filter
+						A filter which replcaes each pixel by the mimimum of itself and its eight neightbours.
 					</p>
-					<div class="bs-example"><p>Minimum filter example</p></div>
 					<div class="highlight">
 						<pre class="brush: java">
-							/**
-							* A filter which replcaes each pixel by the mimimum of itself and its eight neightbours.
-							*/
 							public class MinimumFilter extends WholeImageFilter {
 	
 								public MinimumFilter() {
@@ -226,14 +227,10 @@
 				<div class="bs-docs-section">
 					<h2>Maximum filter</h2>
 					<p>
-						Text about maximum filter
+						A filter which replaces each pixel by the maximum of itself and its eight neightbours.
 					</p>
-					<div class="bs-example"><p>Maximum filter example</p></div>
 					<div class="highlight">
 						<pre class="brush: java">
-							/**
-							* A filter which replcaes each pixel by the maximum of itself and its eight neightbours.
-							*/
 							public class MaximumFilter extends WholeImageFilter {
 
 								public MaximumFilter() {
@@ -278,9 +275,7 @@
 				<div class="bs-docs-section">
 					<h2>Median filter</h2>
 					<p>
-						Text about median filter
-					</p>
-					<div class="bs-example"><p>Median filter example</p></div>
+					In image processing, it is often desirable to be able to perform some kind of noise reduction on an image or signal. The median filter is a nonlinear digital filtering technique, often used to remove noise. Such noise reduction is a typical pre-processing step to improve the results of later processing (for example, edge detection on an image).					</p>
 					<div class="highlight">
 						<pre class="brush: java">
 							public void run(ImageProcessor orig) {
@@ -406,7 +401,8 @@
 						</pre>
 					</div>
 				</div>
-				<!-- Harris Detektor  -->
+				<!--
+
 				<div id="harrisdetektor" class="space"></div>
 				<div class="bs-docs-section">
 					<h2>Harris Detector</h2>
@@ -423,6 +419,7 @@
 					</div>
 				</div>
 			</div>
+					-->
 		</div>		
 	</div>
 	@footer
