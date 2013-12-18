@@ -83,8 +83,7 @@
 				<div id="histogram" class="space"></div>
 				<div class="bs-docs-section">
 					<h2>Histogram</h2>
-					<p>
-						An image histogram is a type of histogram that acts as a graphical representation of the tonal distribution in a digital image. It plots the number of pixels for each tonal value. By looking at the histogram for a specific image a viewer will be able to judge the entire tonal distribution at a glance.
+					<p> An image histogram is a type of histogram that acts as a graphical representation of the tonal distribution 						in a digital image. It plots the number of pixels for each tonal value. By looking at the histogram for a 						  specific image a viewer will be able to judge the entire tonal distribution at a glance.
 					</p>
 					<div class="highlight">
 						<pre class="brush: java">
@@ -184,7 +183,7 @@
 				<div class="bs-docs-section">
 					<h2>Minimum filter</h2>
 					<p>
-						A filter which replcaes each pixel by the mimimum of itself and its eight neightbours.
+A filter which looks minimum up from the filter region from the neighbouring pixels. Extended the darken structures and reduce bright structures.
 					</p>
 					<div class="highlight">
 						<pre class="brush: java">
@@ -227,7 +226,7 @@
 				<div class="bs-docs-section">
 					<h2>Maximum filter</h2>
 					<p>
-						A filter which replaces each pixel by the maximum of itself and its eight neightbours.
+A filter which looks maximum up from the filter region from the neighbouring pixels. Extended the bright structures and reduce dark structures.
 					</p>
 					<div class="highlight">
 						<pre class="brush: java">
@@ -275,7 +274,7 @@
 				<div class="bs-docs-section">
 					<h2>Median filter</h2>
 					<p>
-					In image processing, it is often desirable to be able to perform some kind of noise reduction on an image or signal. The median filter is a nonlinear digital filtering technique, often used to remove noise. Such noise reduction is a typical pre-processing step to improve the results of later processing (for example, edge detection on an image).					</p>
+					In image processing, it is often desirable to be able to perform some kind of noise reduction on an image or signal. The median filter is a nonlinear digital filtering technique, often used to remove noise. Such noise reduction is a typical pre-processing step to improve the results of later processing (for example, edge detection on an image). Replaces each pixel by the median of the pixel values within the filter region R, the the middle value, if the consequence is sorted according to the size of their items.</p>
 					<div class="highlight">
 						<pre class="brush: java">
 							public void run(ImageProcessor orig) {
@@ -310,9 +309,7 @@
 				<div class="bs-docs-section">
 					<h2>Weighted median filter</h2>
 					<p>
-						Text about weighted median filter
-					</p>
-					<div class="bs-example"><p>Weighted median filter example</p></div>
+Version of the median filter, with which individual positions have different weights within the filter region. Weights are specified on a weight matrix, afterwards the flow as also like a normal median filter.			</p>
 					<div class="highlight">
 						<pre>
 							<code class="html">
@@ -326,9 +323,8 @@
 				<div class="bs-docs-section">
 					<h2>Morphological filter</h2>
 					<p>
-						Text about morphological filter
+Ursprünglich nur für Binärbilder gedacht, aber auch für Grauwert- und Farbbilder. Die Idee ist hier, kleinere Strukturen schrumpfen zu lassen, bis diese verschwunden sind und dann wieder wachsen zu lassen damit die größere Strukturen wieder annähernd vorhanden sind, aber die kleinere Strukturen aus dem Bild verschwunden sind.
 					</p>
-					<div class="bs-example"><p>Morphological filter example</p></div>
 					<div class="highlight">
 						<pre>
 							<code class="html">
@@ -350,7 +346,6 @@
 						The method (especially in the second step) is relatively complex, 
 						but because of its moderate	Memory requirements quite common.
 					</p>
-					<div class="bs-example"><p>Region labeling example</p></div>
 					<div class="highlight">
 						<pre class="brush: java">
 							SEQUENTIALLABELING(I) - I: binary image (0 = background, 1 = foreground)
