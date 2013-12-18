@@ -45,7 +45,6 @@ $(function() {
 				dataType: 'json',
 				url: "/minimum"
 			});
-			console.log("minimum filter is alive");
 			// warten bis Filteroperation angewendet wurde
 			setTimeout(function () { 
 				showHistogram("GET", "minimum/" + global_ID + ".jpg");		
@@ -69,7 +68,6 @@ $(function() {
 				dataType: 'json',
 				url: "/maximum"
 			});
-			console.log("maximum filter is alive");
 			// warten bis Filteroperation angewendet wurde
 			setTimeout(function () { 
 				showHistogram("GET", "maximum/" + global_ID + ".jpg");		
