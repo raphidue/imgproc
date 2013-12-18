@@ -151,22 +151,22 @@ public class Image extends Controller {
 				// Filteroperation
 				int[] P = new int[9];
 
-			    for (int v=1; v<=h-2; v++) {
-			        for (int u=1; u<=w-2; u++) {
+				for (int v=1; v<=h-2; v++) {
+					for (int u=1; u<=w-2; u++) {
 			 
-				        //fill the pixel vector P for filter position (u,v)
-				        int k = 0;
-				        for (int j=-1; j<=1; j++) {
-				            for (int i=-1; i<=1; i++) {
-				                P[k] = copy.getRaster().getPixel(u+i, v+j, (int[]) null)[0];
-				                k++;
-				            }
-				        }
-				        //sort the pixel vector and take center element
-				        Arrays.sort(P);
-				        im.getRaster().setSample(u,v,0,P[4]);
-			        }
-			    }
+						//fill the pixel vector P for filter position (u,v)
+						int k = 0;
+						for (int j=-1; j<=1; j++) {
+							for (int i=-1; i<=1; i++) {
+								P[k] = copy.getRaster().getPixel(u+i, v+j, (int[]) null)[0];
+								k++;
+							}
+						}
+						//sort the pixel vector and take center element
+						Arrays.sort(P);
+						im.getRaster().setSample(u,v,0,P[4]);
+					}
+				}
 
 
 				ImageIO.write(im,"JPG",new File(uploadPath)); 
@@ -183,78 +183,7 @@ public class Image extends Controller {
 	public static Result minimum() {
 		ObjectNode respJSON = Json.newObject();
 		JsonNode json = request().body().asJson();
-		if(json == null) {
-			return badRequest("Expecting Json data");
-		} else {
-			String id = json.findPath("id").toString();
-			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
-			try {
-				BufferedImage dst = ImageIO.read(new File(uploadPath));
-				
-				
-				int width = dst.getWidth();
-        		int height = dst.getHeight();
 
-				//-----------------to here
-				BufferedImage copy;
-				copy = dst;
-				// Filteroperation
-				
-
-				//int index = 0;
-				//int[] outPixels = new int[width * height];
-
-				
-				//int[] inPixels = copy.getRGB(0, 0, width, height, null, 0, 0);
-
-				//filter pixels
-				for (int y = 0; y < height; y++) {
-					for (int x = 0; x < width; x++) {
-						int pixel = 0xffffffff;
-						int pixel2 = 0xffffffff;
-						int pixel3 = 0xffffffff;
-						for (int dy = -1; dy <= 1; dy++) {
-							int iy = y+dy;
-							if (0 <= iy && iy < height) {
-								for (int dx = -1; dx <= 1; dx++) {
-									int ix = x+dx;
-									if (0 <= ix && ix < width) {
-										pixel2 = copy.getRaster().getPixel(y+dy, x+dx, (int[]) null)[0];
-										pixel3 = copy.getRaster().getPixel(y, x, (int[]) null)[0];
-										pixel = (int) Math.min(pixel2, pixel3);
-										pixel = checkPixel(pixel);
-									}
-								}
-							}
-						}
-						//inPixels[index++] = pixel;
-						
-						
-						
-						dst.getRaster().setSample(x,y,0,pixel);
-					}
-				}
-
-
-				//inPixels = outPixels;
-				
-				//dst.setRGB(0, 0, width, height, inPixels, 0, 0 );
-
-
-				ImageIO.write(dst,"JPG",new File(uploadPath)); 
-				
-				// Histogramm erstellen
-				respJSON = generateHisto(id + ".jpg");
-			} catch(IOException ioe) {
-				respJSON.put("error", "Error on processing minimum filter...");
-			}
-			return ok(respJSON);			
-		}
-	}
-
-	public static Result maximum() {
-		ObjectNode respJSON = Json.newObject();
-		JsonNode json = request().body().asJson();
 		if(json == null) {
 			return badRequest("Expecting Json data");
 		} else {
@@ -269,10 +198,78 @@ public class Image extends Controller {
 
 				//-----------------to here
 				BufferedImage copy;
-				copy = im;
+				copy = copyImage(im, "white");
 				// Filteroperation
+				int[] P = new int[9];
+
+				for (int v=1; v<=h-2; v++) {
+					for (int u=1; u<=w-2; u++) {
+			 
+						//fill the pixel vector P for filter position (u,v)
+						int k = 0;
+						for (int j=-1; j<=1; j++) {
+							for (int i=-1; i<=1; i++) {
+								P[k] = copy.getRaster().getPixel(u+i, v+j, (int[]) null)[0];
+								k++;
+							}
+						}
+						//sort the pixel vector and take center element
+						Arrays.sort(P);
+						im.getRaster().setSample(u,v,0,P[0]);
+					}
+				}
+
+
+				ImageIO.write(im,"JPG",new File(uploadPath)); 
 				
+				// Histogramm erstellen
+				respJSON = generateHisto(id + ".jpg");
+			} catch(IOException ioe) {
+				respJSON.put("error", "Error on processing median filter...");
+			}
+			return ok(respJSON);			
+		}
+	}
+
+	public static Result maximum() {
+		ObjectNode respJSON = Json.newObject();
+		JsonNode json = request().body().asJson();
+
+		if(json == null) {
+			return badRequest("Expecting Json data");
+		} else {
+			String id = json.findPath("id").toString();
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
+			try {
+				BufferedImage im = ImageIO.read(new File(uploadPath));
 				
+				// Histogramm erstellen
+				int w = im.getWidth();
+				int h = im.getHeight();
+
+				//-----------------to here
+				BufferedImage copy;
+				copy = copyImage(im, "black");
+				// Filteroperation
+				int[] P = new int[9];
+
+				for (int v=1; v<=h-2; v++) {
+					for (int u=1; u<=w-2; u++) {
+			 
+						//fill the pixel vector P for filter position (u,v)
+						int k = 0;
+						for (int j=-1; j<=1; j++) {
+							for (int i=-1; i<=1; i++) {
+								P[k] = copy.getRaster().getPixel(u+i, v+j, (int[]) null)[0];
+								k++;
+							}
+						}
+						//sort the pixel vector and take center element
+						Arrays.sort(P);
+						im.getRaster().setSample(u,v,0,P[8]);
+					}
+				}
+
 
 				ImageIO.write(im,"JPG",new File(uploadPath)); 
 				
@@ -322,20 +319,33 @@ public class Image extends Controller {
 	} 
 	
 	// speichert das Bild in einen vergrößertes Bild für die Randbehandlung
-	public static BufferedImage copyImage(BufferedImage src) {
+	public static BufferedImage copyImage(BufferedImage src, String mode) {
 
 		int w = src.getWidth();
 		int h = src.getHeight();
 		
 		// Kopie des Bildes sowie randbehandlung des bildes
 		BufferedImage copy = new BufferedImage(w+2, h+2, BufferedImage.TYPE_BYTE_GRAY);
-			
-		// Kopiebild auf komplett auf Weiß setzen
-		for (int v = 0; v < h+2; v++) {
-			for (int u = 0; u < w+2; u++) {
-				copy.getRaster().setSample(u, v, 0, 255);
-			}
-		} 
+		
+		switch(mode) {
+			case "white":
+			// Kopiebild auf komplett auf Weiß setzen
+			for (int v = 0; v < h+2; v++) {
+				for (int u = 0; u < w+2; u++) {
+					copy.getRaster().setSample(u, v, 0, 255);
+				}
+			} 
+			break;
+			case "black":
+			// Kopiebild auf komplett auf Schwarz setzen
+			for (int v = 0; v < h+2; v++) {
+				for (int u = 0; u < w+2; u++) {
+					copy.getRaster().setSample(u, v, 0, 0);
+				}
+			} 
+			break;
+			default:
+		}
 		
 		// Bild in das vergrößerte Bild kopieren
 		for (int v = 0; v < h; v++) {
@@ -343,6 +353,7 @@ public class Image extends Controller {
 				copy.getRaster().setSample(u+1, v+1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
 			}
 		} 
+		
 		return copy;		
 	}
 	// Wandelt ein JSON in eine Matrix
