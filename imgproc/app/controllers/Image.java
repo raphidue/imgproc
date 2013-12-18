@@ -94,11 +94,11 @@ public class Image extends Controller {
 				//from here---------------------------------------------
 				// copyImage() function?!
 				BufferedImage copy;
-				copy = im;
+				copy = copyImage(im, "BLACK");
 			
 				// Filteroperation
-				for (int v = 1; v <= h-2; v++) {
-					for (int u = 1; u <= w-2; u++) {
+				for (int v = 1; v <= h; v++) {
+					for (int u = 1; u <= w; u++) {
 						double sum = 0;
 						for (int j = -1; j <= 1; j++) {
 							for (int i = -1; i <= 1; i++) {
@@ -112,7 +112,7 @@ public class Image extends Controller {
 						
 						int q = (int) Math.round(sum);
 						q = checkPixel(q);
-						im.getRaster().setSample(u,v,0,q);
+						im.getRaster().setSample(u-1,v-1,0,q);
 						//orig.putPixel(u,v,q);
 					}
 				}
@@ -162,7 +162,7 @@ public class Image extends Controller {
 								k++;
 							}
 						}
-						//sort the pixel vector and take center element
+						//sort the pixel vector and take 1 element
 						Arrays.sort(P);
 						im.getRaster().setSample(u,v,0,P[4]);
 					}
@@ -198,12 +198,13 @@ public class Image extends Controller {
 
 				//-----------------to here
 				BufferedImage copy;
-				copy = copyImage(im, "white");
+				copy = copyImage(im, "WHITE");
+				
 				// Filteroperation
 				int[] P = new int[9];
 
-				for (int v=1; v<=h-2; v++) {
-					for (int u=1; u<=w-2; u++) {
+				for (int v=1; v<=h; v++) {
+					for (int u=1; u<=w; u++) {
 			 
 						//fill the pixel vector P for filter position (u,v)
 						int k = 0;
@@ -213,9 +214,9 @@ public class Image extends Controller {
 								k++;
 							}
 						}
-						//sort the pixel vector and take center element
+						//sort the pixel vector and take 1 element
 						Arrays.sort(P);
-						im.getRaster().setSample(u,v,0,P[0]);
+						im.getRaster().setSample(u-1,v-1,0,P[0]);
 					}
 				}
 
@@ -249,12 +250,12 @@ public class Image extends Controller {
 
 				//-----------------to here
 				BufferedImage copy;
-				copy = copyImage(im, "black");
+				copy = copyImage(im, "BLACK");
 				// Filteroperation
 				int[] P = new int[9];
 
-				for (int v=1; v<=h-2; v++) {
-					for (int u=1; u<=w-2; u++) {
+				for (int v=1; v<=h; v++) {
+					for (int u=1; u<=w; u++) {
 			 
 						//fill the pixel vector P for filter position (u,v)
 						int k = 0;
@@ -264,9 +265,9 @@ public class Image extends Controller {
 								k++;
 							}
 						}
-						//sort the pixel vector and take center element
+						//sort the pixel vector and take 1 element
 						Arrays.sort(P);
-						im.getRaster().setSample(u,v,0,P[8]);
+						im.getRaster().setSample(u-1,v-1,0,P[8]);
 					}
 				}
 
@@ -328,21 +329,58 @@ public class Image extends Controller {
 		BufferedImage copy = new BufferedImage(w+2, h+2, BufferedImage.TYPE_BYTE_GRAY);
 		
 		switch(mode) {
-			case "white":
 			// Kopiebild auf komplett auf Weiß setzen
+			case "WHITE":
 			for (int v = 0; v < h+2; v++) {
 				for (int u = 0; u < w+2; u++) {
 					copy.getRaster().setSample(u, v, 0, 255);
 				}
 			} 
 			break;
-			case "black":
 			// Kopiebild auf komplett auf Schwarz setzen
+			case "BLACK":
 			for (int v = 0; v < h+2; v++) {
 				for (int u = 0; u < w+2; u++) {
 					copy.getRaster().setSample(u, v, 0, 0);
 				}
-			} 
+			}
+			break;
+			// Randpixel auf an die Ränder erweitern
+			case "CONTINUE":
+			/*
+			// Oberer Rand
+			for(int u = 0; u < w+2; u++) {
+				copy.getRaster().setSample(u,0,0,src.getRaster().getPixel(u,0,(int[]) null)[0]);
+			}
+	
+			// Unterer Rand
+			for(int u = 0; u < w+2; u++) {
+				copy.getRaster().setSample(u,h+1,0,src.getRaster().getPixel(u,h+1,(int[]) null)[0]);
+			}
+
+			// Linker Rand
+			for(int v = 0; v < h+2; v++) {
+				for(int u = 0; u < 1; u++) {
+					copy.getRaster().setSample(u,v,0,src.getRaster().getPixel(u,v,(int[]) null)[0]);
+				}
+			}
+			
+			// Rechter Rand
+			for(int v = 0; v < h+2; v++) {
+				for(int u = w+1; u < w+2; u++) {
+					copy.getRaster().setSample(u,v,0,src.getRaster().getPixel(u,v,(int[]) null)[0]);
+				}
+			}
+		
+			// Obere linke Ecke
+			copy.getRaster().setSample(0,0,0,src.getRaster().getPixel(0,0,(int[]) null)[0]);
+			// Untere linke Ecke	
+			copy.getRaster().setSample(0,h+1,0,src.getRaster().getPixel(0,h-1,(int[]) null)[0]);
+			// Obere rechte Ecke
+			copy.getRaster().setSample(w+1,0,0,src.getRaster().getPixel(w-1,0,(int[]) null)[0]);
+			// Untere rechte Ecke
+			copy.getRaster().setSample(w+1,h+1,0,src.getRaster().getPixel(w-1,h-1,(int[]) null)[0]);
+			*/
 			break;
 			default:
 		}
@@ -353,9 +391,16 @@ public class Image extends Controller {
 				copy.getRaster().setSample(u+1, v+1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
 			}
 		} 
+		/*
+		try {
+			ImageIO.write(copy,"JPG",new File("co.jpg")); 
+		} catch(IOException ioe) {
 		
+		}
+		*/
 		return copy;		
 	}
+	
 	// Wandelt ein JSON in eine Matrix
 	private static double[][] convertJsonToMatrix(JsonNode json) {
 		double[][] filter = new double[3][3];
