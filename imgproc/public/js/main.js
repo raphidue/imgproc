@@ -46,7 +46,6 @@ $(function() {
 				dataType: 'json',
 				url: "/minimum"
 			});
-			console.log("minimum filter is alive");
 			// warten bis Filteroperation angewendet wurde
 			setTimeout(function () { 
 				showHistogram("GET", "minimum/" + global_ID + ".jpg");		
@@ -58,6 +57,26 @@ $(function() {
 	});
 	$("#max").click(function() {
 		buttonClicked("#max");
+		
+		if(checkIfImageIsUploaded()) {
+			// ID an path: smoothing senden und Histogramm erstellen
+			//sendJson("POST", "/minimum", JSON.stringify({id: global_ID}));
+
+			$.ajax({
+				type: "POST",
+				data: JSON.stringify({id: global_ID}),
+				contentType: 'application/json',
+				dataType: 'json',
+				url: "/maximum"
+			});
+			// warten bis Filteroperation angewendet wurde
+			setTimeout(function () { 
+				showHistogram("GET", "maximum/" + global_ID + ".jpg");		
+			}, 10000);
+			
+			// refreshing image after use filter
+			refreshImage();
+		}
 	});
 	$("#median").click(function() {
 		
