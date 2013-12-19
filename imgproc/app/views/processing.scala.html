@@ -44,6 +44,10 @@
 		max-width: 800px;
 		height: auto !important;
 	}
+	
+	.form-control {
+		padding: 0px 5px !important;
+	}
 	</style>
 	@scripts
 </head>
@@ -71,6 +75,7 @@
 						Show Histogram
 					</button>
 					<hr>
+					<button class="btn btn-default proc-button" id="config-filter" type="button">Free configurable filter</button>
 					<button class="btn btn-default proc-button" id="glaett" type="button">Smoothing filter</button>
 					<button class="btn btn-default proc-button" id="diff" type="button">Difference filter</button>
 					<button class="btn btn-default proc-button" id="min" type="button">Minimum filter</button>
@@ -85,51 +90,56 @@
 			<div id="img-content" class="col-md-7">				
 			</div>
 			<div class="col-md-3">	
-				<div id="hist-content">
-					<label id="histo-label" style="display: none;">Histogram</label>		
-					<canvas id="canvas" height="" width=""></canvas>
+				<div id="hist-content" style="display: none;">
+					<div class="panel panel-info">
+						<div class="panel-heading">Histogram</div>
+						<div class="panel-body">
+							<canvas id="canvas" height="" width=""></canvas>
+						</div>
+					</div>
 				</div>
-				<label id="filter-label" style="display: none;">Filter matrix</label>
-				<div class="alert alert-danger hidden" id="matrix-error">
-								<b>Please enter values in matrix!</b> 
-				</div>
-				<div id="matrix-content" class="" style="display: none;">
-					<form id="form_matrix" class="form-inline" role="form" style="margin-left: -15px;">
-
-						<div class="form-group">
-							<div class="col-xs-4">
-								<input type="text" class="form-control" id="r1c1" placeholder="0.075" value="0.075" onblur="validateMatrix(this)">
-							</div>
-							<div class="col-xs-4">
-								<input type="text" class="form-control" id="r1c2" placeholder="0.125" value="0.125" onblur="validateMatrix(this)">
-							</div>
-							<div class="col-xs-4">
-								<input type="text" class="form-control" id="r1c3" placeholder="0.075" value="0.075" onblur="validateMatrix(this)">
-							</div>
+				<div id="matrix-content" class="" style="display: none; margin-top: 30px;">
+					<div class="panel panel-info">
+						<div class="panel-heading">Filter matrix</div>
+						<div class="panel-body">
+							<form id="form_matrix" class="form-inline" role="form" style="margin-left: -15px;">
+								<div class="form-group">
+									<div class="col-xs-4">
+										<input type="text" class="form-control" id="r1c1" placeholder="0.075" value="0.075">
+									</div>
+									<div class="col-xs-4">
+										<input type="text" class="form-control" id="r1c2" placeholder="0.125" value="0.125">
+									</div>
+									<div class="col-xs-4">
+										<input type="text" class="form-control" id="r1c3" placeholder="0.075" value="0.075">
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-xs-4">
+										<input type="text" class="form-control" id="r2c1" placeholder="0.125" value="0.125">
+									</div>
+									<div class="col-xs-4">
+										<input type="text" class="form-control" id="r2c2" placeholder="0.200" value="0.200">
+									</div>
+									<div class="col-xs-4">
+										<input type="text" class="form-control" id="r2c3" placeholder="0.125" value="0.125">
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-xs-4">
+										<input type="text" class="form-control" id="r3c1" placeholder="0.075" value="0.075">
+									</div>
+									<div class="col-xs-4">
+										<input type="text" class="form-control" id="r3c2" placeholder="0.125" value="0.125">
+									</div>
+									<div class="col-xs-4">
+										<input type="text" class="form-control" id="r3c3" placeholder="0.075" value="0.075">
+									</div> 
+								</div>
+							</form>
+>>>>>>> development
 						</div>
-						<div class="form-group">
-							<div class="col-xs-4">
-								<input type="text" class="form-control" id="r2c1" placeholder="0.125" value="0.125" onblur="validateMatrix(this)">
-							</div>
-							<div class="col-xs-4">
-								<input type="text" class="form-control" id="r2c2" placeholder="0.200" value="0.200" onblur="validateMatrix(this)">
-							</div>
-							<div class="col-xs-4">
-								<input type="text" class="form-control" id="r2c3" placeholder="0.125" value="0.125" onblur="validateMatrix(this)">
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-xs-4">
-								<input type="text" class="form-control" id="r3c1" placeholder="0.075" value="0.075" onblur="validateMatrix(this)">
-							</div>
-							<div class="col-xs-4">
-								<input type="text" class="form-control" id="r3c2" placeholder="0.125" value="0.125" onblur="validateMatrix(this)">
-							</div>
-							<div class="col-xs-4">
-								<input type="text" class="form-control" id="r3c3" placeholder="0.075" value="0.075" onblur="validateMatrix(this)">
-							</div> 
-						</div>
-					</form>
+					</div>
 				</div>
 			</div>
 		</div> <!-- /row -->

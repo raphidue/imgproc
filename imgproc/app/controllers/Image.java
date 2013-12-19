@@ -147,12 +147,12 @@ public class Image extends Controller {
 
 				//-----------------to here
 				BufferedImage copy;
-				copy = im;
+				copy = copyImage(im, "CONTINUE");
 				// Filteroperation
 				int[] P = new int[9];
 
-				for (int v=1; v<=h-2; v++) {
-					for (int u=1; u<=w-2; u++) {
+				for (int v=1; v<=h; v++) {
+					for (int u=1; u<=w; u++) {
 			 
 						//fill the pixel vector P for filter position (u,v)
 						int k = 0;
@@ -164,7 +164,7 @@ public class Image extends Controller {
 						}
 						//sort the pixel vector and take 1 element
 						Arrays.sort(P);
-						im.getRaster().setSample(u,v,0,P[4]);
+						im.getRaster().setSample(u-1,v-1,0,P[4]);
 					}
 				}
 
@@ -336,6 +336,12 @@ public class Image extends Controller {
 					copy.getRaster().setSample(u, v, 0, 255);
 				}
 			} 
+			// Bild in das vergrößerte Bild kopieren
+			for (int v = 0; v < h; v++) {
+				for (int u = 0; u < w; u++) {
+					copy.getRaster().setSample(u+1, v+1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+				}
+			} 
 			break;
 			// Kopiebild auf komplett auf Schwarz setzen
 			case "BLACK":
@@ -344,61 +350,54 @@ public class Image extends Controller {
 					copy.getRaster().setSample(u, v, 0, 0);
 				}
 			}
+			// Bild in das vergrößerte Bild kopieren
+			for (int v = 0; v < h; v++) {
+				for (int u = 0; u < w; u++) {
+					copy.getRaster().setSample(u+1, v+1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+				}
+			} 
 			break;
 			// Randpixel auf an die Ränder erweitern
 			case "CONTINUE":
-			/*
+			// Kopieren vom Bild in das vergrößerte Bild
+			for (int v = 0; v < h; v++) {
+				for (int u = 0; u < w; u++) {
+					copy.getRaster().setSample(u+1,v+1, 0, src.getRaster().getPixel(u,v,(int[]) null)[0]);
+				}
+			}
 			// Oberer Rand
 			for(int u = 0; u < w+2; u++) {
-				copy.getRaster().setSample(u,0,0,src.getRaster().getPixel(u,0,(int[]) null)[0]);
+				copy.getRaster().setSample(u,0,0,copy.getRaster().getPixel(u,1,(int[]) null)[0]);
 			}
 	
 			// Unterer Rand
 			for(int u = 0; u < w+2; u++) {
-				copy.getRaster().setSample(u,h+1,0,src.getRaster().getPixel(u,h+1,(int[]) null)[0]);
+				copy.getRaster().setSample(u,h+1,0,copy.getRaster().getPixel(u,h,(int[]) null)[0]);
 			}
 
 			// Linker Rand
 			for(int v = 0; v < h+2; v++) {
-				for(int u = 0; u < 1; u++) {
-					copy.getRaster().setSample(u,v,0,src.getRaster().getPixel(u,v,(int[]) null)[0]);
-				}
+					copy.getRaster().setSample(0,v,0,copy.getRaster().getPixel(1,v,(int[]) null)[0]);
 			}
 			
 			// Rechter Rand
 			for(int v = 0; v < h+2; v++) {
-				for(int u = w+1; u < w+2; u++) {
-					copy.getRaster().setSample(u,v,0,src.getRaster().getPixel(u,v,(int[]) null)[0]);
-				}
+					copy.getRaster().setSample(w+1,v,0,copy.getRaster().getPixel(w,v,(int[]) null)[0]);
 			}
 		
 			// Obere linke Ecke
-			copy.getRaster().setSample(0,0,0,src.getRaster().getPixel(0,0,(int[]) null)[0]);
+			copy.getRaster().setSample(0,0,0,copy.getRaster().getPixel(1,1,(int[]) null)[0]);
 			// Untere linke Ecke	
-			copy.getRaster().setSample(0,h+1,0,src.getRaster().getPixel(0,h-1,(int[]) null)[0]);
+			copy.getRaster().setSample(0,h+1,0,copy.getRaster().getPixel(1,h,(int[]) null)[0]);
 			// Obere rechte Ecke
-			copy.getRaster().setSample(w+1,0,0,src.getRaster().getPixel(w-1,0,(int[]) null)[0]);
+			copy.getRaster().setSample(w+1,0,0,copy.getRaster().getPixel(w,1,(int[]) null)[0]);
 			// Untere rechte Ecke
-			copy.getRaster().setSample(w+1,h+1,0,src.getRaster().getPixel(w-1,h-1,(int[]) null)[0]);
-			*/
-			break;
+			copy.getRaster().setSample(w+1,h+1,0,copy.getRaster().getPixel(w,h,(int[]) null)[0]);
+				break;
 			default:
 		}
-		
-		// Bild in das vergrößerte Bild kopieren
-		for (int v = 0; v < h; v++) {
-			for (int u = 0; u < w; u++) {
-				copy.getRaster().setSample(u+1, v+1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
-			}
-		} 
-		/*
-		try {
-			ImageIO.write(copy,"JPG",new File("co.jpg")); 
-		} catch(IOException ioe) {
-		
-		}
-		*/
-		return copy;		
+
+			return copy;		
 	}
 	
 	// Wandelt ein JSON in eine Matrix

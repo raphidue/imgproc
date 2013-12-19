@@ -10,9 +10,9 @@ $(function() {
 			$( "#hist-content" ).fadeIn();
 		}
 	});
+	$("#config-filter").click(function() {
+	});
 	$("#glaett").click(function() {
-		buttonClicked("#glaett");
-
 		
 		if(checkIfImageIsUploaded()) {
 			// ID an path: smoothing senden und Histogramm erstellen
@@ -29,10 +29,8 @@ $(function() {
 		}
 	});
 	$("#diff").click(function() {
-		buttonClicked("#diff");
 	});
 	$("#min").click(function() {
-		buttonClicked("#min");
 
 		if(checkIfImageIsUploaded()) {
 			// ID an path: smoothing senden und Histogramm erstellen
@@ -56,7 +54,6 @@ $(function() {
 		}
 	});
 	$("#max").click(function() {
-		buttonClicked("#max");
 		
 		if(checkIfImageIsUploaded()) {
 			// ID an path: smoothing senden und Histogramm erstellen
@@ -80,8 +77,6 @@ $(function() {
 	});
 	$("#median").click(function() {
 		
-		buttonClicked("#median");
-
 		if(checkIfImageIsUploaded()) {
 			// ID an path: smoothing senden und Histogramm erstellen
 			sendJson("POST", "/median", JSON.stringify({id: global_ID}));
@@ -96,16 +91,12 @@ $(function() {
 		}
 	});
 	$("#gewMedian").click(function() {
-		buttonClicked("#gewMedian");
 	});
 	$("#morph").click(function() {
-		buttonClicked("#morph");
 	});
 	$("#region").click(function() {
-		buttonClicked("#region");
 	});
 	$("#harri").click(function() {
-		buttonClicked("#harri");
 	});
 });
 
@@ -251,7 +242,7 @@ function sendJson(typ, path, data) {
 }
 
 function showHistogram(typ, path) {
-	$("#histo-label").fadeIn();
+	$("#hist-content").fadeIn();
 	var data = new Array(256);
 	var array = new Array(256);
 
