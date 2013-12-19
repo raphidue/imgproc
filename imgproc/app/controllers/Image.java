@@ -54,7 +54,7 @@ public class Image extends Controller {
 				g2d.drawImage(input,0,0,null);
 				
 				// das resultierende Bild Speichern
-				ImageIO.write(im,"JPG",new File(myUploadPath));
+				ImageIO.write(im,"PNG",new File(myUploadPath));
 				
 			} catch(IOException ioe) {
 			}			
@@ -73,6 +73,14 @@ public class Image extends Controller {
 		return ok(respJSON);	
 	}
 	
+	public static Result showBinaryHist(String id) {
+		ObjectNode respJSON = Json.newObject();
+		
+		respJSON = generateBinaryHisto(id);
+						
+		return ok(respJSON);	
+	}
+	
 	public static Result smoothing() {
 		ObjectNode respJSON = Json.newObject();
 		JsonNode json = request().body().asJson();
@@ -83,7 +91,7 @@ public class Image extends Controller {
 			double[][] filter;
 			String id = json.findPath("id").toString();
 			filter = convertJsonToMatrix(json);
-			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
 				
@@ -91,8 +99,6 @@ public class Image extends Controller {
 				int w = im.getWidth();
 				int h = im.getHeight();
 
-				//from here---------------------------------------------
-				// copyImage() function?!
 				BufferedImage copy;
 				copy = copyImage(im, "BLACK");
 			
@@ -118,10 +124,10 @@ public class Image extends Controller {
 				}
 
 
-				ImageIO.write(im,"JPG",new File(uploadPath)); 
+				ImageIO.write(im,"PNG",new File(uploadPath)); 
 				
 				// Histogramm erstellen
-				respJSON = generateHisto(id + ".jpg");
+				respJSON = generateHisto(id + ".png");
 			} catch(IOException ioe) {
 				respJSON.put("error", "Error on processing smoothing filter...");
 			}
@@ -137,7 +143,7 @@ public class Image extends Controller {
 			return badRequest("Expecting Json data");
 		} else {
 			String id = json.findPath("id").toString();
-			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
 				
@@ -169,10 +175,10 @@ public class Image extends Controller {
 				}
 
 
-				ImageIO.write(im,"JPG",new File(uploadPath)); 
+				ImageIO.write(im,"PNG",new File(uploadPath)); 
 				
 				// Histogramm erstellen
-				respJSON = generateHisto(id + ".jpg");
+				respJSON = generateHisto(id + ".png");
 			} catch(IOException ioe) {
 				respJSON.put("error", "Error on processing median filter...");
 			}
@@ -188,7 +194,7 @@ public class Image extends Controller {
 			return badRequest("Expecting Json data");
 		} else {
 			String id = json.findPath("id").toString();
-			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
 				
@@ -221,12 +227,12 @@ public class Image extends Controller {
 				}
 
 
-				ImageIO.write(im,"JPG",new File(uploadPath)); 
+				ImageIO.write(im,"PNG",new File(uploadPath)); 
 				
 				// Histogramm erstellen
-				respJSON = generateHisto(id + ".jpg");
+				respJSON = generateHisto(id + ".png");
 			} catch(IOException ioe) {
-				respJSON.put("error", "Error on processing median filter...");
+				respJSON.put("error", "Error on processing minimum filter...");
 			}
 			return ok(respJSON);			
 		}
@@ -240,7 +246,7 @@ public class Image extends Controller {
 			return badRequest("Expecting Json data");
 		} else {
 			String id = json.findPath("id").toString();
-			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".jpg";
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
 				
@@ -248,7 +254,6 @@ public class Image extends Controller {
 				int w = im.getWidth();
 				int h = im.getHeight();
 
-				//-----------------to here
 				BufferedImage copy;
 				copy = copyImage(im, "BLACK");
 				// Filteroperation
@@ -272,15 +277,147 @@ public class Image extends Controller {
 				}
 
 
-				ImageIO.write(im,"JPG",new File(uploadPath)); 
+				ImageIO.write(im,"PNG",new File(uploadPath)); 
 				
 				// Histogramm erstellen
-				respJSON = generateHisto(id + ".jpg");
+				respJSON = generateHisto(id + ".png");
 			} catch(IOException ioe) {
-				respJSON.put("error", "Error on processing median filter...");
+				respJSON.put("error", "Error on processing maximum filter...");
 			}
 			return ok(respJSON);			
 		}
+	}
+	
+	public static Result region() {
+		ObjectNode respJSON = Json.newObject();
+		JsonNode json = request().body().asJson();
+		
+		if(json == null) {
+			return badRequest("Expecting Json data");
+		} else {
+			String id = json.findPath("id").toString();
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+			try {
+				BufferedImage im = ImageIO.read(new File(uploadPath));
+				
+				// Konvertierung in ein Binärbild
+				im = getBinaryImage(127, im);
+				
+				int w = im.getWidth();
+				int h = im.getHeight();
+				int[] neighbours = new int[4];
+				
+				BufferedImage copy;
+				copy = copyImage(im, "CONTINUE");
+				/*
+				//PASS 1 - ASSIGN INITIAL LABELS
+				int label = 2;
+				int foregroundPix = 0;
+				for(int y = 1; y <= h; y++) {
+					for(int x = 1; x <= w; x++) {
+						// new labelpixel reached
+						if(copy.getRaster().getPixel(x, y, (int[]) null)[0] == 1) {
+							// *************** check Neighbours ***********************
+							// check top pixel
+							if(copy.getRaster().getPixel(x, y-1, (int[]) null)[0] > 1) {
+								foregroundPix++;
+								neighbours[0] = copy.getRaster().getPixel(x, y-1, (int[]) null)[0]
+							}
+							// check left pixel
+							if(copy.getRaster().getPixel(x-1, y, (int[]) null)[0] > 1) {
+								foregroundPix++;
+								neighbours[1] = copy.getRaster().getPixel(x-1, y, (int[]) null)[0];
+							}
+							// check topleft pixel
+							if(copy.getRaster().getPixel(x-1, y-1, (int[]) null)[0] > 1) {
+								foregroundPix++;
+								neighbours[2] = copy.getRaster().getPixel(x-1, y-1, (int[]) null)[0];
+							}
+							// check topright pixel
+							if(copy.getRaster().getPixel(x+1, y-1, (int[]) null)[0] > 1) {
+								foregroundPix++;
+								neighbours[3] = copy.getRaster().getPixel(x+1, y-1, (int[]) null)[0];
+							}
+                
+							// all neighbours are background pixels
+							if(foregroundPix == 0) {
+								copy.getRaster().getPixel(x, y, (int[]) null)[0] = label;
+								label++;
+								// exactly one of the neighbours has a label value
+							} else if(foregroundPix == 1) {
+								for(int i = 0; i < 4; i++) {
+									// select the first value which appears in map
+									if(neighbours[i] != 0) {
+										copy.getRaster().getPixel(x, y, (int[]) null)[0] = neighbours[i];
+										break;
+									}
+								}
+								// serveral neighbours have label values
+							} else if(foregroundPix > 1) {
+								boolean firstEntry = true;
+								int tmp;
+								for(int i = 0; i < 4; i++) {                         
+									if(neighbours[i] != 0) {
+										// select the first appaering label value
+										if(firstEntry == true) {
+											tmp = neighbours[i];
+											copy.getRaster().getPixel(x, y, (int[]) null)[0] = tmp;
+											firstEntry = false;
+											// all other neighbours register in collisionMap 
+										} else if(tmp != neighbours[i]) {
+											
+											// PASS 2 - RESOLVE LABEL COLLISIONS
+											std::map<int, int>::const_iterator it;
+											int key = -1;
+											if(tmp > neighbours[i]) {
+												collisionMap.insert(std::pair<int,int>(tmp, neighbours[i]));
+												// use of transitivity characteristic
+												for (it = collisionMap.begin(); it != collisionMap.end(); ++it) {
+													if (it->second == tmp) {
+														collisionMap[it->first] = neighbours[i];
+													}
+												}
+											} else {
+												collisionMap.insert(std::pair<int,int>(neighbours[i], tmp));
+												// use of transitivity characteristic
+												for (it = collisionMap.begin(); it != collisionMap.end(); ++it) {
+													if (it->second == neighbours[i]) {
+														collisionMap[it->first] = tmp;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}    
+    
+				// PASS 3 - RELABEL THE IMAGE
+				// copy to output image
+				for(int i = 1; i <= h; i++) {
+					for(int j = 1; j <= w; j++) {
+						map<int,int>::iterator it = collisionMap.find(copy.getRaster().getPixel(i, j, (int[]) null)[0]);
+						if(it != collisionMap.end()) {
+							//element found;
+							pOutImage[getIndex(i-1, j-1, width, height)] = it->second;
+						} else {
+							pOutImage[getIndex(i-1, j-1, width, height)] = copy.getRaster().getPixel(i, j, (int[]) null)[0];
+						}
+					}
+				}
+				*/
+				ImageIO.write(im,"PNG",new File(uploadPath)); 
+				
+				// Histogramm erstellen
+				respJSON = generateBinaryHisto(id + ".png");
+			} catch(IOException ioe) {
+				respJSON.put("error", "Error on processing region labeling...");
+			}
+			return ok(respJSON);
+		}
+		
 	}
 
 
@@ -317,7 +454,42 @@ public class Image extends Controller {
 			respJSON.put("error", "Error on creating histogram...");
 		}
 		return respJSON;
-	} 
+	}
+	
+	// generiert ein Histogramm für binäre Bilder
+	public static ObjectNode generateBinaryHisto(String id) {
+		int[] H = new int[2];
+		String tmp;
+		Integer tmpInt;
+		ObjectNode respJSON = Json.newObject();
+		
+		try {
+			// Bild einlesen
+			BufferedImage im = ImageIO.read(new File(Play.application().path().getAbsolutePath() + "/public/uploads/" + id));
+		
+			// Histogramm erstellen
+			int w = im.getWidth();
+			int h = im.getHeight();			
+		
+			for (int v = 0; v < h; v++) {
+				for (int u = 0; u < w; u++) {
+					// Pixel abspeichern 
+					int i = im.getRaster().getPixel(u, v, (int[]) null)[0];
+					H[i] = H[i] + 1;						
+				}
+			}
+			
+			// Histogramm in JSON Object verpacken
+			for (int i = 0; i < H.length; i++) {	
+				tmpInt = new Integer(i);
+				tmp = tmpInt.toString();			
+				respJSON.put(tmp, new Integer(H[i]));
+			}
+		} catch(IOException ioe) {
+			respJSON.put("error", "Error on creating histogram...");
+		}
+		return respJSON;
+	}  
 	
 	// Bestimmt aufgrund des ausgewählten Schwellwertes ein Binärbild
 	public static BufferedImage getBinaryImage(int threshold, BufferedImage greyImage) {
@@ -395,12 +567,12 @@ public class Image extends Controller {
 
 			// Linker Rand
 			for(int v = 0; v < h+2; v++) {
-					copy.getRaster().setSample(0,v,0,copy.getRaster().getPixel(1,v,(int[]) null)[0]);
+				copy.getRaster().setSample(0,v,0,copy.getRaster().getPixel(1,v,(int[]) null)[0]);
 			}
 			
 			// Rechter Rand
 			for(int v = 0; v < h+2; v++) {
-					copy.getRaster().setSample(w+1,v,0,copy.getRaster().getPixel(w,v,(int[]) null)[0]);
+				copy.getRaster().setSample(w+1,v,0,copy.getRaster().getPixel(w,v,(int[]) null)[0]);
 			}
 		
 			// Obere linke Ecke
@@ -411,11 +583,11 @@ public class Image extends Controller {
 			copy.getRaster().setSample(w+1,0,0,copy.getRaster().getPixel(w,1,(int[]) null)[0]);
 			// Untere rechte Ecke
 			copy.getRaster().setSample(w+1,h+1,0,copy.getRaster().getPixel(w,h,(int[]) null)[0]);
-				break;
+			break;
 			default:
 		}
 
-			return copy;		
+		return copy;		
 	}
 	
 	// Wandelt ein JSON in eine Matrix
