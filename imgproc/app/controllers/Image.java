@@ -319,6 +319,24 @@ public class Image extends Controller {
 		return respJSON;
 	} 
 	
+	// Bestimmt aufgrund des ausgewählten Schwellwertes ein Binärbild
+	public static BufferedImage getBinaryImage(int threshold, BufferedImage greyImage) {
+		int w = greyImage.getWidth();
+		int h = greyImage.getHeight();
+		BufferedImage binaryImage = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_BINARY); 
+		
+		for (int v = 0; v < h; v++) {
+			for (int u = 0; u < w; u++) {
+				if(greyImage.getRaster().getPixel(u,v,(int[]) null)[0] >= threshold) {
+					binaryImage.getRaster().setSample(u,v,0,1);
+				} else {
+					binaryImage.getRaster().setSample(u,v,0,0);
+				}
+			}
+		}
+		return binaryImage;		
+	}
+	
 	// speichert das Bild in einen vergrößertes Bild für die Randbehandlung
 	public static BufferedImage copyImage(BufferedImage src, String mode) {
 
