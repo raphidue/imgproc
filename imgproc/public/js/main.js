@@ -16,7 +16,8 @@ $(function() {
 		
 		if(checkIfImageIsUploaded()) {
 			// ID an path: smoothing senden und Histogramm erstellen
-			sendJson("POST", "/smoothing", JSON.stringify({id: global_ID}));
+			if(!sendJson("POST", "/smoothing", JSON.stringify({id: global_ID})))
+				return;
 			
 			// warten bis Filteroperation angewendet wurde
 			setTimeout(function () { 
@@ -184,25 +185,51 @@ function refreshImage() {
 			img.setAttribute('src', img.getAttribute('src') + "?ts=" + new Date().getTime());
 		}, 1000);
 }
+
+function validateMatrix(field) {
+	var x = parseFloat(field.value);
+	console.log("x = " + x + " typeof x = " + typeof x);
+	if (isNaN(x)) {
+		console.log("Bad input: " + field.value);
+		field.value = "";
+		// TODO: add chaning the color of element here, not in getMatrix
+	}
+}
+
+function getMatrix() {
+	var matrix = new Array();
+	var toReturn = true;
+	// r für row c für column
+	for (var i = 0; i < 9; i++){
+		var r = Math.floor(i/3)+1;
+		var c = (i%3)+1;
+		var id = '#r' + r + 'c' + c;
+		matrix[i] = $(id).val();
+		if (matrix[i] == ""){
+			$(id).closest('div').addClass("has-error");
+			toReturn = false;
+		} else {
+			$(id).closest('div').removeClass("has-error");
+		}
+	}
+	return toReturn == true ? matrix : null;
+}
 	
 // sendet die filtermatrix und id des zu bearbeitenden bildes als JSON 
 function sendJson(typ, path, data) {
 	
-	// r für row c für column
-	var r1c1 = $('#r1c1').val();
-	var r1c2 = $('#r1c2').val();
-	var r1c3 = $('#r1c3').val();
-	var r2c1 = $('#r2c1').val();
-	var r2c2 = $('#r2c2').val();
-	var r2c3 = $('#r2c3').val();
-	var r3c1 = $('#r3c1').val();
-	var r3c2 = $('#r3c2').val();
-	var r3c3 = $('#r3c3').val();
+	var matrix = getMatrix();
+	if (matrix == null){
+		$('#matrix-error').removeClass("hidden");
+		return false;
+	} else {
+		$('#matrix-error').addClass("hidden");
+	}
 	
 	// zusammenfügen von array und id
-	data = '[' + data + ', {"r1c1":' + r1c1 +'},{"r1c2":' + r1c2 + '}, {"r1c3":' +
-			 r1c3 + '}, {"r2c1":' + r2c1 + '}, {"r2c2":' + r2c2 + '}, {"r2c3":' +
-			  r2c3 + '}, {"r3c1":' + r3c1 + '}, {"r3c2":' + r3c2 + '}, {"r3c3":' + r3c3 + '}]';	
+	data = '[' + data + ', {"r1c1":' + matrix[0] +'},{"r1c2":' + matrix[1] + '}, {"r1c3":' +
+			 matrix[2] + '}, {"r2c1":' + matrix[3] + '}, {"r2c2":' + matrix[4] + '}, {"r2c3":' +
+			  matrix[5] + '}, {"r3c1":' + matrix[6] + '}, {"r3c2":' + matrix[7] + '}, {"r3c3":' + matrix[8] + '}]';	
 	console.log(data);
 	$.ajax({
 		type: typ,
@@ -211,6 +238,7 @@ function sendJson(typ, path, data) {
 		dataType: 'json',
 		url: path
 	});
+	return true;
 }
 
 function showHistogram(typ, path) {
