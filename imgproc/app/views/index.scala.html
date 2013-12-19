@@ -15,8 +15,13 @@
 		padding-top: 50px;
 	}
 	.row p {
-	    font-size: 16px !important;
-	    line-height: 22px !important; 
+		font-size: 16px !important;
+		line-height: 22px !important; 
+	}
+	h2 {
+		font-size: 30px !important;
+		font-weight: 200 !important;
+		line-height: 1.0 !important;
 	}
 	</style>
 	@scripts
@@ -35,29 +40,31 @@
 
 	<div class="container">
 		<!-- Example row of columns -->
-		<div class="row">
+		<div class="row" style="margin-bottom: 80px;">
 			<div class="col-lg-6">
 				<h2>Upload Images</h2>
-				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+				<p>With imgproc you get the opportunity to take the first steps in image processing. First, you simply upload an image of your choice using the "Upload Image" button. Then the image is automatically converted into an 8-bit grayscale image and will be displayed on your page. Furthermore, you'll get information about the uploaded image, like the histogram of the uploaded image.</p>
 			</div>
 			<div class="col-lg-6">
-				<h2>.</h2>
-				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+				<img class="thumbnail" src='@routes.Assets.at("images/upload.png")'/>		
 			</div>
-			<div class="col-lg-6">
-				<h2>.</h2>
-				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
 			</div>
-			<div class="col-lg-6">
-				<h2>Use Filters</h2>
-				<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>       </div>
+			<div class="row" style="margin-bottom: 80px;">
 				<div class="col-lg-6">
-					<h2>Look how it works</h2>
-					<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+					<img class="thumbnail" src='@routes.Assets.at("images/use.png")'/>		
 				</div>
 				<div class="col-lg-6">
-					<h2>.</h2>
-					<p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+					<h2>Use Filters</h2>
+					<p>After you've uploaded your image, there are a variety of filters. Depending on whether the specified filter requires a filter matrix, you have the option to specify a 3x3 filter matrix. By clicking on the desired filter you apply the selected filter on your uploaded image.</p>       
+				</div>
+			</div>
+			<div class="row" style="margin-bottom: 80px;">
+				<div class="col-lg-6">
+					<h2>Look how it works</h2>
+					<p>After you are finish with experimenting by using the filter. Do you have the opportunity to learn how the filters work. You can see the function of the filters and their pseudocode on our documentation page.
+				</div>
+				<div class="col-lg-6">
+					<img class="thumbnail" src='@routes.Assets.at("images/look.png")'/>		
 				</div>
 			</div>
 		</div>

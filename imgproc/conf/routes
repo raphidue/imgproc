@@ -17,6 +17,8 @@ POST	/minimum					controllers.Image.minimum()
 GET		/minimum/:id				controllers.Image.showHist(id: String)
 POST	/maximum					controllers.Image.maximum()
 GET		/maximum/:id				controllers.Image.showHist(id: String)
+POST	/region						controllers.Image.region()
+GET		/region/:id					controllers.Image.showBinaryHist(id: String)
 
 #for contact form
 POST	/app_contact_sendEmail.html		controllers.Contact.sendEmail()
