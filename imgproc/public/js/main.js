@@ -214,7 +214,7 @@ function sendJson(typ, path, data) {
 }
 
 function showHistogram(typ, path) {
-	$("#histo-label").fadeIn();
+	$("#hist-content").fadeIn();
 	var data = new Array(256);
 	var array = new Array(256);
 
