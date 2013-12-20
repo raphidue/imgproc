@@ -1,58 +1,4 @@
 var global_ID = null;
-// Verbirgt die Matrix Input-Maske und blendet diese ein, ja nach Filter
-$(function(){
-	$("#config-filter").hover(function(){
-		$("#matrix-content").fadeIn();
-	});
-	$("#glaett").hover(function(){
-		/*
-		// Glättungsfilter default werte
-		$("#r1c1").val(0.075);
-		$("#r1c2").val(0.125);
-		$("#r1c3").val(0.075);
-		$("#r2c1").val(0.125);
-		$("#r2c2").val(0.200);
-		$("#r2c3").val(0.125);
-		$("#r3c1").val(0.075);
-		$("#r3c2").val(0.125);
-		$("#r3c3").val(0.075);
-		*/
-		$("#matrix-content").fadeIn();
-	});
-	$("#diff").hover(function(){
-		/*
-		// Differenzfilter default werte
-		$("#r1c1").val(-1);
-		$("#r1c2").val(-2);
-		$("#r1c3").val(-1);
-		$("#r2c1").val(-2);
-		$("#r2c2").val(16);
-		$("#r2c3").val(-2);
-		$("#r3c1").val(-1);
-		$("#r3c2").val(-2);
-		$("#r3c3").val(-1);
-		*/
-		$("#matrix-content").fadeIn();
-	});
-	$("#min").hover(function(){
-		$("#matrix-content").fadeOut();
-	});
-	$("#max").hover(function(){
-		$("#matrix-content").fadeOut();
-	});
-	$("#median").hover(function(){
-		$("#matrix-content").fadeOut();
-	});
-	$("#gewMedian").hover(function(){
-		$("#matrix-content").fadeIn();
-	});
-	$("#region").hover(function(){
-		$("#matrix-content").fadeOut();
-	});
-	$("#morph").hover(function(){
-		$("#matrix-content").fadeIn();
-	});
-});
 /************************Processing Buttons Action*****************************/
 $(function() {
 	$("#showImg").click(function() {
@@ -65,10 +11,74 @@ $(function() {
 		}
 	});
 	$("#config-filter").click(function() {
+		buttonClicked("#config-filter");
+		if(checkIfImageIsUploaded()) {
+			displayfilter("#config-filter");
+		}
 	});
 	$("#glaett").click(function() {
-		
+		buttonClicked("#glaett");
 		if(checkIfImageIsUploaded()) {
+			displayfilter("#glaett");
+		}
+	});
+	$("#diff").click(function() {
+		buttonClicked("#diff");
+		if(checkIfImageIsUploaded()) {
+			displayfilter("#diff");
+		}
+	});
+	$("#min").click(function() {
+		buttonClicked("#min");
+		if(checkIfImageIsUploaded()) {
+			$("#matrix-content").fadeOut();
+		}
+	});
+	$("#max").click(function() {
+		buttonClicked("#max");
+		if(checkIfImageIsUploaded()) {
+			$("#matrix-content").fadeOut();
+		}
+	});
+	$("#median").click(function() {
+		buttonClicked("#median");
+		if(checkIfImageIsUploaded()) {
+			$("#matrix-content").fadeOut();
+		}
+	});
+	$("#gewMedian").click(function() {
+		buttonClicked("#gewMedian");
+		if(checkIfImageIsUploaded()) {
+			displayfilter("#gewMedian");			
+		}
+	});
+	$("#toBinary").click(function() {
+		buttonClicked("#toBinary");
+		if(checkIfImageIsUploaded()) {
+			$("#matrix-content").fadeOut();
+		}
+	});
+	$("#dilate").click(function() {
+		buttonClicked("#dilate");
+		if(checkIfImageIsUploaded()) {
+			displayfilter("#dilate");
+		}
+	});
+	$("#erode").click(function() {
+		buttonClicked("#erode");
+		if(checkIfImageIsUploaded()) {
+			displayfilter("#erode");
+		}
+	});
+	$("#region").click(function() {
+		buttonClicked("#region");
+		if(checkIfImageIsUploaded()) {
+			$("#matrix-content").fadeOut();
+		}
+	});
+	// Anwenden der ausgewählten Filter
+	$("#apply-button").on("click", function() {
+		if ($("#glaett").hasClass("active")) {
 			// ID an path: smoothing senden und Histogramm erstellen
 			if(!sendJson("POST", "/smoothing", JSON.stringify({id: global_ID})))
 			return;
@@ -80,17 +90,15 @@ $(function() {
 			
 			// refreshing image after use filter
 			refreshImage();	
-		}
-	});
-	$("#diff").click(function() {
-	});
-	$("#min").click(function() {
-
-		if(checkIfImageIsUploaded()) {
-			// ID an path: smoothing senden und Histogramm erstellen
-			//sendJson("POST", "/minimum", JSON.stringify({id: global_ID}));
 			
-
+		} 
+		else if ($("#diff").hasClass("active")) {
+			
+		}
+		else if ($("#config-filter").hasClass("active")) {
+			
+		}
+		else if ($("#min").hasClass("active")) {
 			$.ajax({
 				type: "POST",
 				data: JSON.stringify({id: global_ID}),
@@ -105,14 +113,9 @@ $(function() {
 			
 			// refreshing image after use filter
 			refreshImage();
+			
 		}
-	});
-	$("#max").click(function() {
-		
-		if(checkIfImageIsUploaded()) {
-			// ID an path: smoothing senden und Histogramm erstellen
-			//sendJson("POST", "/minimum", JSON.stringify({id: global_ID}));
-
+		else if ($("#max").hasClass("active")) {
 			$.ajax({
 				type: "POST",
 				data: JSON.stringify({id: global_ID}),
@@ -128,10 +131,11 @@ $(function() {
 			// refreshing image after use filter
 			refreshImage();
 		}
-	});
-	$("#median").click(function() {
-		
-		if(checkIfImageIsUploaded()) {
+		else if ($("#diff").hasClass("active")) {
+			
+		}
+		else if ($("#median").hasClass("active")) {
+			
 			// ID an path: smoothing senden und Histogramm erstellen
 			sendJson("POST", "/median", JSON.stringify({id: global_ID}));
 			
@@ -142,12 +146,16 @@ $(function() {
 			
 			// refreshing image after use filter
 			refreshImage();
+			
 		}
-	});
-	$("#gewMedian").click(function() {
-	});
-	$("#morph").click(function() {
-		if(checkIfImageIsUploaded()) {
+		else if ($("#gewMedian").hasClass("active")) {
+			
+		}
+		else if ($("#toBinary").hasClass("active")) {
+			
+		}
+		else if ($("#dilate").hasClass("active")) {
+						
 			// ID an path: smoothing senden und Histogramm erstellen
 			sendJson("POST", "/morph", JSON.stringify({id: global_ID}));
 			
@@ -158,10 +166,13 @@ $(function() {
 			
 			// refreshing image after use filter
 			refreshImage();
+			
 		}
-	});
-	$("#region").click(function() {
-		if(checkIfImageIsUploaded()) {
+		else if ($("#erode").hasClass("active")) {
+			
+		}
+		else if ($("#region").hasClass("active")) {
+			
 			// ID an path: smoothing senden und Histogramm erstellen
 			sendJson("POST", "/region", JSON.stringify({id: global_ID}));
 			
@@ -221,10 +232,6 @@ function getFile(){
 $(function() {
 	$('#upfile').on('change', function()
 	{
-		setTimeout(function () { 
-			$("#filter-label").fadeIn();
-			$("#matrix-content").fadeIn();	
-		}, 1000);
 		$("#img-content").html('');
 		$("#img-content").html('<img id="ajax-loader" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
 		// get File Name for Post to Image Controller
@@ -290,6 +297,51 @@ $(function() {
 			}
 			return toReturn == true ? matrix : null;
 		}
+		
+		// Zeigt eine Filtermatrix mit den geeigneten Filterwerten an.
+		function displayfilter(id) {
+			switch(id)
+			{
+			case "#glaett":
+				$("#r1c1").val(0.075);
+				$("#r1c2").val(0.125);
+				$("#r1c3").val(0.075);
+				$("#r2c1").val(0.125);
+				$("#r2c2").val(0.200);
+				$("#r2c3").val(0.125);
+				$("#r3c1").val(0.075);
+				$("#r3c2").val(0.125);
+				$("#r3c3").val(0.075);
+				$("#matrix-content").fadeIn();
+				break;
+			case "#diff":
+				$("#r1c1").val(-1);
+				$("#r1c2").val(-2);
+				$("#r1c3").val(-1);
+				$("#r2c1").val(-2);
+				$("#r2c2").val(16);
+				$("#r2c3").val(-2);
+				$("#r3c1").val(-1);
+				$("#r3c2").val(-2);
+				$("#r3c3").val(-1);
+				$("#matrix-content").fadeIn();
+				break;
+			case "#config-filter":
+				$("#r1c1").val(0);
+				$("#r1c2").val(0);
+				$("#r1c3").val(0);
+				$("#r2c1").val(0);
+				$("#r2c2").val(0);
+				$("#r2c3").val(0);
+				$("#r3c1").val(0);
+				$("#r3c2").val(0);
+				$("#r3c3").val(0);
+				$("#matrix-content").fadeIn();
+				break;
+			default:
+				console.log("ID not detected, for displaying filtermatrix...");
+			}
+		}
 	
 		// sendet die filtermatrix und id des zu bearbeitenden bildes als JSON 
 		function sendJson(typ, path, data) {
@@ -306,7 +358,6 @@ $(function() {
 			data = '[' + data + ', {"r1c1":' + matrix[0] +'},{"r1c2":' + matrix[1] + '}, {"r1c3":' +
 			matrix[2] + '}, {"r2c1":' + matrix[3] + '}, {"r2c2":' + matrix[4] + '}, {"r2c3":' +
 			matrix[5] + '}, {"r3c1":' + matrix[6] + '}, {"r3c2":' + matrix[7] + '}, {"r3c3":' + matrix[8] + '}]';	
-			console.log(data);
 			$.ajax({
 				type: typ,
 				data: data,
@@ -395,7 +446,6 @@ $(function() {
 
 				}
 				var myLine = new Chart(document.getElementById("canvas").getContext("2d")).Bar(barChartData, options);
-
 			});
 		}
 		function showBinaryHistogram(typ, path) {
