@@ -147,6 +147,18 @@ $(function() {
 	$("#gewMedian").click(function() {
 	});
 	$("#morph").click(function() {
+		if(checkIfImageIsUploaded()) {
+			// ID an path: smoothing senden und Histogramm erstellen
+			sendJson("POST", "/morph", JSON.stringify({id: global_ID}));
+			
+			// warten bis Filteroperation angewendet wurde
+			setTimeout(function () { 
+				showBinaryHistogram("GET", "morph/" + global_ID + ".png");		
+			}, 1000);
+			
+			// refreshing image after use filter
+			refreshImage();
+		}
 	});
 	$("#region").click(function() {
 		if(checkIfImageIsUploaded()) {

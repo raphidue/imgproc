@@ -20,6 +20,11 @@ import java.io.*;
 import javax.imageio.*;
 import java.util.Arrays;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 public class Image extends Controller {
 
 	public static Result upload(String id) {		
@@ -303,86 +308,99 @@ public class Image extends Controller {
 				// Konvertierung in ein Binärbild
 				im = getBinaryImage(127, im);
 				
+				Map<Integer,Integer> collisionMap = new HashMap<Integer, Integer>();
 				int w = im.getWidth();
 				int h = im.getHeight();
 				int[] neighbours = new int[4];
 				
 				BufferedImage copy;
 				copy = copyImage(im, "CONTINUE");
-				/*
+				
 				//PASS 1 - ASSIGN INITIAL LABELS
 				int label = 2;
 				int foregroundPix = 0;
 				for(int y = 1; y <= h; y++) {
 					for(int x = 1; x <= w; x++) {
-						// new labelpixel reached
+						// Vordergrundpixel wurde erreicht
 						if(copy.getRaster().getPixel(x, y, (int[]) null)[0] == 1) {
-							// *************** check Neighbours ***********************
-							// check top pixel
+							// *************** überprüfe die Nachbarpixel ***********************
+							// überprüfe oberes Pixel
 							if(copy.getRaster().getPixel(x, y-1, (int[]) null)[0] > 1) {
 								foregroundPix++;
-								neighbours[0] = copy.getRaster().getPixel(x, y-1, (int[]) null)[0]
+								neighbours[0] = copy.getRaster().getPixel(x, y-1, (int[]) null)[0];
 							}
-							// check left pixel
+							// überprüfe linkes Pixel
 							if(copy.getRaster().getPixel(x-1, y, (int[]) null)[0] > 1) {
 								foregroundPix++;
 								neighbours[1] = copy.getRaster().getPixel(x-1, y, (int[]) null)[0];
 							}
-							// check topleft pixel
+							// überprüfe links/oben Pixel
 							if(copy.getRaster().getPixel(x-1, y-1, (int[]) null)[0] > 1) {
 								foregroundPix++;
 								neighbours[2] = copy.getRaster().getPixel(x-1, y-1, (int[]) null)[0];
 							}
-							// check topright pixel
+							// überprüfe rechts/oben Pixel
 							if(copy.getRaster().getPixel(x+1, y-1, (int[]) null)[0] > 1) {
 								foregroundPix++;
 								neighbours[3] = copy.getRaster().getPixel(x+1, y-1, (int[]) null)[0];
 							}
                 
-							// all neighbours are background pixels
+							// wenn alle Nachbarpixel Hintergrundpixel sind
 							if(foregroundPix == 0) {
 								copy.getRaster().getPixel(x, y, (int[]) null)[0] = label;
 								label++;
-								// exactly one of the neighbours has a label value
+								// genau einer der Nachbarpixel hat eine Regionenmarkierung
 							} else if(foregroundPix == 1) {
 								for(int i = 0; i < 4; i++) {
-									// select the first value which appears in map
+									// wähle den ersten Wert der in dem Array vorkommt
 									if(neighbours[i] != 0) {
 										copy.getRaster().getPixel(x, y, (int[]) null)[0] = neighbours[i];
 										break;
 									}
 								}
-								// serveral neighbours have label values
+								// mehrere Nachbarpixel haben Regionenmarkierungen
 							} else if(foregroundPix > 1) {
 								boolean firstEntry = true;
-								int tmp;
+								int tmp = 0;
 								for(int i = 0; i < 4; i++) {                         
 									if(neighbours[i] != 0) {
-										// select the first appaering label value
+										// wähle den ersten auftretende Regionenmarkierung
 										if(firstEntry == true) {
 											tmp = neighbours[i];
 											copy.getRaster().getPixel(x, y, (int[]) null)[0] = tmp;
 											firstEntry = false;
-											// all other neighbours register in collisionMap 
+											// registriere alle anderne Nachbarpixel in der Kollisionsmap 
 										} else if(tmp != neighbours[i]) {
 											
 											// PASS 2 - RESOLVE LABEL COLLISIONS
-											std::map<int, int>::const_iterator it;
+
+											//Get Map in Set interface to get key and value
+											Set s = collisionMap.entrySet();
+
+											//Move next key and value of Map by iterator
+											Iterator it = s.iterator();
+											
 											int key = -1;
 											if(tmp > neighbours[i]) {
-												collisionMap.insert(std::pair<int,int>(tmp, neighbours[i]));
+												collisionMap.put(new Integer(tmp), new Integer(neighbours[i]));
 												// use of transitivity characteristic
-												for (it = collisionMap.begin(); it != collisionMap.end(); ++it) {
-													if (it->second == tmp) {
-														collisionMap[it->first] = neighbours[i];
+												while(it.hasNext()) {
+													// key=value separator this by Map.Entry to get key and value
+													Map.Entry m =(Map.Entry)it.next();
+													
+													if (m.getValue() == tmp) {
+														collisionMap.put(new Integer((int)m.getKey()), new Integer(neighbours[i]));
 													}
 												}
 											} else {
-												collisionMap.insert(std::pair<int,int>(neighbours[i], tmp));
+												collisionMap.put(new Integer(neighbours[i]), new Integer(tmp));
 												// use of transitivity characteristic
-												for (it = collisionMap.begin(); it != collisionMap.end(); ++it) {
-													if (it->second == neighbours[i]) {
-														collisionMap[it->first] = tmp;
+												while(it.hasNext()) {
+													// key=value separator this by Map.Entry to get key and value
+													Map.Entry m =(Map.Entry)it.next();
+													
+													if (m.getValue() == neighbours[i]) {
+														collisionMap.put(new Integer((int)m.getKey()), new Integer(tmp));
 													}
 												}
 											}
@@ -393,21 +411,29 @@ public class Image extends Controller {
 						}
 					}
 				}    
-    
+				
 				// PASS 3 - RELABEL THE IMAGE
 				// copy to output image
 				for(int i = 1; i <= h; i++) {
 					for(int j = 1; j <= w; j++) {
-						map<int,int>::iterator it = collisionMap.find(copy.getRaster().getPixel(i, j, (int[]) null)[0]);
-						if(it != collisionMap.end()) {
+						/*
+							if(collisionMap.get(copy.getRaster().getPixel(i, j, (int[]) null)[0]) != -1) {
+							//Get Map in Set interface to get key and value
+							Set s = collisionMap.entrySet();
+
+							//Move next key and value of Map by iterator
+							Iterator it = s.iterator();
+							Map.Entry m =(Map.Entry)it.next();
+							
 							//element found;
-							pOutImage[getIndex(i-1, j-1, width, height)] = it->second;
-						} else {
-							pOutImage[getIndex(i-1, j-1, width, height)] = copy.getRaster().getPixel(i, j, (int[]) null)[0];
-						}
+							im.getRaster().setSample(i-1, j-1, 0, (int)m.getValue());
+							} else {
+							im.getRaster().setSample(i-1, j-1, 0, copy.getRaster().getPixel(i, j, (int[]) null)[0]);
+							}
+							*/
 					}
 				}
-				*/
+				
 				ImageIO.write(im,"PNG",new File(uploadPath)); 
 				
 				// Histogramm erstellen
@@ -419,7 +445,68 @@ public class Image extends Controller {
 		}
 		
 	}
-
+	
+	public static Result morph() {
+		ObjectNode respJSON = Json.newObject();
+		JsonNode json = request().body().asJson();
+		
+		if(json == null) {
+			return badRequest("Expecting Json data");
+		} else {
+			int[][] filter;
+			filter = convertBinaryJsonToMatrix(json);
+			String id = json.findPath("id").toString();
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+			try {
+				BufferedImage im = ImageIO.read(new File(uploadPath));
+				
+				// Konvertierung in ein Binärbild
+				im = getBinaryImage(127, im);
+				
+				int w = im.getWidth();
+				int h = im.getHeight();
+				
+				BufferedImage copy;
+				copy = copyBinaryImage(im, "BLACK");
+				
+				for(int i = 1; i <= h; i++) {
+					for(int j = 1; j <= w; j++) {
+						int newValue = 0;
+						
+						// Maximumfilter                    
+						for(int k = -1; k <= 1; k++) {
+							for(int l = -1; l <= 1; l++) {
+								int filterVal = filter[l+1][k+1];
+								if(filterVal == 0)
+									filterVal = -255;
+								int bufferVal = copy.getRaster().getPixel(j+l, i+k, (int[]) null)[0]; 
+								bufferVal = bufferVal + filterVal;
+								
+								// check max
+								if (bufferVal > newValue) {
+									newValue = bufferVal;
+								}
+							}
+						}
+						newValue = checkPixel(newValue);
+            
+						// outputImage(u,v) = result value;
+						im.getRaster().setSample(j-1, i-1, 0, newValue);
+					}
+				}
+				
+				
+				ImageIO.write(im,"PNG",new File(uploadPath)); 
+				
+				// Histogramm erstellen
+				respJSON = generateBinaryHisto(id + ".png");
+			} catch(IOException ioe) {
+				respJSON.put("error", "Error on processing region labeling...");
+			}
+			return ok(respJSON);
+		}
+		
+	}
 
 	// generiert ein Histogramm
 	public static ObjectNode generateHisto(String id) {
@@ -590,6 +677,50 @@ public class Image extends Controller {
 		return copy;		
 	}
 	
+	// speichert das Bild in einen vergrößertes Bild für die Randbehandlung
+	public static BufferedImage copyBinaryImage(BufferedImage src, String mode) {
+
+		int w = src.getWidth();
+		int h = src.getHeight();
+		
+		// Kopie des Bildes sowie randbehandlung des bildes
+		BufferedImage copy = new BufferedImage(w+2, h+2, BufferedImage.TYPE_BYTE_BINARY);
+		
+		switch(mode) {
+			// Kopiebild auf komplett auf Weiß setzen
+			case "WHITE":
+			for (int v = 0; v < h+2; v++) {
+				for (int u = 0; u < w+2; u++) {
+					copy.getRaster().setSample(u, v, 0, 1);
+				}
+			} 
+			// Bild in das vergrößerte Bild kopieren
+			for (int v = 0; v < h; v++) {
+				for (int u = 0; u < w; u++) {
+					copy.getRaster().setSample(u+1, v+1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+				}
+			} 
+			break;
+			// Kopiebild auf komplett auf Schwarz setzen
+			case "BLACK":
+			for (int v = 0; v < h+2; v++) {
+				for (int u = 0; u < w+2; u++) {
+					copy.getRaster().setSample(u, v, 0, 0);
+				}
+			}
+			// Bild in das vergrößerte Bild kopieren
+			for (int v = 0; v < h; v++) {
+				for (int u = 0; u < w; u++) {
+					copy.getRaster().setSample(u+1, v+1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+				}
+			} 
+			break;
+			default:
+		}
+
+		return copy;		
+	}
+	
 	// Wandelt ein JSON in eine Matrix
 	private static double[][] convertJsonToMatrix(JsonNode json) {
 		double[][] filter = new double[3][3];
@@ -598,6 +729,21 @@ public class Image extends Controller {
 			for (int c = 1; c <= 3; c++) {
 				String str = "r" + r + "c" + c;
 				double tmp = Double.parseDouble(json.findPath(str).toString());
+				filter[r-1][c-1] = tmp;
+			}
+		}
+
+		return filter;
+	}
+	
+	// Wandelt ein JSON in eine Matrix
+	private static int[][] convertBinaryJsonToMatrix(JsonNode json) {
+		int[][] filter = new int[3][3];
+
+		for (int r = 1; r <= 3; r++) {
+			for (int c = 1; c <= 3; c++) {
+				String str = "r" + r + "c" + c;
+				int tmp = Integer.parseInt(json.findPath(str).toString());
 				filter[r-1][c-1] = tmp;
 			}
 		}
