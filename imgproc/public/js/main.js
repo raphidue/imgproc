@@ -76,6 +76,12 @@ $(function() {
 			$("#matrix-content").fadeOut();
 		}
 	});
+	$("#toBinary").click(function() {
+		buttonClicked("#toBinary");
+		if(checkIfImageIsUploaded()) {
+			$("#matrix-content").fadeOut();
+		}
+	});
 	// Anwenden der ausgewählten Filter
 	$("#apply-button").on("click", function() {
 		if ($("#glaett").hasClass("active")) {
@@ -152,16 +158,32 @@ $(function() {
 			
 		}
 		else if ($("#toBinary").hasClass("active")) {
+			data = '[' + JSON.stringify({id: global_ID}) + ', {"threshold":' + 200 +'}]';
+			// ID an path: toBinary senden und Histogramm erstellen			
+			$.ajax({
+				type: "POST",
+				data: data,
+				contentType: 'application/json',
+				dataType: 'json',
+				url: "/toBinary"
+			});
 			
+			// warten bis Filteroperation angewendet wurde
+			setTimeout(function () { 
+				showBinaryHistogram("GET", "toBinary/" + global_ID + ".png");		
+			}, 1000);
+			
+			// refreshing image after use filter
+			refreshImage();
 		}
 		else if ($("#dilate").hasClass("active")) {
 						
 			// ID an path: smoothing senden und Histogramm erstellen
-			sendJson("POST", "/morph", JSON.stringify({id: global_ID}));
+			sendJson("POST", "/dilate", JSON.stringify({id: global_ID}));
 			
 			// warten bis Filteroperation angewendet wurde
 			setTimeout(function () { 
-				showBinaryHistogram("GET", "morph/" + global_ID + ".png");		
+				showBinaryHistogram("GET", "dilate/" + global_ID + ".png");		
 			}, 1000);
 			
 			// refreshing image after use filter
@@ -169,7 +191,16 @@ $(function() {
 			
 		}
 		else if ($("#erode").hasClass("active")) {
+			// ID an path: smoothing senden und Histogramm erstellen
+			sendJson("POST", "/erode", JSON.stringify({id: global_ID}));
 			
+			// warten bis Filteroperation angewendet wurde
+			setTimeout(function () { 
+				showBinaryHistogram("GET", "erode/" + global_ID + ".png");		
+			}, 1000);
+			
+			// refreshing image after use filter
+			refreshImage();
 		}
 		else if ($("#region").hasClass("active")) {
 			
@@ -335,6 +366,30 @@ $(function() {
 				$("#r2c3").val(0);
 				$("#r3c1").val(0);
 				$("#r3c2").val(0);
+				$("#r3c3").val(0);
+				$("#matrix-content").fadeIn();
+				break;
+			case "#dilate":
+				$("#r1c1").val(0);
+				$("#r1c2").val(1);
+				$("#r1c3").val(0);
+				$("#r2c1").val(1);
+				$("#r2c2").val(1);
+				$("#r2c3").val(1);
+				$("#r3c1").val(0);
+				$("#r3c2").val(1);
+				$("#r3c3").val(0);
+				$("#matrix-content").fadeIn();
+				break;
+			case "#erode":
+				$("#r1c1").val(0);
+				$("#r1c2").val(1);
+				$("#r1c3").val(0);
+				$("#r2c1").val(1);
+				$("#r2c2").val(1);
+				$("#r2c3").val(1);
+				$("#r3c1").val(0);
+				$("#r3c2").val(1);
 				$("#r3c3").val(0);
 				$("#matrix-content").fadeIn();
 				break;
