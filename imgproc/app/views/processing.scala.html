@@ -48,6 +48,9 @@
 	.form-control {
 		padding: 0px 5px !important;
 	}
+	#slider-panel {
+		display: none;
+	}
 	</style>
 	@scripts
 </head>
@@ -75,84 +78,91 @@
 						Show Histogram
 					</button>
 					<button type="button" id="apply-button" class="btn btn-info col-md-offset-5">
-					<span class="glyphicon glyphicon-repeat"></span> Apply</button>
-					<div style="margin-bottom: 20px;"></div>
-					<span class="label label-info">Grayscale Image operations</span>
-					<button class="btn btn-info proc-button" id="config-filter" type="button">Free configurable filter</button>
-					<button class="btn btn-info proc-button" id="glaett" type="button">Smoothing filter</button>
-					<button class="btn btn-info proc-button" id="diff" type="button">Difference filter</button>
-					<button class="btn btn-info proc-button" id="min" type="button">Minimum filter</button>
-					<button class="btn btn-info proc-button" id="max" type="button">Maximum filter</button>
-					<button class="btn btn-info proc-button" id="median" type="button">Median filter</button>
-					<button class="btn btn-info proc-button" id="gewMedian" type="button">Weighted median filter</button>
-					<button class="btn btn-info proc-button" id="toBinary" type="button">Convert to Binary image</button>
+						<span class="glyphicon glyphicon-repeat"></span> Apply</button>
+						<div style="margin-bottom: 20px;"></div>
+						<span class="label label-info">Grayscale Image operations</span>
+						<button class="btn btn-info proc-button" id="config-filter" type="button">Free configurable filter</button>
+						<button class="btn btn-info proc-button" id="glaett" type="button">Smoothing filter</button>
+						<button class="btn btn-info proc-button" id="diff" type="button">Difference filter</button>
+						<button class="btn btn-info proc-button" id="min" type="button">Minimum filter</button>
+						<button class="btn btn-info proc-button" id="max" type="button">Maximum filter</button>
+						<button class="btn btn-info proc-button" id="median" type="button">Median filter</button>
+						<button class="btn btn-info proc-button" id="gewMedian" type="button">Weighted median filter</button>
+						<button class="btn btn-info proc-button" id="toBinary" type="button">Convert to Binary image</button>
 					
-					<div style="margin-bottom: 20px;"></div>
-					<span class="label label-info">Binary Image operations</span>
-					<button class="btn btn-info proc-button" id="dilate" type="button">Dilate</button>
-					<button class="btn btn-info proc-button" id="erode" type="button">Erode</button>
-					<button class="btn btn-info proc-button" id="region" type="button">Region labeling</button>
-					<!--<button class="btn btn-default proc-button" id="harri" type="button">Harris Detector</button>-->
+						<div style="margin-bottom: 20px;"></div>
+						<span class="label label-info">Binary Image operations</span>
+						<button class="btn btn-info proc-button" id="dilate" type="button">Dilate</button>
+						<button class="btn btn-info proc-button" id="erode" type="button">Erode</button>
+						<button class="btn btn-info proc-button" id="region" type="button">Region labeling</button>
+						<!--<button class="btn btn-default proc-button" id="harri" type="button">Harris Detector</button>-->
+					</div>
 				</div>
-			</div>
-			<div id="img-content" class="col-md-7">				
-			</div>
-			<div class="col-md-3">	
-				<div id="hist-content" style="display: none;">
-					<div class="panel panel-info">
-						<div class="panel-heading">Histogram</div>
-						<div class="panel-body">
-							<canvas id="canvas" height="" width=""></canvas>
+				<div id="img-content" class="col-md-7">				
+				</div>
+				<div class="col-md-3">	
+					<div id="hist-content" style="display: none;">
+						<div class="panel panel-info">
+							<div class="panel-heading">Histogram</div>
+							<div class="panel-body">
+								<canvas id="canvas" height="" width=""></canvas>
+							</div>
+						</div>
+					</div>
+					<div id="slider-panel">
+						<div id="slider"></div>
+						<div id="slider-text"><p>Your Threshold has a value of <span id="slider-value"></span></p></div>
+					</div>
+					<div class="alert alert-danger hidden" id="matrix-error">
+						<b>Please enter values in matrix!</b> 
+					</div>
+					<div class="alert alert-danger hidden" id="binary-error">
+						<b>Please enter value 0 or value 1!</b>
+					</div>
+					<div id="matrix-content" class="" style="display: none; margin-top: 30px;">
+						<div class="panel panel-info">
+							<div class="panel-heading" id="filter-heading">Filter Matrix</div>
+							<div class="panel-body">
+								<form id="form_matrix" class="form-inline" role="form" style="margin-left: -15px;">
+									<div class="form-group">
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r1c1" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r1c2" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r1c3" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r2c1" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r2c2" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r2c3" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r3c1" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r3c2" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r3c3" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div> 
+									</div>
+								</form>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="alert alert-danger hidden" id="matrix-error">
-					<b>Please enter values in matrix!</b> 
-				</div>
-				<div id="matrix-content" class="" style="display: none; margin-top: 30px;">
-					<div class="panel panel-info">
-						<div class="panel-heading">Filter Matrix</div>
-						<div class="panel-body">
-							<form id="form_matrix" class="form-inline" role="form" style="margin-left: -15px;">
-								<div class="form-group">
-									<div class="col-xs-4">
-										<input type="text" class="form-control" id="r1c1" placeholder="0" value="0" onblur="validateMatrix(this)">
-									</div>
-									<div class="col-xs-4">
-										<input type="text" class="form-control" id="r1c2" placeholder="0" value="0" onblur="validateMatrix(this)">
-									</div>
-									<div class="col-xs-4">
-										<input type="text" class="form-control" id="r1c3" placeholder="0" value="0" onblur="validateMatrix(this)">
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-xs-4">
-										<input type="text" class="form-control" id="r2c1" placeholder="0" value="0" onblur="validateMatrix(this)">
-									</div>
-									<div class="col-xs-4">
-										<input type="text" class="form-control" id="r2c2" placeholder="0" value="0" onblur="validateMatrix(this)">
-									</div>
-									<div class="col-xs-4">
-										<input type="text" class="form-control" id="r2c3" placeholder="0" value="0" onblur="validateMatrix(this)">
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-xs-4">
-										<input type="text" class="form-control" id="r3c1" placeholder="0" value="0" onblur="validateMatrix(this)">
-									</div>
-									<div class="col-xs-4">
-										<input type="text" class="form-control" id="r3c2" placeholder="0" value="0" onblur="validateMatrix(this)">
-									</div>
-									<div class="col-xs-4">
-										<input type="text" class="form-control" id="r3c3" placeholder="0" value="0" onblur="validateMatrix(this)">
-									</div> 
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div> <!-- /row -->
-	</div>
-</body>
-</html>
+			</div> <!-- /row -->
+		</div>
+	</body>
+	</html>

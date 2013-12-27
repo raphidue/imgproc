@@ -1,6 +1,22 @@
 var global_ID = null;
+var global_Threshold = null;
 /************************Processing Buttons Action*****************************/
 $(function() {
+ 	// Initialisiert den Slider
+	$("#slider").slider(
+ 	{
+ 	            value:127,
+ 	            min: 0,
+ 	            max: 255,
+ 	            step: 1,
+ 	            slide: function( event, ui ) {
+ 	                $( "#slider-value" ).html( ui.value );
+					global_Threshold = ui.value;
+ 	            }
+ 	}
+ 	);
+ 	$( "#slider-value" ).html(  $('#slider').slider('value') );
+	
 	$("#showImg").click(function() {
 		if($( "#showImg" ).hasClass( "active" )) {
 			$( "#showImg").removeClass( "active" );
@@ -14,66 +30,84 @@ $(function() {
 		buttonClicked("#config-filter");
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#config-filter");
+			$("#slider-panel").fadeOut();
 		}
 	});
 	$("#glaett").click(function() {
 		buttonClicked("#glaett");
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#glaett");
+			$("#slider-panel").fadeOut();
 		}
 	});
 	$("#diff").click(function() {
 		buttonClicked("#diff");
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#diff");
+			$("#slider-panel").fadeOut();
 		}
 	});
 	$("#min").click(function() {
 		buttonClicked("#min");
 		if(checkIfImageIsUploaded()) {
 			$("#matrix-content").fadeOut();
+			$("#slider-panel").fadeOut();
 		}
 	});
 	$("#max").click(function() {
 		buttonClicked("#max");
 		if(checkIfImageIsUploaded()) {
 			$("#matrix-content").fadeOut();
+			$("#slider-panel").fadeOut();
 		}
 	});
 	$("#median").click(function() {
 		buttonClicked("#median");
 		if(checkIfImageIsUploaded()) {
 			$("#matrix-content").fadeOut();
+			$("#slider-panel").fadeOut();
 		}
 	});
 	$("#gewMedian").click(function() {
 		buttonClicked("#gewMedian");
 		if(checkIfImageIsUploaded()) {
-			displayfilter("#gewMedian");			
+			displayfilter("#gewMedian");
+			$("#slider-panel").fadeOut();			
 		}
 	});
 	$("#toBinary").click(function() {
 		buttonClicked("#toBinary");
 		if(checkIfImageIsUploaded()) {
 			$("#matrix-content").fadeOut();
+			$("#slider-panel").fadeOut();
 		}
 	});
 	$("#dilate").click(function() {
 		buttonClicked("#dilate");
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#dilate");
+			$("#slider-panel").fadeOut();
 		}
 	});
 	$("#erode").click(function() {
 		buttonClicked("#erode");
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#erode");
+			$("#slider-panel").fadeOut();
 		}
 	});
 	$("#region").click(function() {
 		buttonClicked("#region");
 		if(checkIfImageIsUploaded()) {
 			$("#matrix-content").fadeOut();
+			$("#slider-panel").fadeOut();
+		}
+	});
+	$("#toBinary").click(function() {
+		buttonClicked("#toBinary");
+		if(checkIfImageIsUploaded()) {
+			$("#matrix-content").fadeOut();
+			$("#slider-panel").fadeIn();
 		}
 	});
 	// Anwenden der ausgewählten Filter
@@ -152,16 +186,31 @@ $(function() {
 			
 		}
 		else if ($("#toBinary").hasClass("active")) {
-			
-		}
-		else if ($("#dilate").hasClass("active")) {
-						
-			// ID an path: smoothing senden und Histogramm erstellen
-			sendJson("POST", "/morph", JSON.stringify({id: global_ID}));
+			data = '[' + JSON.stringify({id: global_ID}) + ', {"threshold":' + global_Threshold +'}]';
+			// ID an path: toBinary senden und Histogramm erstellen			
+			$.ajax({
+				type: "POST",
+				data: data,
+				contentType: 'application/json',
+				dataType: 'json',
+				url: "/toBinary"
+			});
 			
 			// warten bis Filteroperation angewendet wurde
 			setTimeout(function () { 
-				showBinaryHistogram("GET", "morph/" + global_ID + ".png");		
+				showBinaryHistogram("GET", "toBinary/" + global_ID + ".png");		
+			}, 1000);
+			
+			// refreshing image after use filter
+			refreshImage();
+		}
+		else if ($("#dilate").hasClass("active")) {
+			// ID an path: smoothing senden und Histogramm erstellen
+			sendJson("POST", "/dilate", JSON.stringify({id: global_ID}));
+			
+			// warten bis Filteroperation angewendet wurde
+			setTimeout(function () { 
+				showBinaryHistogram("GET", "dilate/" + global_ID + ".png");		
 			}, 1000);
 			
 			// refreshing image after use filter
@@ -169,7 +218,16 @@ $(function() {
 			
 		}
 		else if ($("#erode").hasClass("active")) {
+			// ID an path: smoothing senden und Histogramm erstellen
+			sendJson("POST", "/erode", JSON.stringify({id: global_ID}));
 			
+			// warten bis Filteroperation angewendet wurde
+			setTimeout(function () { 
+				showBinaryHistogram("GET", "erode/" + global_ID + ".png");		
+			}, 1000);
+			
+			// refreshing image after use filter
+			refreshImage();
 		}
 		else if ($("#region").hasClass("active")) {
 			
@@ -278,6 +336,25 @@ $(function() {
 				// TODO: add chaning the color of element here, not in getMatrix
 			}
 		}
+		
+		function getBinaryMatrix() {
+			var matrix = new Array();
+			var toReturn = true;
+			// r für row c für column
+			for (var i = 0; i < 9; i++){
+				var r = Math.floor(i/3)+1;
+				var c = (i%3)+1;
+				var id = '#r' + r + 'c' + c;
+				matrix[i] = $(id).val();
+				if (matrix[i] != 0 && matrix[i] != 1){
+					$(id).closest('div').addClass("has-error");
+					toReturn = false;
+				} else {
+					$(id).closest('div').removeClass("has-error");
+				}
+			}
+			return toReturn == true ? matrix : null;
+		}
 
 		function getMatrix() {
 			var matrix = new Array();
@@ -338,6 +415,30 @@ $(function() {
 				$("#r3c3").val(0);
 				$("#matrix-content").fadeIn();
 				break;
+			case "#dilate":
+				$("#r1c1").val(1);
+				$("#r1c2").val(0);
+				$("#r1c3").val(1);
+				$("#r2c1").val(0);
+				$("#r2c2").val(0);
+				$("#r2c3").val(0);
+				$("#r3c1").val(1);
+				$("#r3c2").val(0);
+				$("#r3c3").val(1);
+				$("#matrix-content").fadeIn();
+				break;
+			case "#erode":
+				$("#r1c1").val(1);
+				$("#r1c2").val(0);
+				$("#r1c3").val(1);
+				$("#r2c1").val(0);
+				$("#r2c2").val(0);
+				$("#r2c3").val(0);
+				$("#r3c1").val(1);
+				$("#r3c2").val(0);
+				$("#r3c3").val(1);
+				$("#matrix-content").fadeIn();
+				break;
 			default:
 				console.log("ID not detected, for displaying filtermatrix...");
 			}
@@ -345,13 +446,24 @@ $(function() {
 	
 		// sendet die filtermatrix und id des zu bearbeitenden bildes als JSON 
 		function sendJson(typ, path, data) {
-	
-			var matrix = getMatrix();
-			if (matrix == null){
-				$('#matrix-error').removeClass("hidden");
-				return false;
+			var matrix;
+			
+			if (path == "/dilate" || path == "/erode") {
+				matrix = getBinaryMatrix(); 
+				if (matrix == null){
+					$('#binary-error').removeClass("hidden");
+					return false;
+				} else {
+					$('#binary-error').addClass("hidden");
+				}
 			} else {
-				$('#matrix-error').addClass("hidden");
+				matrix = getMatrix();
+				if (matrix == null){
+					$('#matrix-error').removeClass("hidden");
+					return false;
+				} else {
+					$('#matrix-error').addClass("hidden");
+				}
 			}
 	
 			// zusammenfügen von array und id

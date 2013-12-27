@@ -191,6 +191,34 @@ public class Image extends Controller {
 		}
 	}
 	
+	public static Result toBinary() {
+		ObjectNode respJSON = Json.newObject();
+		JsonNode json = request().body().asJson();
+		if(json == null) {
+			return badRequest("Expecting Json data");
+		} else {
+			String id = json.findPath("id").toString();
+			int threshold = Integer.parseInt(json.findPath("threshold").toString());
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+			try {
+				BufferedImage im = ImageIO.read(new File(uploadPath));
+				
+				// Histogramm erstellen
+				int w = im.getWidth();
+				int h = im.getHeight();
+				
+				im = getBinaryImage(threshold, im);
+				ImageIO.write(im,"PNG",new File(uploadPath)); 
+				
+				// Histogramm erstellen
+				respJSON = generateBinaryHisto(id + ".png");
+			} catch(IOException ioe) {
+				respJSON.put("error", "Error on processing convert to binary...");
+			}
+			return ok(respJSON);			
+		}
+	}
+	
 	public static Result minimum() {
 		ObjectNode respJSON = Json.newObject();
 		JsonNode json = request().body().asJson();
@@ -446,7 +474,7 @@ public class Image extends Controller {
 		
 	}
 	
-	public static Result morph() {
+	public static Result dilate() {
 		ObjectNode respJSON = Json.newObject();
 		JsonNode json = request().body().asJson();
 		
@@ -459,28 +487,34 @@ public class Image extends Controller {
 			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
-				
-				// Konvertierung in ein Binärbild
-				im = getBinaryImage(127, im);
-				
+					
+				// Falls noch kein Binärbild
+				if (im.getType() == 10) {
+					// Konvertierung in ein Binärbild
+					im = getBinaryImage(127, im);
+				} 
+					
 				int w = im.getWidth();
 				int h = im.getHeight();
+				int newValue;					
 				
 				BufferedImage copy;
-				copy = copyBinaryImage(im, "BLACK");
-				
+				copy = copyBinaryImage(im, "CONTINUE");
+					
+					
 				for(int i = 1; i <= h; i++) {
 					for(int j = 1; j <= w; j++) {
-						int newValue = 0;
+						newValue = 0;
 						
 						// Maximumfilter                    
 						for(int k = -1; k <= 1; k++) {
 							for(int l = -1; l <= 1; l++) {
-								int filterVal = filter[l+1][k+1];
-								if(filterVal == 0)
+								int filterVal = filter[k+1][l+1];
+								if(filterVal == 1) {
 									filterVal = -255;
+								}
 								int bufferVal = copy.getRaster().getPixel(j+l, i+k, (int[]) null)[0]; 
-								bufferVal = bufferVal + filterVal;
+								bufferVal += filterVal;
 								
 								// check max
 								if (bufferVal > newValue) {
@@ -489,13 +523,75 @@ public class Image extends Controller {
 							}
 						}
 						newValue = checkPixel(newValue);
-            
-						// outputImage(u,v) = result value;
 						im.getRaster().setSample(j-1, i-1, 0, newValue);
 					}
 				}
+					
+				ImageIO.write(im,"PNG",new File(uploadPath)); 
 				
+				// Histogramm erstellen
+				respJSON = generateBinaryHisto(id + ".png");
+			} catch(IOException ioe) {
+				respJSON.put("error", "Error on processing region labeling...");
+			}
+			return ok(respJSON);
+		}
+		
+	}
+	
+	public static Result erode() {
+		ObjectNode respJSON = Json.newObject();
+		JsonNode json = request().body().asJson();
+		
+		if(json == null) {
+			return badRequest("Expecting Json data");
+		} else {
+			int[][] filter;
+			filter = convertBinaryJsonToMatrix(json);
+			String id = json.findPath("id").toString();
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+			try {
+				BufferedImage im = ImageIO.read(new File(uploadPath));
+					
+				// Falls noch kein Binärbild
+				if (im.getType() == 10) {
+					// Konvertierung in ein Binärbild
+					im = getBinaryImage(127, im);
+				} 
+					
+				int w = im.getWidth();
+				int h = im.getHeight();
+				int newValue;					
 				
+				BufferedImage copy;
+				copy = copyBinaryImage(im, "CONTINUE");
+					
+					
+				for(int i = 1; i <= h; i++) {
+					for(int j = 1; j <= w; j++) {
+						newValue = 255;
+						
+						// Minimumfilter                    
+						for(int k = -1; k <= 1; k++) {
+							for(int l = -1; l <= 1; l++) {
+								int filterVal = filter[k+1][l+1];
+								if(filterVal == 1) {
+									filterVal = -255;
+								}
+								int bufferVal = copy.getRaster().getPixel(j+l, i+k, (int[]) null)[0]; 
+								bufferVal -= filterVal;
+								
+								// check min
+								if (bufferVal < newValue) {
+									newValue = bufferVal;
+								}
+							}
+						}
+						newValue = checkPixel(newValue);
+						im.getRaster().setSample(j-1, i-1, 0, newValue);
+					}
+				}
+					
 				ImageIO.write(im,"PNG",new File(uploadPath)); 
 				
 				// Histogramm erstellen
@@ -714,6 +810,43 @@ public class Image extends Controller {
 					copy.getRaster().setSample(u+1, v+1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
 				}
 			} 
+			break;
+			// Randpixel auf an die Ränder erweitern
+			case "CONTINUE":
+			// Kopieren vom Bild in das vergrößerte Bild
+			for (int v = 0; v < h; v++) {
+				for (int u = 0; u < w; u++) {
+					copy.getRaster().setSample(u+1,v+1, 0, src.getRaster().getPixel(u,v,(int[]) null)[0]);
+				}
+			}
+			// Oberer Rand
+			for(int u = 0; u < w+2; u++) {
+				copy.getRaster().setSample(u,0,0,copy.getRaster().getPixel(u,1,(int[]) null)[0]);
+			}
+	
+			// Unterer Rand
+			for(int u = 0; u < w+2; u++) {
+				copy.getRaster().setSample(u,h+1,0,copy.getRaster().getPixel(u,h,(int[]) null)[0]);
+			}
+
+			// Linker Rand
+			for(int v = 0; v < h+2; v++) {
+				copy.getRaster().setSample(0,v,0,copy.getRaster().getPixel(1,v,(int[]) null)[0]);
+			}
+			
+			// Rechter Rand
+			for(int v = 0; v < h+2; v++) {
+				copy.getRaster().setSample(w+1,v,0,copy.getRaster().getPixel(w,v,(int[]) null)[0]);
+			}
+		
+			// Obere linke Ecke
+			copy.getRaster().setSample(0,0,0,copy.getRaster().getPixel(1,1,(int[]) null)[0]);
+			// Untere linke Ecke	
+			copy.getRaster().setSample(0,h+1,0,copy.getRaster().getPixel(1,h,(int[]) null)[0]);
+			// Obere rechte Ecke
+			copy.getRaster().setSample(w+1,0,0,copy.getRaster().getPixel(w,1,(int[]) null)[0]);
+			// Untere rechte Ecke
+			copy.getRaster().setSample(w+1,h+1,0,copy.getRaster().getPixel(w,h,(int[]) null)[0]);
 			break;
 			default:
 		}
