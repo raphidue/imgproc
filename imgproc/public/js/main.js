@@ -177,7 +177,6 @@ $(function() {
 			refreshImage();
 		}
 		else if ($("#dilate").hasClass("active")) {
-						
 			// ID an path: smoothing senden und Histogramm erstellen
 			sendJson("POST", "/dilate", JSON.stringify({id: global_ID}));
 			
@@ -309,6 +308,25 @@ $(function() {
 				// TODO: add chaning the color of element here, not in getMatrix
 			}
 		}
+		
+		function getBinaryMatrix() {
+			var matrix = new Array();
+			var toReturn = true;
+			// r für row c für column
+			for (var i = 0; i < 9; i++){
+				var r = Math.floor(i/3)+1;
+				var c = (i%3)+1;
+				var id = '#r' + r + 'c' + c;
+				matrix[i] = $(id).val();
+				if (matrix[i] != 0 && matrix[i] != 1){
+					$(id).closest('div').addClass("has-error");
+					toReturn = false;
+				} else {
+					$(id).closest('div').removeClass("has-error");
+				}
+			}
+			return toReturn == true ? matrix : null;
+		}
 
 		function getMatrix() {
 			var matrix = new Array();
@@ -370,27 +388,27 @@ $(function() {
 				$("#matrix-content").fadeIn();
 				break;
 			case "#dilate":
-				$("#r1c1").val(0);
-				$("#r1c2").val(1);
-				$("#r1c3").val(0);
-				$("#r2c1").val(1);
-				$("#r2c2").val(1);
-				$("#r2c3").val(1);
-				$("#r3c1").val(0);
-				$("#r3c2").val(1);
-				$("#r3c3").val(0);
+				$("#r1c1").val(1);
+				$("#r1c2").val(0);
+				$("#r1c3").val(1);
+				$("#r2c1").val(0);
+				$("#r2c2").val(0);
+				$("#r2c3").val(0);
+				$("#r3c1").val(1);
+				$("#r3c2").val(0);
+				$("#r3c3").val(1);
 				$("#matrix-content").fadeIn();
 				break;
 			case "#erode":
-				$("#r1c1").val(0);
-				$("#r1c2").val(1);
-				$("#r1c3").val(0);
-				$("#r2c1").val(1);
-				$("#r2c2").val(1);
-				$("#r2c3").val(1);
-				$("#r3c1").val(0);
-				$("#r3c2").val(1);
-				$("#r3c3").val(0);
+				$("#r1c1").val(1);
+				$("#r1c2").val(0);
+				$("#r1c3").val(1);
+				$("#r2c1").val(0);
+				$("#r2c2").val(0);
+				$("#r2c3").val(0);
+				$("#r3c1").val(1);
+				$("#r3c2").val(0);
+				$("#r3c3").val(1);
 				$("#matrix-content").fadeIn();
 				break;
 			default:
@@ -400,13 +418,24 @@ $(function() {
 	
 		// sendet die filtermatrix und id des zu bearbeitenden bildes als JSON 
 		function sendJson(typ, path, data) {
-	
-			var matrix = getMatrix();
-			if (matrix == null){
-				$('#matrix-error').removeClass("hidden");
-				return false;
+			var matrix;
+			
+			if (path == "/dilate" || path == "/erode") {
+				matrix = getBinaryMatrix(); 
+				if (matrix == null){
+					$('#binary-error').removeClass("hidden");
+					return false;
+				} else {
+					$('#binary-error').addClass("hidden");
+				}
 			} else {
-				$('#matrix-error').addClass("hidden");
+				matrix = getMatrix();
+				if (matrix == null){
+					$('#matrix-error').removeClass("hidden");
+					return false;
+				} else {
+					$('#matrix-error').addClass("hidden");
+				}
 			}
 	
 			// zusammenfügen von array und id
