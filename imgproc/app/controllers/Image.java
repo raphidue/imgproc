@@ -444,16 +444,8 @@ public class Image extends Controller {
 			    for(int y = 1; y <= h; y++) {
 			        for(int x = 1; x <= w; x++) {
 						im.getRaster().setSample(x-1, y-1, 0, copy.getRaster().getPixel(x, y, (int[]) null)[0]);
-
 					}
 				}
-							  
-				/*
-				for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
-					respJSON.put(""+entry.getKey(), ""+entry.getValue());
-				}
-				ImageIO.write(copy,"PNG",new File("public/uploads/copy.png")); 
-				*/
 				
 				ImageIO.write(copy,"PNG",new File("public/uploads/test.png")); 
 				
