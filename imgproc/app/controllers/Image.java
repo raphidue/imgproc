@@ -191,6 +191,60 @@ public class Image extends Controller {
 		}
 	}
 	
+	public static Result weightedMedian(){
+		ObjectNode respJSON = Json.newObject();
+		JsonNode json = request().body().asJson();
+		double[][] filter;
+		filter = convertJsonToMatrix(json);		
+
+		if(json == null) {
+			return badRequest("Expecting Json data");
+		} else {
+			String id = json.findPath("id").toString();
+			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+			try {
+				BufferedImage im = ImageIO.read(new File(uploadPath));
+				
+				// Histogramm erstellen
+				int w = im.getWidth();
+				int h = im.getHeight();
+
+				//-----------------to here
+				BufferedImage copy;
+				copy = copyImage(im, "CONTINUE");
+				// Filteroperation
+				int[] P = new int[9];
+
+				for (int v=1; v<=h; v++) {
+					for (int u=1; u<=w; u++) {
+			 
+						//fill the pixel vector P for filter position (u,v)
+						int k = 0;
+						for (int j=-1; j<=1; j++) {
+							for (int i=-1; i<=1; i++) {
+								double c = filter[j+1][i+1];
+								P[k] = copy.getRaster().getPixel(u+i, v+j, (int[]) null)[0] * (int)c;
+								k++;
+							}
+						}
+						//sort the pixel vector and take 1 element
+						Arrays.sort(P);
+						im.getRaster().setSample(u-1,v-1,0,P[4]);
+					}
+				}
+
+
+				ImageIO.write(im,"PNG",new File(uploadPath)); 
+				
+				// Histogramm erstellen
+				respJSON = generateHisto(id + ".png");
+			} catch(IOException ioe) {
+				respJSON.put("error", "Error on processing median filter...");
+			}
+			return ok(respJSON);			
+		}
+	}
+	
 	public static Result toBinary() {
 		ObjectNode respJSON = Json.newObject();
 		JsonNode json = request().body().asJson();

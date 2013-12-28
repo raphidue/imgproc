@@ -132,10 +132,30 @@ $(function() {
 			
 			} 
 			else if ($("#diff").hasClass("active")) {
+				// ID an path: smoothing senden und Histogramm erstellen
+				if(!sendJson("POST", "/difference", JSON.stringify({id: global_ID})))
+				return;
 			
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showHistogram("GET", "difference/" + global_ID + ".png");		
+				}, 1000);
+			
+				// refreshing image after use filter
+				refreshImage();	
 			}
 			else if ($("#config-filter").hasClass("active")) {
+				// ID an path: smoothing senden und Histogramm erstellen
+				if(!sendJson("POST", "/free-config", JSON.stringify({id: global_ID})))
+				return;
 			
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showHistogram("GET", "free-config/" + global_ID + ".png");		
+				}, 1000);
+			
+				// refreshing image after use filter
+				refreshImage();	
 			}
 			else if ($("#min").hasClass("active")) {
 				$.ajax({
@@ -170,9 +190,6 @@ $(function() {
 				// refreshing image after use filter
 				refreshImage();
 			}
-			else if ($("#diff").hasClass("active")) {
-			
-			}
 			else if ($("#median").hasClass("active")) {
 			
 				// ID an path: smoothing senden und Histogramm erstellen
@@ -188,7 +205,16 @@ $(function() {
 			
 			}
 			else if ($("#gewMedian").hasClass("active")) {
+				// ID an path: smoothing senden und Histogramm erstellen
+				sendJson("POST", "/weighted-median", JSON.stringify({id: global_ID}));
 			
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showHistogram("GET", "weighted-median/" + global_ID + ".png");		
+				}, 1000);
+			
+				// refreshing image after use filter
+				refreshImage();
 			}
 			else if ($("#toBinary").hasClass("active")) {
 				data = '[' + JSON.stringify({id: global_ID}) + ', {"threshold":' + global_Threshold +'}]';
@@ -442,6 +468,18 @@ $(function() {
 				$("#r2c3").val(0);
 				$("#r3c1").val(1);
 				$("#r3c2").val(0);
+				$("#r3c3").val(1);
+				$("#matrix-content").fadeIn();
+				break;
+			case "#gewMedian":
+				$("#r1c1").val(1);
+				$("#r1c2").val(2);
+				$("#r1c3").val(1);
+				$("#r2c1").val(2);
+				$("#r2c2").val(2);
+				$("#r2c3").val(2);
+				$("#r3c1").val(1);
+				$("#r3c2").val(2);
 				$("#r3c3").val(1);
 				$("#matrix-content").fadeIn();
 				break;
