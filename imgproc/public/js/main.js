@@ -2,20 +2,20 @@ var global_ID = null;
 var global_Threshold = null;
 /************************Processing Buttons Action*****************************/
 $(function() {
- 	// Initialisiert den Slider
+	// Initialisiert den Slider
 	$("#slider").slider(
- 	{
- 	            value:127,
- 	            min: 0,
- 	            max: 255,
- 	            step: 1,
- 	            slide: function( event, ui ) {
- 	                $( "#slider-value" ).html( ui.value );
-					global_Threshold = ui.value;
- 	            }
- 	}
- 	);
- 	$( "#slider-value" ).html(  $('#slider').slider('value') );
+		{
+			value:127,
+			min: 0,
+			max: 255,
+			step: 1,
+			slide: function( event, ui ) {
+				$( "#slider-value" ).html( ui.value );
+				global_Threshold = ui.value;
+			}
+		}
+	);
+	$( "#slider-value" ).html(  $('#slider').slider('value') );
 	
 	$("#showImg").click(function() {
 		if($( "#showImg" ).hasClass( "active" )) {
@@ -31,6 +31,7 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#config-filter");
 			$("#slider-panel").fadeOut();
+			$("#binary-notice").fadeOut();		
 		}
 	});
 	$("#glaett").click(function() {
@@ -38,6 +39,7 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#glaett");
 			$("#slider-panel").fadeOut();
+			$("#binary-notice").fadeOut();		
 		}
 	});
 	$("#diff").click(function() {
@@ -45,6 +47,7 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#diff");
 			$("#slider-panel").fadeOut();
+			$("#binary-notice").fadeOut();		
 		}
 	});
 	$("#min").click(function() {
@@ -52,6 +55,7 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			$("#matrix-content").fadeOut();
 			$("#slider-panel").fadeOut();
+			$("#binary-notice").fadeOut();		
 		}
 	});
 	$("#max").click(function() {
@@ -59,6 +63,7 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			$("#matrix-content").fadeOut();
 			$("#slider-panel").fadeOut();
+			$("#binary-notice").fadeOut();		
 		}
 	});
 	$("#median").click(function() {
@@ -66,20 +71,15 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			$("#matrix-content").fadeOut();
 			$("#slider-panel").fadeOut();
+			$("#binary-notice").fadeOut();		
 		}
 	});
 	$("#gewMedian").click(function() {
 		buttonClicked("#gewMedian");
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#gewMedian");
-			$("#slider-panel").fadeOut();			
-		}
-	});
-	$("#toBinary").click(function() {
-		buttonClicked("#toBinary");
-		if(checkIfImageIsUploaded()) {
-			$("#matrix-content").fadeOut();
 			$("#slider-panel").fadeOut();
+			$("#binary-notice").fadeOut();		
 		}
 	});
 	$("#dilate").click(function() {
@@ -87,6 +87,7 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#dilate");
 			$("#slider-panel").fadeOut();
+			$("#binary-notice").fadeIn();
 		}
 	});
 	$("#erode").click(function() {
@@ -94,6 +95,7 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			displayfilter("#erode");
 			$("#slider-panel").fadeOut();
+			$("#binary-notice").fadeIn();
 		}
 	});
 	$("#region").click(function() {
@@ -101,6 +103,7 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			$("#matrix-content").fadeOut();
 			$("#slider-panel").fadeOut();
+			$("#binary-notice").fadeIn();
 		}
 	});
 	$("#toBinary").click(function() {
@@ -108,139 +111,142 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			$("#matrix-content").fadeOut();
 			$("#slider-panel").fadeIn();
+			$("#binary-notice").fadeIn();
 		}
 	});
 	// Anwenden der ausgewählten Filter
 	$("#apply-button").on("click", function() {
-		if ($("#glaett").hasClass("active")) {
-			// ID an path: smoothing senden und Histogramm erstellen
-			if(!sendJson("POST", "/smoothing", JSON.stringify({id: global_ID})))
-			return;
+		if(checkIfImageIsUploaded()) {
+			if ($("#glaett").hasClass("active")) {
+				// ID an path: smoothing senden und Histogramm erstellen
+				if(!sendJson("POST", "/smoothing", JSON.stringify({id: global_ID})))
+				return;
 			
-			// warten bis Filteroperation angewendet wurde
-			setTimeout(function () { 
-				showHistogram("GET", "smoothing/" + global_ID + ".png");		
-			}, 1000);
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showHistogram("GET", "smoothing/" + global_ID + ".png");		
+				}, 1000);
 			
-			// refreshing image after use filter
-			refreshImage();	
+				// refreshing image after use filter
+				refreshImage();	
 			
-		} 
-		else if ($("#diff").hasClass("active")) {
+			} 
+			else if ($("#diff").hasClass("active")) {
 			
-		}
-		else if ($("#config-filter").hasClass("active")) {
+			}
+			else if ($("#config-filter").hasClass("active")) {
 			
-		}
-		else if ($("#min").hasClass("active")) {
-			$.ajax({
-				type: "POST",
-				data: JSON.stringify({id: global_ID}),
-				contentType: 'application/json',
-				dataType: 'json',
-				url: "/minimum"
-			});
-			// warten bis Filteroperation angewendet wurde
-			setTimeout(function () { 
-				showHistogram("GET", "minimum/" + global_ID + ".png");		
-			}, 10000);
+			}
+			else if ($("#min").hasClass("active")) {
+				$.ajax({
+					type: "POST",
+					data: JSON.stringify({id: global_ID}),
+					contentType: 'application/json',
+					dataType: 'json',
+					url: "/minimum"
+				});
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showHistogram("GET", "minimum/" + global_ID + ".png");		
+				}, 10000);
 			
-			// refreshing image after use filter
-			refreshImage();
+				// refreshing image after use filter
+				refreshImage();
 			
-		}
-		else if ($("#max").hasClass("active")) {
-			$.ajax({
-				type: "POST",
-				data: JSON.stringify({id: global_ID}),
-				contentType: 'application/json',
-				dataType: 'json',
-				url: "/maximum"
-			});
-			// warten bis Filteroperation angewendet wurde
-			setTimeout(function () { 
-				showHistogram("GET", "maximum/" + global_ID + ".png");		
-			}, 10000);
+			}
+			else if ($("#max").hasClass("active")) {
+				$.ajax({
+					type: "POST",
+					data: JSON.stringify({id: global_ID}),
+					contentType: 'application/json',
+					dataType: 'json',
+					url: "/maximum"
+				});
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showHistogram("GET", "maximum/" + global_ID + ".png");		
+				}, 10000);
 			
-			// refreshing image after use filter
-			refreshImage();
-		}
-		else if ($("#diff").hasClass("active")) {
+				// refreshing image after use filter
+				refreshImage();
+			}
+			else if ($("#diff").hasClass("active")) {
 			
-		}
-		else if ($("#median").hasClass("active")) {
+			}
+			else if ($("#median").hasClass("active")) {
 			
-			// ID an path: smoothing senden und Histogramm erstellen
-			sendJson("POST", "/median", JSON.stringify({id: global_ID}));
+				// ID an path: smoothing senden und Histogramm erstellen
+				sendJson("POST", "/median", JSON.stringify({id: global_ID}));
 			
-			// warten bis Filteroperation angewendet wurde
-			setTimeout(function () { 
-				showHistogram("GET", "median/" + global_ID + ".png");		
-			}, 1000);
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showHistogram("GET", "median/" + global_ID + ".png");		
+				}, 1000);
 			
-			// refreshing image after use filter
-			refreshImage();
+				// refreshing image after use filter
+				refreshImage();
 			
-		}
-		else if ($("#gewMedian").hasClass("active")) {
+			}
+			else if ($("#gewMedian").hasClass("active")) {
 			
-		}
-		else if ($("#toBinary").hasClass("active")) {
-			data = '[' + JSON.stringify({id: global_ID}) + ', {"threshold":' + global_Threshold +'}]';
-			// ID an path: toBinary senden und Histogramm erstellen			
-			$.ajax({
-				type: "POST",
-				data: data,
-				contentType: 'application/json',
-				dataType: 'json',
-				url: "/toBinary"
-			});
+			}
+			else if ($("#toBinary").hasClass("active")) {
+				data = '[' + JSON.stringify({id: global_ID}) + ', {"threshold":' + global_Threshold +'}]';
+				// ID an path: toBinary senden und Histogramm erstellen			
+				$.ajax({
+					type: "POST",
+					data: data,
+					contentType: 'application/json',
+					dataType: 'json',
+					url: "/toBinary"
+				});
 			
-			// warten bis Filteroperation angewendet wurde
-			setTimeout(function () { 
-				showBinaryHistogram("GET", "toBinary/" + global_ID + ".png");		
-			}, 1000);
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showBinaryHistogram("GET", "toBinary/" + global_ID + ".png");		
+				}, 1000);
 			
-			// refreshing image after use filter
-			refreshImage();
-		}
-		else if ($("#dilate").hasClass("active")) {
-			// ID an path: smoothing senden und Histogramm erstellen
-			sendJson("POST", "/dilate", JSON.stringify({id: global_ID}));
+				// refreshing image after use filter
+				refreshImage();
+			}
+			else if ($("#dilate").hasClass("active")) {
+				// ID an path: smoothing senden und Histogramm erstellen
+				sendJson("POST", "/dilate", JSON.stringify({id: global_ID}));
 			
-			// warten bis Filteroperation angewendet wurde
-			setTimeout(function () { 
-				showBinaryHistogram("GET", "dilate/" + global_ID + ".png");		
-			}, 1000);
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showBinaryHistogram("GET", "dilate/" + global_ID + ".png");		
+				}, 1000);
 			
-			// refreshing image after use filter
-			refreshImage();
+				// refreshing image after use filter
+				refreshImage();
 			
-		}
-		else if ($("#erode").hasClass("active")) {
-			// ID an path: smoothing senden und Histogramm erstellen
-			sendJson("POST", "/erode", JSON.stringify({id: global_ID}));
+			}
+			else if ($("#erode").hasClass("active")) {
+				// ID an path: smoothing senden und Histogramm erstellen
+				sendJson("POST", "/erode", JSON.stringify({id: global_ID}));
 			
-			// warten bis Filteroperation angewendet wurde
-			setTimeout(function () { 
-				showBinaryHistogram("GET", "erode/" + global_ID + ".png");		
-			}, 1000);
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showBinaryHistogram("GET", "erode/" + global_ID + ".png");		
+				}, 1000);
 			
-			// refreshing image after use filter
-			refreshImage();
-		}
-		else if ($("#region").hasClass("active")) {
+				// refreshing image after use filter
+				refreshImage();
+			}
+			else if ($("#region").hasClass("active")) {
 			
-			// ID an path: smoothing senden und Histogramm erstellen
-			sendJson("POST", "/region", JSON.stringify({id: global_ID}));
+				// ID an path: smoothing senden und Histogramm erstellen
+				sendJson("POST", "/region", JSON.stringify({id: global_ID}));
 			
-			// warten bis Filteroperation angewendet wurde
-			setTimeout(function () { 
-				showBinaryHistogram("GET", "region/" + global_ID + ".png");		
-			}, 1000);
+				// warten bis Filteroperation angewendet wurde
+				setTimeout(function () { 
+					showBinaryHistogram("GET", "region/" + global_ID + ".png");		
+				}, 1000);
 			
-			// refreshing image after use filter
-			refreshImage();
+				// refreshing image after use filter
+				refreshImage();
+			}
 		}
 	});
 });
