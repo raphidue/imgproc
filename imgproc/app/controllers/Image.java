@@ -333,102 +333,92 @@ public class Image extends Controller {
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
 				
-				// Konvertierung in ein Binärbild
-				im = getBinaryImage(127, im);
+				if (im.getType() == 10) {
+					// Konvertierung in ein Binärbild
+					im = getBinaryImage(127, im);
+				}
 				
 				Map<Integer,Integer> collisionMap = new HashMap<Integer, Integer>();
 				int w = im.getWidth();
 				int h = im.getHeight();
 				int[] neighbours = new int[4];
+				int label;
+				int foregroundPix;
 				
 				BufferedImage copy;
 				copy = copyImage(im, "CONTINUE");
 				
 				//PASS 1 - ASSIGN INITIAL LABELS
-				int label = 2;
-				int foregroundPix = 0;
+				label = 2;
+				foregroundPix = 0;
 				for(int y = 1; y <= h; y++) {
 					for(int x = 1; x <= w; x++) {
-						// Vordergrundpixel wurde erreicht
+						// new labelpixel reached
 						if(copy.getRaster().getPixel(x, y, (int[]) null)[0] == 1) {
-							// *************** überprüfe die Nachbarpixel ***********************
-							// überprüfe oberes Pixel
+							// *************** check Neighbours ***********************
+							// check top pixel
 							if(copy.getRaster().getPixel(x, y-1, (int[]) null)[0] > 1) {
 								foregroundPix++;
 								neighbours[0] = copy.getRaster().getPixel(x, y-1, (int[]) null)[0];
 							}
-							// überprüfe linkes Pixel
+							// check left pixel
 							if(copy.getRaster().getPixel(x-1, y, (int[]) null)[0] > 1) {
 								foregroundPix++;
 								neighbours[1] = copy.getRaster().getPixel(x-1, y, (int[]) null)[0];
 							}
-							// überprüfe links/oben Pixel
+							// check topleft pixel
 							if(copy.getRaster().getPixel(x-1, y-1, (int[]) null)[0] > 1) {
 								foregroundPix++;
 								neighbours[2] = copy.getRaster().getPixel(x-1, y-1, (int[]) null)[0];
 							}
-							// überprüfe rechts/oben Pixel
+							// check topright pixel
 							if(copy.getRaster().getPixel(x+1, y-1, (int[]) null)[0] > 1) {
 								foregroundPix++;
 								neighbours[3] = copy.getRaster().getPixel(x+1, y-1, (int[]) null)[0];
 							}
                 
-							// wenn alle Nachbarpixel Hintergrundpixel sind
+							// all neighbours are background pixels
 							if(foregroundPix == 0) {
-								copy.getRaster().getPixel(x, y, (int[]) null)[0] = label;
+								copy.getRaster().setSample(x,y,0,label);
 								label++;
-								// genau einer der Nachbarpixel hat eine Regionenmarkierung
+								// exactly one of the neighbours has a label value
 							} else if(foregroundPix == 1) {
 								for(int i = 0; i < 4; i++) {
-									// wähle den ersten Wert der in dem Array vorkommt
+									// select the first value which appears in map
 									if(neighbours[i] != 0) {
-										copy.getRaster().getPixel(x, y, (int[]) null)[0] = neighbours[i];
+										copy.getRaster().setSample(x,y,0,neighbours[i]);
 										break;
 									}
 								}
-								// mehrere Nachbarpixel haben Regionenmarkierungen
+								// serveral neighbours have label values
 							} else if(foregroundPix > 1) {
 								boolean firstEntry = true;
 								int tmp = 0;
 								for(int i = 0; i < 4; i++) {                         
 									if(neighbours[i] != 0) {
-										// wähle den ersten auftretende Regionenmarkierung
+										// select the first appaering label value
 										if(firstEntry == true) {
 											tmp = neighbours[i];
-											copy.getRaster().getPixel(x, y, (int[]) null)[0] = tmp;
+											copy.getRaster().setSample(x,y,0,tmp);
 											firstEntry = false;
-											// registriere alle anderne Nachbarpixel in der Kollisionsmap 
+											// all other neighbours register in collisionMap 
 										} else if(tmp != neighbours[i]) {
-											
 											// PASS 2 - RESOLVE LABEL COLLISIONS
-
-											//Get Map in Set interface to get key and value
-											Set s = collisionMap.entrySet();
-
-											//Move next key and value of Map by iterator
-											Iterator it = s.iterator();
-											
 											int key = -1;
 											if(tmp > neighbours[i]) {
 												collisionMap.put(new Integer(tmp), new Integer(neighbours[i]));
 												// use of transitivity characteristic
-												while(it.hasNext()) {
-													// key=value separator this by Map.Entry to get key and value
-													Map.Entry m =(Map.Entry)it.next();
-													
-													if (m.getValue() == tmp) {
-														collisionMap.put(new Integer((int)m.getKey()), new Integer(neighbours[i]));
+												for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
+													if (entry.getValue() == tmp) {
+														collisionMap.put(new Integer(entry.getKey()), new Integer(neighbours[i]));
 													}
 												}
 											} else {
-												collisionMap.put(new Integer(neighbours[i]), new Integer(tmp));
+												collisionMap.put(new Integer(neighbours[i]),new Integer(tmp));
 												// use of transitivity characteristic
-												while(it.hasNext()) {
-													// key=value separator this by Map.Entry to get key and value
-													Map.Entry m =(Map.Entry)it.next();
-													
-													if (m.getValue() == neighbours[i]) {
-														collisionMap.put(new Integer((int)m.getKey()), new Integer(tmp));
+												for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
+													if (entry.getValue() == neighbours[i]) {
+														collisionMap.put(new Integer(entry.getKey()), new Integer(tmp));
 													}
 												}
 											}
@@ -438,34 +428,37 @@ public class Image extends Controller {
 							}
 						}
 					}
-				}    
+				}  
+			    // PASS 3 - RELABEL THE IMAGE
+			    // copy to output image
+			    for(int y = 1; y <= h; y++) {
+			        for(int x = 1; x <= w; x++) {
+						// Kollisionen lösen
+			            if(collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]) != null) {
+			            	//element found;
+							copy.getRaster().setSample(x, y, 0, collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]));
+			            }
+			        }
+			    }
 				
-				// PASS 3 - RELABEL THE IMAGE
-				// copy to output image
-				for(int i = 1; i <= h; i++) {
-					for(int j = 1; j <= w; j++) {
-						/*
-							if(collisionMap.get(copy.getRaster().getPixel(i, j, (int[]) null)[0]) != -1) {
-							//Get Map in Set interface to get key and value
-							Set s = collisionMap.entrySet();
+			    for(int y = 1; y <= h; y++) {
+			        for(int x = 1; x <= w; x++) {
+						im.getRaster().setSample(x-1, y-1, 0, copy.getRaster().getPixel(x, y, (int[]) null)[0]);
 
-							//Move next key and value of Map by iterator
-							Iterator it = s.iterator();
-							Map.Entry m =(Map.Entry)it.next();
-							
-							//element found;
-							im.getRaster().setSample(i-1, j-1, 0, (int)m.getValue());
-							} else {
-							im.getRaster().setSample(i-1, j-1, 0, copy.getRaster().getPixel(i, j, (int[]) null)[0]);
-							}
-							*/
 					}
 				}
+							  
+				/*
+				for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
+					respJSON.put(""+entry.getKey(), ""+entry.getValue());
+				}
+				ImageIO.write(copy,"PNG",new File("public/uploads/copy.png")); 
+				*/
+				
+				ImageIO.write(copy,"PNG",new File("public/uploads/test.png")); 
 				
 				ImageIO.write(im,"PNG",new File(uploadPath)); 
 				
-				// Histogramm erstellen
-				respJSON = generateBinaryHisto(id + ".png");
 			} catch(IOException ioe) {
 				respJSON.put("error", "Error on processing region labeling...");
 			}
