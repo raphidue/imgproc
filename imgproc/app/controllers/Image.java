@@ -78,6 +78,37 @@ public class Image extends Controller {
 		return ok(respJSON);	
 	}
 	
+	public static Result showLabels(String id) {
+		
+		String tmp;
+		Integer tmpInt;
+		ObjectNode respJSON = Json.newObject();
+		
+		try {
+			// Bild einlesen
+			BufferedImage im = ImageIO.read(new File(Play.application().path().getAbsolutePath() + "/public/uploads/" + id));
+		
+			// Histogramm erstellen
+			int w = im.getWidth();
+			int h = im.getHeight();			
+			int max = 0;
+			
+			for (int v = 0; v < h; v++) {
+				for (int u = 0; u < w; u++) {
+					if(im.getRaster().getPixel(u, v, (int[]) null)[0] > max) {
+						max = im.getRaster().getPixel(u, v, (int[]) null)[0]; 							
+					}				
+				}
+			}
+			
+			respJSON.put("labels", max-1);
+			
+		} catch(IOException ioe) {
+			respJSON.put("error", "Error on creating histogram...");
+		}
+		return ok(respJSON);
+	}
+	
 	public static Result showBinaryHist(String id) {
 		ObjectNode respJSON = Json.newObject();
 		
@@ -261,7 +292,10 @@ public class Image extends Controller {
 				int w = im.getWidth();
 				int h = im.getHeight();
 				
-				im = getBinaryImage(threshold, im);
+				if (im.getType() == 10) {
+					// Konvertierung in ein Binärbild
+					im = getBinaryImage(threshold, im);
+				} 
 				ImageIO.write(im,"PNG",new File(uploadPath)); 
 				
 				// Histogramm erstellen
@@ -400,7 +434,7 @@ public class Image extends Controller {
 				int foregroundPix;
 				
 				BufferedImage copy;
-				copy = copyImage(im, "CONTINUE");
+				copy = copyImage(im, "CONTINUE");		
 				
 				//PASS 1 - ASSIGN INITIAL LABELS
 				label = 2;
@@ -494,21 +528,20 @@ public class Image extends Controller {
 			            }
 			        }
 			    }
-				
+				BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+				int max = 0;
 			    for(int y = 1; y <= h; y++) {
 			        for(int x = 1; x <= w; x++) {
-						im.getRaster().setSample(x-1, y-1, 0, copy.getRaster().getPixel(x, y, (int[]) null)[0]);
+						out.getRaster().setSample(x-1, y-1, 0, copy.getRaster().getPixel(x, y, (int[]) null)[0]);
 					}
 				}
-				
-				ImageIO.write(copy,"PNG",new File("public/uploads/test.png")); 
-				
-				ImageIO.write(im,"PNG",new File(uploadPath)); 
-				
+								
+				ImageIO.write(out,"PNG",new File(uploadPath)); 
+				respJSON.put("labels", max-1);
 			} catch(IOException ioe) {
 				respJSON.put("error", "Error on processing region labeling...");
 			}
-			return ok(respJSON);
+			return ok();
 		}
 		
 	}
