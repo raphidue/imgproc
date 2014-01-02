@@ -1,5 +1,5 @@
 var global_ID = null;
-var global_Threshold = null;
+var global_Threshold = 127;
 /************************Processing Buttons Action*****************************/
 $(function() {
 	// Initialisiert den Slider
@@ -267,7 +267,18 @@ $(function() {
 			
 				// warten bis Filteroperation angewendet wurde
 				setTimeout(function () { 
-					showBinaryHistogram("GET", "region/" + global_ID + ".png");		
+					$.ajax({
+						type: "GET",
+						url: "region/" + global_ID + ".png",
+						dataType: "json"
+					}).done(function(jsonData) {
+						$("#myLabel").modal();
+						if(jsonData.labels == 1) {
+							$("#myLabel-text").html(jsonData.labels + " region was detected.");
+						} else {
+							$("#myLabel-text").html(jsonData.labels + " regions were detected.");
+						}
+					});		
 				}, 1000);
 			
 				// refreshing image after use filter
