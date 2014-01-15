@@ -1,0 +1,46 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET     /                           controllers.Application.index()
+GET     /processing             	controllers.Application.processing()
+GET     /documentation              controllers.Application.documentation()
+GET     /about                      controllers.Application.about()
+GET     /contact                    controllers.Application.contact()
+POST   	/processing/:id	        	controllers.Image.upload(id: String)
+GET		/processing/:id				controllers.Image.showHist(id: String)
+POST	/smoothing					controllers.Image.smoothing()
+GET		/smoothing/:id				controllers.Image.showHist(id: String)
+POST	/median						controllers.Image.median()
+GET		/median/:id					controllers.Image.showHist(id: String)
+POST	/minimum					controllers.Image.minimum()
+GET		/minimum/:id				controllers.Image.showHist(id: String)
+POST	/maximum					controllers.Image.maximum()
+GET		/maximum/:id				controllers.Image.showHist(id: String)
+POST	/region						controllers.Image.region()
+GET		/region/:id					controllers.Image.showLabels(id: String)
+POST	/dilate						controllers.Image.dilate()
+GET		/dilate/:id					controllers.Image.showBinaryHist(id: String)
+POST	/erode						controllers.Image.erode()
+GET		/erode/:id					controllers.Image.showBinaryHist(id: String)
+POST	/toBinary					controllers.Image.toBinary()
+GET		/toBinary/:id				controllers.Image.showBinaryHist(id: String)
+POST	/difference					controllers.Image.smoothing()
+GET		/difference/:id				controllers.Image.showHist(id: String)
+POST	/free-config				controllers.Image.smoothing()
+GET		/free-config/:id			controllers.Image.showHist(id: String)
+POST	/weighted-median			controllers.Image.weightedMedian()
+GET		/weighted-median/:id		controllers.Image.showHist(id: String)
+
+#for contact form
+POST	/app_contact_sendEmail.html		controllers.Contact.sendEmail()
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+GET     /files/*file           		controllers.FileService.getFile(file: String)
+GET     /webjars/*file              controllers.WebJarAssets.at(file)
+
+
+
+

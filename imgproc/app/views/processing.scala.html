@@ -1,0 +1,192 @@
+@(scripts: Html)(navigation: Html)
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />	
+	<meta http-equiv="Pragma-directive" content="no-cache" />
+	<meta http-equiv="Cache-directive" content="no-cache" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>imgproc - Processing</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width">
+	<style>
+	body {
+		padding-top: 50px;
+	}
+	.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open .dropdown-toggle.btn-default {
+		background-color: #EBEBEB !important;
+		border-color: #ADADAD !important;
+		color: #2AB9CB !important;
+	}    
+	label {
+		font-weight: normal !important;
+	}
+	#footer {
+		width: 100%;
+		bottom: 0;
+		position: absolute;
+	}
+	#img-content {
+		margin-top: 30px;
+	}
+	#hist-content {
+		margin-top: 30px;
+	}
+	
+	canvas{
+		width: 100% !important;
+		max-width: 800px;
+		height: auto !important;
+	}
+	
+	.form-control {
+		padding: 0px 5px !important;
+	}
+	#slider-panel {
+		display: none;
+	}
+	#binary-notice {
+		display: none;
+	}
+	</style>
+	@scripts
+</head>
+<body>
+	@navigation
+	<div class="container">
+		<div class="row">
+			<div class="col-md-2">
+				<div class="btn-group-vertical proc-navi">
+					<form id="form_id" action="/processing/" method="POST" enctype="multipart/form-data">
+						<div style='height: 0px;width:0px; overflow:hidden;'>
+							<input id="upfile" type="file" name="picture">
+						</div>
+					</form>
+					<button class="btn btn-info" id="upImg" type="button" onclick="getFile()">
+						<span class="glyphicon glyphicon-upload"></span>
+						Upload Image
+					</button>
+					<button class="btn btn-info" id="saveImg" type="button" onclick="saveImage()">
+						<span class="glyphicon glyphicon-save"></span>
+						Save Image
+					</button>
+					<button class="btn btn-info active" id="showImg" type="button">
+						<span class="glyphicon glyphicon-signal"></span>
+						Show Histogram
+					</button>
+					<button type="button" id="apply-button" class="btn btn-info col-md-offset-5">
+						<span class="glyphicon glyphicon-repeat"></span> Apply</button>
+						<div style="margin-bottom: 20px;"></div>
+						<span class="label label-info">Grayscale Image operations</span>
+						<button class="btn btn-info proc-button" id="config-filter" type="button">Free configurable filter</button>
+						<button class="btn btn-info proc-button" id="glaett" type="button">Smoothing filter</button>
+						<button class="btn btn-info proc-button" id="diff" type="button">Difference filter</button>
+						<button class="btn btn-info proc-button" id="min" type="button">Minimum filter</button>
+						<button class="btn btn-info proc-button" id="max" type="button">Maximum filter</button>
+						<button class="btn btn-info proc-button" id="median" type="button">Median filter</button>
+						<button class="btn btn-info proc-button" id="gewMedian" type="button">Weighted median filter</button>
+						<button class="btn btn-info proc-button" id="toBinary" type="button">Convert to Binary image</button>
+					
+						<div style="margin-bottom: 20px;"></div>
+						<span class="label label-info">Binary Image operations</span>
+						<button class="btn btn-info proc-button" id="dilate" type="button">Dilate</button>
+						<button class="btn btn-info proc-button" id="erode" type="button">Erode</button>
+						<button class="btn btn-info proc-button" id="region" type="button">Region labeling</button>
+						<!--<button class="btn btn-default proc-button" id="harri" type="button">Harris Detector</button>-->
+					</div>
+				</div>
+				<div class="col-md-7">		
+					<div id="img-content">	
+					</div>
+					<span class="label label-default" id="binary-notice">
+						Please notice that we declare the logical-value 1 as foreground pixel (white) and the logical-value 0 as background pixel (black).
+					</span>
+				</div>
+				<div class="col-md-3">	
+					<div id="hist-content" style="display: none;">
+						<div class="panel panel-info">
+							<div class="panel-heading">Histogram</div>
+							<div class="panel-body">
+								<canvas id="canvas" height="" width=""></canvas>
+							</div>
+						</div>
+					</div>
+					<div id="slider-panel">
+						<div id="slider"></div>
+						<div id="slider-text"><p>Your Threshold has a value of <span id="slider-value"></span></p></div>
+					</div>
+					<div class="alert alert-danger hidden" id="matrix-error">
+						<b>Please enter values in matrix!</b> 
+					</div>
+					<div class="alert alert-danger hidden" id="binary-error">
+						<b>Please enter value 0 or value 1!</b>
+					</div>
+					<div id="matrix-content" class="" style="display: none; margin-top: 30px;">
+						<div class="panel panel-info">
+							<div class="panel-heading" id="filter-heading">Filter Matrix</div>
+							<div class="panel-body">
+								<form id="form_matrix" class="form-inline" role="form" style="margin-left: -15px;">
+									<div class="form-group">
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r1c1" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r1c2" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r1c3" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r2c1" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r2c2" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r2c3" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r3c1" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r3c2" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div>
+										<div class="col-xs-4">
+											<input type="text" class="form-control" id="r3c3" placeholder="0" value="0" onblur="validateMatrix(this)">
+										</div> 
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Modal -->
+				<div class="modal fade" id="myLabel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="myModalLabel">Success</h4>
+							</div>
+							<div class="modal-body" id="myLabel-text">
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-info" data-dismiss="modal">OK</button>
+							</div>
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+			</div> <!-- /row -->
+		</div>
+	</body>
+	</html>
