@@ -1,0 +1,183 @@
+void minimumFilter (Image im){
+	int w = im.getWidth();
+	int h = im.getHeight();
+
+
+	Image copy = copyImage(im);
+
+	// Filteroperation
+	int[] P = new int[9];
+
+	for (int v=1; v<=h; v++) {
+		for (int u=1; u<=w; u++) {
+
+			//fill the pixel vector P for filter position (u,v)
+			int k = 0;
+			for (int j=-1; j<=1; j++) {
+				for (int i=-1; i<=1; i++) {
+					P[k] = copy.getPixel(u+i, v+j)[0];
+					k++;
+				}
+			}
+			//sort the pixel vector and take the first element
+			Arrays.sort(P);
+			im.setSample(u-1,v-1, 0, P[0]);
+		}
+	}
+}
+
+void maximumFilter (Image im){
+	int w = im.getWidth();
+	int h = im.getHeight();
+
+
+	Image copy = copyImage(im);
+
+	// Filteroperation
+	int[] P = new int[9];
+
+	for (int v=1; v<=h; v++) {
+		for (int u=1; u<=w; u++) {
+
+			//fill the pixel vector P for filter position (u,v)
+			int k = 0;
+			for (int j=-1; j<=1; j++) {
+				for (int i=-1; i<=1; i++) {
+					P[k] = copy.getPixel(u+i, v+j)[0];
+					k++;
+				}
+			}
+			//sort the pixel vector and take the last element
+			Arrays.sort(P);
+			im.setSample(u-1,v-1, 0, P[8]);
+		}
+	}
+}
+
+void weightedMedian (Image im, int[][] matrix) {
+
+	int w = im.getWidth();
+	int h = im.getHeight();
+
+	Image copy = copyImage(im);
+
+	// Filteroperation
+	int[] P = new int[9];
+
+	for (int v=1; v<=h; v++) {
+		for (int u=1; u<=w; u++) {
+ 
+			//fill the pixel vector P for filter position (u,v)
+			int k = 0;
+			for (int j=-1; j<=1; j++) {
+				for (int i=-1; i<=1; i++) {
+					
+					//not forget to multiplicate with matrix
+					P[k] = copy.getPixel(u+i, v+j) * matrix[j+1][i+1];
+					k++;
+				}
+			}
+
+			//sort the pixel vector and take the center element
+			Arrays.sort(P);
+			im.setSample(u-1, v-1, 0, P[4]);
+		}
+	}
+}
+
+
+void getBinaryImage(Image im, int threshold) {
+
+	int w = im.getWidth();
+	int h = im.getHeight();
+	
+	Image copy = copyImage(im);
+
+	for (int v = 0; v < h; v++) {
+		for (int u = 0; u < w; u++) {
+			if(copy.getPixel(u, v) >= threshold) {
+				im.setSample(u, v, 0, 1);
+			} else {
+				im.setSample(u, v, 0, 0);
+			}
+		}
+	}
+
+	... //Image im can now be used
+}
+
+void dilate (BinaryImage im, int[][] matrix) {
+	int w = im.getWidth();
+	int h = im.getHeight();
+
+	int newValue;					
+	
+	BinaryImage copy = copyBinaryImage(im);
+		
+	for(int i = 1; i <= h; i++) {
+		for(int j = 1; j <= w; j++) {
+
+			newValue = 0;
+			
+			//Maximum Filter                
+			for(int k = -1; k <= 1; k++) {
+				for(int l = -1; l <= 1; l++) {
+					int filterVal = matrix[k+1][l+1];
+					if(filterVal == 1) {
+						filterVal = -255;
+					}
+					int bufferVal = copy.getPixel(j+l, i+k); 
+					bufferVal += filterVal;
+					
+					// check max
+					if (bufferVal > newValue) {
+						newValue = bufferVal;
+					}
+				}
+			}
+			im.setSample(j-1, i-1, 0, newValue);
+		}
+	}
+
+	... //Image im can now be used
+} 
+
+void erose (BinaryImage im, int[][] matrix) {
+	int w = im.getWidth();
+	int h = im.getHeight();
+
+	int newValue;					
+
+	BinaryImage copy = copyBinaryImage(im);
+		
+		
+	for(int i = 1; i <= h; i++) {
+		for(int j = 1; j <= w; j++) {
+
+			newValue = 255;
+			
+			// Minimum Filter                    
+			for(int k = -1; k <= 1; k++) {
+				for(int l = -1; l <= 1; l++) {
+					int filterVal = matrix[k+1][l+1];
+					if(filterVal == 1) {
+						filterVal = -255;
+					}
+					int bufferVal = copy.getPixel(j+l, i+k); 
+					bufferVal -= filterVal;
+					
+					// check min
+					if (bufferVal < newValue) {
+						newValue = bufferVal;
+					}
+				}
+			}
+			im.setSample(j-1, i-1, 0, newValue);
+		}
+	}
+
+	... //Image im can now be used
+}
+
+
+		

@@ -58,7 +58,13 @@
 							<a id="docGewMed" href="#gewmedianfilter">Weighted median filter</a> 
 						</li>
 						<li>
-							<a id="docMorph" href="#morphologischerfilter">Morphological filter</a> 
+							<a id="docBinary" href="#binary">Binary Conversion</a> 
+						</li>
+						<li>
+							<a id="docDilate" href="#dilate">Dilation</a> 
+						</li>
+						<li>
+							<a id="docErode" href="#erode">Erosion</a> 
 						</li>
 						<li>
 							<a id="docRegion" href="#regionalabeling">Region labeling</a> 
@@ -76,20 +82,20 @@
 					</p>
 					<div class="highlight">
 						<pre class="brush: java">
-							public void run(ImageProcessor ip) {
+							void histogram(Image im) {
 								int[] H = new int[256]; // histogram array
-								int w = ip.getWidth();
-								int h = ip.getHeight();
+								int width = im.getWidth();
+								int height = im.getHeight();
 
-								for (int v = 0; v < h; v++) {
-									for (int u = 0; u < w; u++) {
-										int i = ip.getPixel(u,v);
+								//iterate through Image and add single pixels to array
+								for (int v = 0; v < height; v++) {
+									for (int u = 0; u < width; u++) {
+										int i = im.getPixel(u,v);
 										H[i] = H[i] + 1;
 									}
 								}
 								... //histogram H[] can now be used
-							}
-						</pre>
+							}</pre>
 					</div>
 				</div>
 				<!-- Glättungsfilter = smoothing filter -->
@@ -97,21 +103,23 @@
 				<div class="bs-docs-section">
 					<h2>Smoothing/Difference filter</h2>
 					<p>
-						Text about smoothing filter
+						One of the most common algorithms is the "moving average", often used to try to capture important trends in repeated statistical surveys. In image processing and computer vision, smoothing ideas are used in scale space representations. The simplest smoothing algorithm is the "rectangular" or "unweighted sliding-average smooth". This method replaces each point in the signal with the average of "m" adjacent points, where "m" is a positive integer called the "smooth width". Usually m is an odd number. The triangular smooth is like the rectangular smooth except that it implements a weighted smoothing function.
 					</p>
 					<div class="bs-example"><p>Smoothing filter example</p></div>
 					<div class="highlight">
 						<pre class="brush: java">
-							public void run(ImageProcessor orig) {
-								int w = orig.getWidth();
-								int h = orig.getHeight();
+							void smoothingFilter(Image im) {
+								int w = im.getWidth();
+								int h = im.getHeight();
 								// 3 × 3 filter matrix
 								double[][] filter = {
 									{0.075, 0.125, 0.075},
 									{0.125, 0.200, 0.125},
 									{0.075, 0.125, 0.075}
 								};
-								ImageProcessor copy = orig.duplicate();
+
+								//make the copy of original image
+								Image copy = im.duplicate();
 
 								for (int v=1; v<=h-2; v++) {
 									for (int u=1; u<=w-2; u++) {
@@ -126,10 +134,11 @@
 											}
 										}
 										int q = (int) Math.round(sum);
-										orig.putPixel(u,v,q);
+										im.putPixel(u,v,q);
 									}
 								}
 							}
+							... //Image im can now be used
 						</pre>
 					</div>
 				</div>
@@ -142,37 +151,35 @@ A filter which looks minimum up from the filter region from the neighbouring pix
 					</p>
 					<div class="highlight">
 						<pre class="brush: java">
-							public class MinimumFilter extends WholeImageFilter {
-	
-								public MinimumFilter() {
-								}
-	
-								protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
-									int index = 0;
-									int[] outPixels = new int[width * height];
+void minimumFilter (Image im){
+	int w = im.getWidth();
+	int h = im.getHeight();
 
-									for (int y = 0; y < height; y++) {
-										for (int x = 0; x < width; x++) {
-											int pixel = 0xffffffff;
-											for (int dy = -1; dy <= 1; dy++) {
-												int iy = y+dy;
-												int ioffset;
-												if (0 <= iy && iy < height) {
-													ioffset = iy*width;
-													for (int dx = -1; dx <= 1; dx++) {
-														int ix = x+dx;
-														if (0 <= ix && ix < width) {
-															pixel = PixelUtils.combinePixels(pixel, inPixels[ioffset+ix], PixelUtils.MIN);
-														}
-													}
-												}
-											}
-											outPixels[index++] = pixel;
-										}
-									}
-									return outPixels;
-								}
-							}
+
+	Image copy = copyImage(im);
+
+	// Filteroperation
+	int[] P = new int[9];
+
+	for (int v=1; v<=h; v++) {
+		for (int u=1; u<=w; u++) {
+
+			//fill the pixel vector P for filter position (u,v)
+			int k = 0;
+			for (int j=-1; j<=1; j++) {
+				for (int i=-1; i<=1; i++) {
+					P[k] = copy.getPixel(u+i, v+j);
+					k++;
+				}
+			}
+			//sort the pixel vector and take the first element
+			Arrays.sort(P);
+			im.setSample(u-1,v-1, 0, P[0]);
+		}
+	}
+
+	... //Image im can now be used
+}
 						</pre>
 					</div>
 				</div>
@@ -185,42 +192,34 @@ A filter which looks maximum up from the filter region from the neighbouring pix
 					</p>
 					<div class="highlight">
 						<pre class="brush: java">
-							public class MaximumFilter extends WholeImageFilter {
+void maximumFilter (Image im){
+	int w = im.getWidth();
+	int h = im.getHeight();
 
-								public MaximumFilter() {
-								}
 
-								protected int[] filterPixels( int width, int height, int[] inPixels, Rectangle transformedSpace ) {
-									int index = 0;
-									int[] outPixels = new int[width * height];
+	Image copy = copyImage(im);
 
-									for (int y = 0; y < height; y++) {
-										for (int x = 0; x < width; x++) {
-											int pixel = 0xff000000;
-											for (int dy = -1; dy <= 1; dy++) {
-												int iy = y+dy;
-												int ioffset;
-												if (0 <= iy && iy < height) {
-													ioffset = iy*width;
-													for (int dx = -1; dx <= 1; dx++) {
-														int ix = x+dx;
-														if (0 <= ix && ix < width) {
-															pixel = PixelUtils.combinePixels(pixel, inPixels[ioffset+ix], PixelUtils.MAX);
-														}
-													}
-												}
-											}
-											outPixels[index++] = pixel;
-										}
-									}
-									return outPixels;
-								}
+	// Filteroperation
+	int[] P = new int[9];
 
-								public String toString() {
-									return "Blur/Maximum";
-								}
+	for (int v=1; v<=h; v++) {
+		for (int u=1; u<=w; u++) {
 
-							}
+			//fill the pixel vector P for filter position (u,v)
+			int k = 0;
+			for (int j=-1; j<=1; j++) {
+				for (int i=-1; i<=1; i++) {
+					P[k] = copy.getPixel(u+i, v+j);
+					k++;
+				}
+			}
+			//sort the pixel vector and take the last element
+			Arrays.sort(P);
+			im.setSample(u-1,v-1, 0, P[8]);
+		}
+	}
+	... //Image im can now be used
+}
 						</pre>
 					</div>
 				</div>
@@ -232,10 +231,13 @@ A filter which looks maximum up from the filter region from the neighbouring pix
 					In image processing, it is often desirable to be able to perform some kind of noise reduction on an image or signal. The median filter is a nonlinear digital filtering technique, often used to remove noise. Such noise reduction is a typical pre-processing step to improve the results of later processing (for example, edge detection on an image). Replaces each pixel by the median of the pixel values within the filter region R, the the middle value, if the consequence is sorted according to the size of their items.</p>
 					<div class="highlight">
 						<pre class="brush: java">
-							public void run(ImageProcessor orig) {
-								int w = orig.getWidth();
-								int h = orig.getHeight();
-								ImageProcessor copy = orig.duplicate();
+							void medianFilter(Image im) {
+
+								int w = im.getWidth();
+								int h = im.getHeight();
+
+								ImageProcessor copy = im.duplicate();
+
 								//vector to hold pixels from 3x3 neighborhood
 								int[] P = new int[9];
 
@@ -250,11 +252,13 @@ A filter which looks maximum up from the filter region from the neighbouring pix
 												k++;
 											}
 										}
-										//sort the pixel vector and take center element
+
+										//sort the pixel vector and take the center element
 										Arrays.sort(P);
-										orig.putPixel(u,v,P[4]);
+										im.putPixel(u,v,P[4]);
 									}
 								}
+								... //Image im can now be used
 							}
 						</pre>
 					</div>
@@ -266,28 +270,182 @@ A filter which looks maximum up from the filter region from the neighbouring pix
 					<p>
 Version of the median filter, with which individual positions have different weights within the filter region. Weights are specified on a weight matrix, afterwards the flow as also like a normal median filter.			</p>
 					<div class="highlight">
-						<pre>
-							<code class="html">
-								Weighted median filter pseudocode
-							</code>
+						<pre class="brush: java">
+void weightedMedian (Image im, int[][] matrix) {
+
+	int w = im.getWidth();
+	int h = im.getHeight();
+
+	Image copy = copyImage(im);
+
+	// Filteroperation
+	int[] P = new int[9];
+
+	for (int v=1; v<=h; v++) {
+		for (int u=1; u<=w; u++) {
+ 
+			//fill the pixel vector P for filter position (u,v)
+			int k = 0;
+			for (int j=-1; j<=1; j++) {
+				for (int i=-1; i<=1; i++) {
+					
+					//not forget to multiplicate with matrix
+					P[k] = copy.getPixel(u+i, v+j) * matrix[j+1][i+1];
+					k++;
+				}
+			}
+
+			//sort the pixel vector and take the center element
+			Arrays.sort(P);
+			im.setSample(u-1, v-1, 0, P[4]);
+		}
+	}
+	... //Image im can now be used
+}
 						</pre>
 					</div>
 				</div>
-				<!-- Morphologische Filter  -->
-				<div id="morphologischerfilter" class="space"></div>
+				
+				<!-- Regionalabeling  -->
+				<div id="binary" class="space"></div>
+
 				<div class="bs-docs-section">
-					<h2>Morphological filter</h2>
+					<h2>Binary Conversion</h2>
 					<p>
-Ursprünglich nur für Binärbilder gedacht, aber auch für Grauwert- und Farbbilder. Die Idee ist hier, kleinere Strukturen schrumpfen zu lassen, bis diese verschwunden sind und dann wieder wachsen zu lassen damit die größere Strukturen wieder annähernd vorhanden sind, aber die kleinere Strukturen aus dem Bild verschwunden sind.
+						A binary image is a digital image that has only two possible values for each pixel. Typically the two colors used for a binary image are black and white though any two colors can be used. The color used for the object(s) in the image is the foreground color while the rest of the image is the background color. In the document-scanning industry this is often referred to as "bi-tonal".
 					</p>
 					<div class="highlight">
-						<pre>
-							<code class="html">
-								Morphological filter pseudocode
-							</code>
+						<pre class="brush: java">
+void getBinaryImage(Image im, int threshold) {
+
+	int w = im.getWidth();
+	int h = im.getHeight();
+	
+	Image copy = copyImage(im);
+
+	for (int v = 0; v < h; v++) {
+		for (int u = 0; u < w; u++) {
+			if(copy.getPixel(u, v) >= threshold) {
+				im.setSample(u, v, 0, 1);
+			} else {
+				im.setSample(u, v, 0, 0);
+			}
+		}
+	}
+
+	... //Image im can now be used
+}
 						</pre>
 					</div>
 				</div>
+
+				<!-- Regionalabeling  -->
+				<div id="dilate" class="space"></div>
+
+				<div class="bs-docs-section">
+					<h2>Image Dilation</h2>
+					<p>
+						Dilation is one of the two basic operators in the area of mathematical morphology, the other being erosion. It is typically applied to binary images, but there are versions that work on grayscale images. The basic effect of the operator on a binary image is to gradually enlarge the boundaries of regions of foreground pixels (i.e. white pixels, typically). Thus areas of foreground pixels grow in size while holes within those regions become smaller.
+
+						Further information for Image Dilation can be found <a href="http://homepages.inf.ed.ac.uk/rbf/HIPR2/dilate.htm">here</a>. 
+
+					</p>
+					<div class="highlight">
+					<pre class="brush: java">
+
+void dilate (BinaryImage im, int[][] matrix) {
+	int w = im.getWidth();
+	int h = im.getHeight();
+
+	int newValue;					
+	
+	BinaryImage copy = copyBinaryImage(im);
+		
+	for(int i = 1; i <= h; i++) {
+		for(int j = 1; j <= w; j++) {
+
+			newValue = 0;
+			
+			//Maximum Filter                
+			for(int k = -1; k <= 1; k++) {
+				for(int l = -1; l <= 1; l++) {
+					int filterVal = matrix[k+1][l+1];
+					if(filterVal == 1) {
+						filterVal = -255;
+					}
+					int bufferVal = copy.getPixel(j+l, i+k); 
+					bufferVal += filterVal;
+					
+					// check max
+					if (bufferVal > newValue) {
+						newValue = bufferVal;
+					}
+				}
+			}
+			im.setSample(j-1, i-1, 0, newValue);
+		}
+	}
+
+	... //Image im can now be used
+} 
+					</pre>
+					</div>
+				</div>
+
+				<!-- Regionalabeling  -->
+				<div id="erode" class="space"></div>
+
+				<div class="bs-docs-section">
+					<h2>Image Erosion</h2>
+					<p>
+						Erosion is one of the two basic operators in the area of mathematical morphology, the other being dilation. It is typically applied to binary images, but there are versions that work on grayscale images. The basic effect of the operator on a binary image is to erode away the boundaries of regions of foreground pixels (i.e. white pixels, typically). Thus areas of foreground pixels shrink in size, and holes within those areas become larger.
+
+						
+						Further information for Image Erosion can be found <a href="http://homepages.inf.ed.ac.uk/rbf/HIPR2/erode.htm">here</a>.
+					</p>
+					<div class="highlight">
+					<pre class="brush: java">
+
+void erose (BinaryImage im, int[][] matrix) {
+	int w = im.getWidth();
+	int h = im.getHeight();
+
+	int newValue;					
+
+	BinaryImage copy = copyBinaryImage(im);
+		
+		
+	for(int i = 1; i <= h; i++) {
+		for(int j = 1; j <= w; j++) {
+
+			newValue = 255;
+			
+			// Minimum Filter                    
+			for(int k = -1; k <= 1; k++) {
+				for(int l = -1; l <= 1; l++) {
+					int filterVal = matrix[k+1][l+1];
+					if(filterVal == 1) {
+						filterVal = -255;
+					}
+					int bufferVal = copy.getPixel(j+l, i+k); 
+					bufferVal -= filterVal;
+					
+					// check min
+					if (bufferVal < newValue) {
+						newValue = bufferVal;
+					}
+				}
+			}
+			im.setSample(j-1, i-1, 0, newValue);
+		}
+	}
+
+	... //Image im can now be used
+}
+					</pre>
+					</div>
+				</div>
+
 				<!-- Regionalabeling  -->
 				<div id="regionalabeling" class="space"></div>
 				<div class="bs-docs-section">
