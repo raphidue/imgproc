@@ -268,7 +268,8 @@ void maximumFilter (Image im){
 				<div class="bs-docs-section">
 					<h2>Weighted median filter</h2>
 					<p>
-Version of the median filter, with which individual positions have different weights within the filter region. Weights are specified on a weight matrix, afterwards the flow as also like a normal median filter.			</p>
+Version of the median filter, with which individual positions have different weights within the filter region. Weights are specified on a weight matrix, afterwards the flow as also like a normal median filter.
+					</p>
 					<div class="highlight">
 						<pre class="brush: java">
 void weightedMedian (Image im, int[][] matrix) {
@@ -346,7 +347,7 @@ void getBinaryImage(Image im, int threshold) {
 					<h2>Image Dilation</h2>
 					<p>
 						Dilation is one of the two basic operators in the area of mathematical morphology, the other being erosion. It is typically applied to binary images, but there are versions that work on grayscale images. The basic effect of the operator on a binary image is to gradually enlarge the boundaries of regions of foreground pixels (i.e. white pixels, typically). Thus areas of foreground pixels grow in size while holes within those regions become smaller.
-
+						<br><br>
 						Further information for Image Dilation can be found <a href="http://homepages.inf.ed.ac.uk/rbf/HIPR2/dilate.htm">here</a>. 
 
 					</p>
@@ -365,7 +366,7 @@ void dilate (BinaryImage im, int[][] matrix) {
 		for(int j = 1; j <= w; j++) {
 
 			newValue = 0;
-			
+
 			//Maximum Filter                
 			for(int k = -1; k <= 1; k++) {
 				for(int l = -1; l <= 1; l++) {
@@ -400,7 +401,7 @@ void dilate (BinaryImage im, int[][] matrix) {
 					<p>
 						Erosion is one of the two basic operators in the area of mathematical morphology, the other being dilation. It is typically applied to binary images, but there are versions that work on grayscale images. The basic effect of the operator on a binary image is to erode away the boundaries of regions of foreground pixels (i.e. white pixels, typically). Thus areas of foreground pixels shrink in size, and holes within those areas become larger.
 
-						
+						<br><br>
 						Further information for Image Erosion can be found <a href="http://homepages.inf.ed.ac.uk/rbf/HIPR2/erode.htm">here</a>.
 					</p>
 					<div class="highlight">
