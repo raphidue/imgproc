@@ -59,6 +59,22 @@
 </head>
 <body>
 	@navigation
+	@if(request.host == "localhost:9000") {
+		<div class="container" style="margin-top: 30px;">
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2">
+					<div class="jumbotron">
+					  <h1>Sorry.</h1>
+					  <p>Due to the fact, that our application is hosted on heroku, it is unable to upload images to heroku. Because heroku is a free service to deploy Java Play Applications and heroku cant handle file uploads.</p>
+					  <p>All external storage services are also liable for costs. So that we decided at this time, to give you the opportunity to download a local version of imgproc. Pleas follow these steps:
+					  </p>
+					  <p><a class="btn btn-info btn-lg" role="button" href="http://typesafe.com/platform/getstarted" target="blank">Download typsafe activator</a>
+					  <a class="btn btn-info btn-lg" role="button" href="https://github.com/raphidue/imgproc" target="blank">Download imgproc</a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	} else {
 	<div class="container">
 		<div class="row">
 			<div class="col-md-2">
@@ -188,5 +204,6 @@
 				</div><!-- /.modal -->
 			</div> <!-- /row -->
 		</div>
+	}
 	</body>
 	</html>
