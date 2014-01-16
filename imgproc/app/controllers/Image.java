@@ -236,11 +236,10 @@ public class Image extends Controller {
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
 				
-				// Histogramm erstellen
+				
 				int w = im.getWidth();
 				int h = im.getHeight();
 
-				//-----------------to here
 				BufferedImage copy;
 				copy = copyImage(im, "CONTINUE");
 				// Filteroperation
@@ -391,7 +390,7 @@ public class Image extends Controller {
 								k++;
 							}
 						}
-						//sort the pixel vector and take 1 element
+						//sort the pixel vector and take the last element
 						Arrays.sort(P);
 						im.getRaster().setSample(u-1,v-1,0,P[8]);
 					}
