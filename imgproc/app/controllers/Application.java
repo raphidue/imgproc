@@ -3,7 +3,6 @@ package controllers;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html._include.*;
-import views.html.*;
 
 public class Application extends Controller {
     
@@ -13,7 +12,6 @@ public class Application extends Controller {
     
 	public static Result processing() {
 		return ok(views.html.processing.render(scripts.render(), navigation.render("processing")));
-
 	}
     
 	public static Result contact() {        
@@ -27,6 +25,5 @@ public class Application extends Controller {
 	public static Result documentation() {
 		return ok(views.html.documentation.render(scripts.render(), 
 			navigation.render("documentation"), footer.render()));
-	}
-	
+	}	
 }

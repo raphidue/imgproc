@@ -2,8 +2,6 @@ package controllers;
 
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html._include.*;
-import views.html.*;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 import java.io.File;
@@ -14,16 +12,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 //for buffered image
 import java.awt.Graphics2D; 
-import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 import java.util.Arrays;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 public class Image extends Controller {
 
@@ -35,13 +30,13 @@ public class Image extends Controller {
 				
 		// erstelle Ordner uploads wenn nicht existiert
 		if (!theDir.exists()) {
-			boolean result = theDir.mkdir();  
+			theDir.mkdir();  
 		}
 
 	  
 		if (picture != null) {
-			String fileName = picture.getFilename();
-			String contentType = picture.getContentType(); 
+			//String fileName = picture.getFilename();
+			//String contentType = picture.getContentType(); 
 			File file = picture.getFile();
 
 			String myUploadPath = path + "/" + id;
@@ -80,8 +75,6 @@ public class Image extends Controller {
 	
 	public static Result showLabels(String id) {
 		
-		String tmp;
-		Integer tmpInt;
 		ObjectNode respJSON = Json.newObject();
 		
 		try {
@@ -286,11 +279,7 @@ public class Image extends Controller {
 			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
-				
-				// Histogramm erstellen
-				int w = im.getWidth();
-				int h = im.getHeight();
-				
+						
 				if (im.getType() == 10) {
 					// Konvertierung in ein Binärbild
 					im = getBinaryImage(threshold, im);
@@ -491,7 +480,7 @@ public class Image extends Controller {
 											// all other neighbours register in collisionMap 
 										} else if(tmp != neighbours[i]) {
 											// PASS 2 - RESOLVE LABEL COLLISIONS
-											int key = -1;
+											//int key = -1;
 											if(tmp > neighbours[i]) {
 												collisionMap.put(new Integer(tmp), new Integer(neighbours[i]));
 												// use of transitivity characteristic
@@ -772,9 +761,11 @@ public class Image extends Controller {
 		// Kopie des Bildes sowie randbehandlung des bildes
 		BufferedImage copy = new BufferedImage(w+2, h+2, BufferedImage.TYPE_BYTE_GRAY);
 		
-		switch(mode) {
+		int intMode = modeStringToInt(mode);
+		
+		switch(intMode) {
 			// Kopiebild auf komplett auf Weiß setzen
-			case "WHITE":
+			case 0:
 			for (int v = 0; v < h+2; v++) {
 				for (int u = 0; u < w+2; u++) {
 					copy.getRaster().setSample(u, v, 0, 255);
@@ -788,7 +779,7 @@ public class Image extends Controller {
 			} 
 			break;
 			// Kopiebild auf komplett auf Schwarz setzen
-			case "BLACK":
+			case 1:
 			for (int v = 0; v < h+2; v++) {
 				for (int u = 0; u < w+2; u++) {
 					copy.getRaster().setSample(u, v, 0, 0);
@@ -802,7 +793,7 @@ public class Image extends Controller {
 			} 
 			break;
 			// Randpixel auf an die Ränder erweitern
-			case "CONTINUE":
+			case 2:
 			// Kopieren vom Bild in das vergrößerte Bild
 			for (int v = 0; v < h; v++) {
 				for (int u = 0; u < w; u++) {
@@ -853,9 +844,11 @@ public class Image extends Controller {
 		// Kopie des Bildes sowie randbehandlung des bildes
 		BufferedImage copy = new BufferedImage(w+2, h+2, BufferedImage.TYPE_BYTE_BINARY);
 		
-		switch(mode) {
+		int intMode = modeStringToInt(mode);
+		
+		switch(intMode) {
 			// Kopiebild auf komplett auf Weiß setzen
-			case "WHITE":
+			case 0:
 			for (int v = 0; v < h+2; v++) {
 				for (int u = 0; u < w+2; u++) {
 					copy.getRaster().setSample(u, v, 0, 1);
@@ -869,7 +862,7 @@ public class Image extends Controller {
 			} 
 			break;
 			// Kopiebild auf komplett auf Schwarz setzen
-			case "BLACK":
+			case 1:
 			for (int v = 0; v < h+2; v++) {
 				for (int u = 0; u < w+2; u++) {
 					copy.getRaster().setSample(u, v, 0, 0);
@@ -883,7 +876,7 @@ public class Image extends Controller {
 			} 
 			break;
 			// Randpixel auf an die Ränder erweitern
-			case "CONTINUE":
+			case 2:
 			// Kopieren vom Bild in das vergrößerte Bild
 			for (int v = 0; v < h; v++) {
 				for (int u = 0; u < w; u++) {
@@ -962,5 +955,20 @@ public class Image extends Controller {
 		if (pixel < 0)
 			pixel = 0; 
 		return pixel;
+	}
+	
+	private static int modeStringToInt (String mode) {
+		int intMode = -1;
+
+		if (mode.contains("WHITE")) {
+			intMode = 0;
+		} else if (mode.contains("BLACK")){
+			intMode = 1;
+
+		} else {
+			intMode = 2;
+		}
+
+		return intMode;
 	}
 }
