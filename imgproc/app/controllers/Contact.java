@@ -1,25 +1,14 @@
 package controllers;
 
-import play.*;
 import play.mvc.*;
-import play.mvc.Http.MultipartFormData;
-
-
-import java.sql.*;
-import java.util.*;
 import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.activation.*;
-import javax.sql.*;
 import play.libs.Json;
 import play.data.DynamicForm;
 import play.data.Form;
 
-import play.libs.Json;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import views.html.*;
-import views.html._include.*;
 
 public class Contact extends Controller {
 
