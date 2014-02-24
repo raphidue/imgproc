@@ -105,6 +105,7 @@ public class Image extends Controller {
 		} else {
 			double[][] filter;
 			String id = json.findPath("id").toString();
+			
 			filter = convertJsonToMatrix(json);
 			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
 			try {

@@ -337,7 +337,6 @@ $(function() {
 		$("#img-content").html('<img id="ajax-loader" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
 		// get File Name for Post to Image Controller
 		var filename = $('#upfile').val();
-		var ts = Math.round((new Date()).getTime() / 1000);
 		global_ID = "cactus";
 		$("#form_id").attr("action", "/processing/cactus.png");
 		$("#form_id").ajaxForm(
