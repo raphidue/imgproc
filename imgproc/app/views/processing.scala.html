@@ -59,30 +59,6 @@
 </head>
 <body>
 	@navigation
-	@if(request.host == "imgprog.herokuapp.com") {
-		<div class="container" style="margin-top: 30px;">
-			<div class="row">
-				<div class="col-md-8 col-md-offset-2">
-					<div class="jumbotron">
-					  <h1>Sorry.</h1>
-					  <p class="lead">Due to the fact, that our application is hosted on Heroku, it is unable to work with images online. The reason is, that Heroku forces to use Amazon S3 or another proprietary file storage, what is really unwanted.
-					  <br>
-					  So that we decided make our project half-online. Online you can have a look at filters pseudocode. To use the filters, you have to download a local version of imgproc.
-					  <br>
-					  <h2>To use offline version:</h2>
-					  Download and install typesafe activator, using the instructions on the page. 
-					  <br>
-					  <a class="btn btn-info btn-lg" role="button" href="http://typesafe.com/platform/getstarted" target="blank">Download typesafe activator</a>
-					  <br>
-					  Download source Code of imgproc from GitHub (or simply clone it), unzip and import into typesave activator.
-					  <br>
-					  <a class="btn btn-info btn-lg" role="button" href="https://github.com/raphidue/imgproc" target="blank">Download imgproc</a>
-					  </p>
-					</div>
-				</div>
-			</div>
-		</div>
-	} else {
 	<div class="container">
 		<div class="row">
 			<div class="col-md-2">
@@ -94,7 +70,7 @@
 					</form>
 					<button class="btn btn-info" id="upImg" type="button" onclick="getFile()">
 						<span class="glyphicon glyphicon-upload"></span>
-						Upload Image
+						Choose Image
 					</button>
 					<button class="btn btn-info" id="saveImg" type="button" onclick="saveImage()">
 						<span class="glyphicon glyphicon-save"></span>
@@ -212,6 +188,5 @@
 				</div><!-- /.modal -->
 			</div> <!-- /row -->
 		</div>
-	}
 	</body>
 	</html>

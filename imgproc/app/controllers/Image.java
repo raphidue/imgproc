@@ -33,14 +33,7 @@ public class Image extends Controller {
 			theDir.mkdir();  
 		}
 
-	  
-		if (picture != null) {
-			//String fileName = picture.getFilename();
-			//String contentType = picture.getContentType(); 
-			File file = picture.getFile();
-
-			String myUploadPath = path + "/" + id;
-			file.renameTo(new File(myUploadPath));			
+			String myUploadPath = path + "/cactus.png";
 			
 			try {
 				// Bild einlesen
@@ -53,16 +46,9 @@ public class Image extends Controller {
 				// Bild rendern
 				g2d.drawImage(input,0,0,null);
 				
-				// das resultierende Bild Speichern
-				ImageIO.write(im,"PNG",new File(myUploadPath));
-				
 			} catch(IOException ioe) {
 			}			
 			return ok(views.html.image.render(id));
-		} else {
-			flash("error", "Missing file");
-			return redirect(routes.Application.index());    
-		}
 	}
 	
 	public static Result showHist(String id) {
