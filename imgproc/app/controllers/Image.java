@@ -409,6 +409,7 @@ public class Image extends Controller {
 			try {
 				BufferedImage im = ImageIO.read(new File(uploadPath));
 				
+				// Falls kein Binärbild				
 				if (im.getType() == 10) {
 					// Konvertierung in ein Binärbild
 					im = getBinaryImage(127, im);
@@ -421,14 +422,28 @@ public class Image extends Controller {
 				int label;
 				int foregroundPix;
 				
+				// Randerweiterung
+				BufferedImage processing;
+				processing = copyBinaryImage(im, "CONTINUE");	
+				
 				BufferedImage copy;
-				copy = copyImage(im, "CONTINUE");		
+				// Erzeugung eines Bildes für die Verarbeitung
+				copy = new BufferedImage(processing.getWidth(),processing.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+				
+				// Kopiere Intensitätswerte in Grauwertbild
+				for(int y = 0; y < processing.getHeight(); y++) {
+					for(int x = 0; x < processing.getWidth(); x++) {
+						copy.getRaster().setSample(x,y,0,processing.getRaster().getPixel(x,y,(int[]) null)[0]);
+					}
+				}
 				
 				//PASS 1 - ASSIGN INITIAL LABELS
 				label = 2;
 				foregroundPix = 0;
+				
 				for(int y = 1; y <= h; y++) {
 					for(int x = 1; x <= w; x++) {
+						
 						// new labelpixel reached
 						if(copy.getRaster().getPixel(x, y, (int[]) null)[0] == 1) {
 							// *************** check Neighbours ***********************
@@ -460,7 +475,7 @@ public class Image extends Controller {
 								// exactly one of the neighbours has a label value
 							} else if(foregroundPix == 1) {
 								for(int i = 0; i < 4; i++) {
-									// select the first value which appears in map
+									// select the first value which appears in array
 									if(neighbours[i] != 0) {
 										copy.getRaster().setSample(x,y,0,neighbours[i]);
 										break;
@@ -480,8 +495,8 @@ public class Image extends Controller {
 											// all other neighbours register in collisionMap 
 										} else if(tmp != neighbours[i]) {
 											// PASS 2 - RESOLVE LABEL COLLISIONS
-											//int key = -1;
 											if(tmp > neighbours[i]) {
+												// Registriere Kollision
 												collisionMap.put(new Integer(tmp), new Integer(neighbours[i]));
 												// use of transitivity characteristic
 												for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
@@ -504,7 +519,8 @@ public class Image extends Controller {
 							}
 						}
 					}
-				}  
+				} 					
+				
 			    // PASS 3 - RELABEL THE IMAGE
 			    // copy to output image
 			    for(int y = 1; y <= h; y++) {
@@ -516,6 +532,7 @@ public class Image extends Controller {
 			            }
 			        }
 			    }
+				
 				BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
 				int max = 0;
 			    for(int y = 1; y <= h; y++) {
@@ -526,6 +543,7 @@ public class Image extends Controller {
 								
 				ImageIO.write(out,"PNG",new File(uploadPath)); 
 				respJSON.put("labels", max-1);
+				
 			} catch(IOException ioe) {
 				respJSON.put("error", "Error on processing region labeling...");
 			}
