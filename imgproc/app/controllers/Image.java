@@ -33,7 +33,14 @@ public class Image extends Controller {
 			theDir.mkdir();  
 		}
 
-			String myUploadPath = path + "/cactus.png";
+	  
+		if (picture != null) {
+			//String fileName = picture.getFilename();
+			//String contentType = picture.getContentType(); 
+			File file = picture.getFile();
+
+			String myUploadPath = path + "/" + id;
+			file.renameTo(new File(myUploadPath));			
 			
 			try {
 				// Bild einlesen
@@ -46,9 +53,16 @@ public class Image extends Controller {
 				// Bild rendern
 				g2d.drawImage(input,0,0,null);
 				
+				// das resultierende Bild Speichern
+				ImageIO.write(im,"PNG",new File(myUploadPath));
+				
 			} catch(IOException ioe) {
 			}			
 			return ok(views.html.image.render(id));
+		} else {
+			flash("error", "Missing file");
+			return redirect(routes.Application.index());    
+		}
 	}
 	
 	public static Result showHist(String id) {
@@ -105,7 +119,6 @@ public class Image extends Controller {
 		} else {
 			double[][] filter;
 			String id = json.findPath("id").toString();
-			
 			filter = convertJsonToMatrix(json);
 			String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
 			try {
@@ -426,7 +439,6 @@ public class Image extends Controller {
 				
 				//PASS 1 - ASSIGN INITIAL LABELS
 				label = 2;
-				foregroundPix = 0;
 				
 				for(int y = 1; y <= h; y++) {
 					for(int x = 1; x <= w; x++) {
@@ -434,6 +446,8 @@ public class Image extends Controller {
 						// new labelpixel reached
 						if(copy.getRaster().getPixel(x, y, (int[]) null)[0] == 1) {
 							// *************** check Neighbours ***********************
+							foregroundPix = 0;
+							
 							// check top pixel
 							if(copy.getRaster().getPixel(x, y-1, (int[]) null)[0] > 1) {
 								foregroundPix++;
@@ -459,7 +473,7 @@ public class Image extends Controller {
 							if(foregroundPix == 0) {
 								copy.getRaster().setSample(x,y,0,label);
 								label++;
-								// exactly one of the neighbours has a label value
+								// exactly one of the neighbours has a label value, no conflict
 							} else if(foregroundPix == 1) {
 								for(int i = 0; i < 4; i++) {
 									// select the first value which appears in array
@@ -506,20 +520,26 @@ public class Image extends Controller {
 							}
 						}
 					}
-				} 					
+				}
+				ImageIO.write(copy,"PNG",new File(Play.application().path().getAbsolutePath() + "/public/uploads/before.png")); 
+																					
+				// PASS 2 – RESOLVE LABEL COLLISIONS
+				for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
+					System.out.println(entry.getKey() + "," + entry.getValue());
+				}
 				
 			    // PASS 3 - RELABEL THE IMAGE
 			    // copy to output image
+				for(int z = 1; z < 20; z++) {
 			    for(int y = 1; y <= h; y++) {
 			        for(int x = 1; x <= w; x++) {
-						// Kollisionen lösen
 			            if(collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]) != null) {
 			            	//element found;
 							copy.getRaster().setSample(x, y, 0, collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]));
 			            }
 			        }
 			    }
-				
+			}
 				BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
 				int max = 0;
 			    for(int y = 1; y <= h; y++) {
@@ -530,6 +550,8 @@ public class Image extends Controller {
 								
 				ImageIO.write(out,"PNG",new File(uploadPath)); 
 				respJSON.put("labels", max-1);
+				
+				ImageIO.write(copy,"PNG",new File(Play.application().path().getAbsolutePath() + "/public/uploads/end.png")); 
 				
 			} catch(IOException ioe) {
 				respJSON.put("error", "Error on processing region labeling...");

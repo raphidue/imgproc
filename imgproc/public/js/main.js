@@ -337,13 +337,14 @@ $(function() {
 		$("#img-content").html('<img id="ajax-loader" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
 		// get File Name for Post to Image Controller
 		var filename = $('#upfile').val();
-		global_ID = "cactus";
-		$("#form_id").attr("action", "/processing/cactus.png");
+		var ts = Math.round((new Date()).getTime() / 1000);
+		global_ID = ts;
+		$("#form_id").attr("action", "/processing/" + ts + ".png");
 		$("#form_id").ajaxForm(
 			{
 				target: '#img-content',
 				success: function() {
-					showHistogram("GET", "processing/cactus.png");
+					showHistogram("GET", "processing/" + ts+ ".png");
 				}
 			}).submit();
 		});
