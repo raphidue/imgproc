@@ -447,6 +447,10 @@ public class Image extends Controller {
 						if(copy.getRaster().getPixel(x, y, (int[]) null)[0] == 1) {
 							// *************** check Neighbours ***********************
 							foregroundPix = 0;
+							neighbours[0] = 0;
+							neighbours[1] = 0;
+							neighbours[2] = 0;
+							neighbours[3] = 0;
 							
 							// check top pixel
 							if(copy.getRaster().getPixel(x, y-1, (int[]) null)[0] > 1) {
