@@ -20,6 +20,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
+import java.util.List;
+import java.util.LinkedList;
+import collision.*;
 
 public class Image extends Controller {
 
@@ -414,7 +417,8 @@ public class Image extends Controller {
 					im = getBinaryImage(127, im);
 				}
 				
-				Map<Integer,Integer> collisionMap = new HashMap<Integer, Integer>();
+				Map<Collision, Collision> collisionMap = new HashMap<Collision, Collision>();
+				
 				int w = im.getWidth();
 				int h = im.getHeight();
 				int[] neighbours = new int[4];
@@ -498,52 +502,61 @@ public class Image extends Controller {
 											firstEntry = false;
 											// all other neighbours register in collisionMap 
 										} else if(tmp != neighbours[i]) {
-											System.out.println("tmp:" + tmp + ", neighbour:" + neighbours[i]);
-											if(tmp > neighbours[i]) {
-												// register collision
-												collisionMap.put(new Integer(tmp), new Integer(neighbours[i]));
-												// use of transitivity characteristic
-												for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
-													if (entry.getValue() == tmp) {
-														collisionMap.put(new Integer(entry.getKey()), new Integer(neighbours[i]));
-														System.out.println("value==tmp -->put:" + entry.getKey() + "," + neighbours[i]);
-													}
-												}
-											} else {
-												collisionMap.put(new Integer(neighbours[i]),new Integer(tmp));
-												
-												// use of transitivity characteristic
-												for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
-													if (entry.getValue() == neighbours[i]) {
-														collisionMap.put(new Integer(entry.getKey()), new Integer(tmp));
-														System.out.println("value==neighbours -->put:" + entry.getKey() + "," + tmp);
-
-													}
-												}
-											}
+											
+											// register collissions
+											Collision c;
+											
+											if(tmp > neighbours[i]) 
+												c = new Collision(neighbours[i], tmp);
+											else
+												c = new Collision(tmp, neighbours[i]);
+														
+											if (!collisionMap.containsKey(c))
+												collisionMap.put(c, c);
 										}
 									}
 								}
 							}
 						}
 					}
-				}
-				System.out.println("collisionMap:" + collisionMap);
+				}				
 				ImageIO.write(copy,"PNG",new File(Play.application().path().getAbsolutePath() + "/public/uploads/before.png")); 
 				
-				// PASS 3 - RELABEL THE IMAGE
-				// copy to output image
-				// ATTENTION: Not efficient algorithm, use resolve Labels(transitivity) instead of z-loop
-				for(int z = 1; z < collisionMap.size(); z++) {
-					for(int y = 1; y <= h; y++) {
-						for(int x = 1; x <= w; x++) {
-							if(collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]) != null) {
-								//element found;
-								copy.getRaster().setSample(x, y, 0, collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]));
-							}
+				// PASS 2 - RESOLVE LABEL COLLISIONS
+				// The table setNumber[i] indicates to which set the element i belongs:
+				// k == setNumber[e] means that e is in set k
+				int[] setNumber = new int[label];
+
+				// Initially, we assign a separate set to each element e:
+				for (int e = 0; e < label; e++) {
+					setNumber[e] = e;
+				}
+
+				// Inspect all collissions c=(a,b) one by one [note that a<b]
+				for (Collision c : collisionMap.keySet()) {
+					int A = setNumber[c.a]; // element a is currently in set A
+					int B = setNumber[c.b]; // element b is currently in set B
+					// Merge sets A and B (unless they are the same) by
+					// moving all elements of set B into set A
+					if (A != B) {
+						for (int i = 0; i < label; i++) {
+							if (setNumber[i] == B)
+								setNumber[i] = A;
 						}
 					}
 				}
+				
+				// PASS 3 - RELABEL THE IMAGE
+				// copy to output image
+					for(int y = 1; y <= h; y++) {
+						for(int x = 1; x <= w; x++) {
+							if(setNumber[copy.getRaster().getPixel(x, y, (int[]) null)[0]] != 0) {
+								//element found;
+								copy.getRaster().setSample(x, y, 0, setNumber[copy.getRaster().getPixel(x, y, (int[]) null)[0]]);
+							}
+						}
+					}
+				
 				
 				// Create Output-image
 				BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
@@ -556,7 +569,7 @@ public class Image extends Controller {
 				
 				respJSON.put("success", "Success on processing region labeling...");
 				ImageIO.write(copy,"PNG",new File(Play.application().path().getAbsolutePath() + "/public/uploads/end.png")); 
-				
+					
 			} catch(IOException ioe) {
 				respJSON.put("error", "Error on processing region labeling...");
 			}
