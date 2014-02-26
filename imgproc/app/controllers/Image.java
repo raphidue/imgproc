@@ -19,6 +19,10 @@ import java.util.Arrays;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.List;
+import java.util.LinkedList;
+import collision.*;
 
 public class Image extends Controller {
 
@@ -78,26 +82,24 @@ public class Image extends Controller {
 		ObjectNode respJSON = Json.newObject();
 		
 		try {
-			// Bild einlesen
+			// read image
 			BufferedImage im = ImageIO.read(new File(Play.application().path().getAbsolutePath() + "/public/uploads/" + id));
 		
-			// Histogramm erstellen
+			// create histogram
 			int w = im.getWidth();
 			int h = im.getHeight();			
-			int max = 0;
+			HashSet<Integer> distinct = new HashSet<Integer>();
 			
 			for (int v = 0; v < h; v++) {
 				for (int u = 0; u < w; u++) {
-					if(im.getRaster().getPixel(u, v, (int[]) null)[0] > max) {
-						max = im.getRaster().getPixel(u, v, (int[]) null)[0]; 							
-					}				
+					distinct.add(im.getRaster().getPixel(u, v, (int[]) null)[0]); 										
 				}
-			}
-			
-			respJSON.put("labels", max-1);
+			}			
+			//-1 because of the backgroundpixel (0)
+			respJSON.put("labels", distinct.size()-1);
 			
 		} catch(IOException ioe) {
-			respJSON.put("error", "Error on creating histogram...");
+			respJSON.put("error", "Error on showLabels...");
 		}
 		return ok(respJSON);
 	}
@@ -415,7 +417,8 @@ public class Image extends Controller {
 					im = getBinaryImage(127, im);
 				}
 				
-				Map<Integer,Integer> collisionMap = new HashMap<Integer, Integer>();
+				Map<Collision, Collision> collisionMap = new HashMap<Collision, Collision>();
+				
 				int w = im.getWidth();
 				int h = im.getHeight();
 				int[] neighbours = new int[4];
@@ -439,7 +442,6 @@ public class Image extends Controller {
 				
 				//PASS 1 - ASSIGN INITIAL LABELS
 				label = 2;
-				foregroundPix = 0;
 				
 				for(int y = 1; y <= h; y++) {
 					for(int x = 1; x <= w; x++) {
@@ -447,6 +449,12 @@ public class Image extends Controller {
 						// new labelpixel reached
 						if(copy.getRaster().getPixel(x, y, (int[]) null)[0] == 1) {
 							// *************** check Neighbours ***********************
+							foregroundPix = 0;
+							neighbours[0] = 0;
+							neighbours[1] = 0;
+							neighbours[2] = 0;
+							neighbours[3] = 0;
+							
 							// check top pixel
 							if(copy.getRaster().getPixel(x, y-1, (int[]) null)[0] > 1) {
 								foregroundPix++;
@@ -472,7 +480,7 @@ public class Image extends Controller {
 							if(foregroundPix == 0) {
 								copy.getRaster().setSample(x,y,0,label);
 								label++;
-								// exactly one of the neighbours has a label value
+								// exactly one of the neighbours has a label value, no conflict
 							} else if(foregroundPix == 1) {
 								for(int i = 0; i < 4; i++) {
 									// select the first value which appears in array
@@ -494,56 +502,74 @@ public class Image extends Controller {
 											firstEntry = false;
 											// all other neighbours register in collisionMap 
 										} else if(tmp != neighbours[i]) {
-											// PASS 2 - RESOLVE LABEL COLLISIONS
-											if(tmp > neighbours[i]) {
-												// Registriere Kollision
-												collisionMap.put(new Integer(tmp), new Integer(neighbours[i]));
-												// use of transitivity characteristic
-												for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
-													if (entry.getValue() == tmp) {
-														collisionMap.put(new Integer(entry.getKey()), new Integer(neighbours[i]));
-													}
-												}
-											} else {
-												collisionMap.put(new Integer(neighbours[i]),new Integer(tmp));
-												// use of transitivity characteristic
-												for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
-													if (entry.getValue() == neighbours[i]) {
-														collisionMap.put(new Integer(entry.getKey()), new Integer(tmp));
-													}
-												}
-											}
+											
+											// register collissions
+											Collision c;
+											
+											if(tmp > neighbours[i]) 
+												c = new Collision(neighbours[i], tmp);
+											else
+												c = new Collision(tmp, neighbours[i]);
+														
+											if (!collisionMap.containsKey(c))
+												collisionMap.put(c, c);
 										}
 									}
 								}
 							}
 						}
 					}
-				} 					
+				}				
+				ImageIO.write(copy,"PNG",new File(Play.application().path().getAbsolutePath() + "/public/uploads/before.png")); 
 				
-			    // PASS 3 - RELABEL THE IMAGE
-			    // copy to output image
-			    for(int y = 1; y <= h; y++) {
-			        for(int x = 1; x <= w; x++) {
-						// Kollisionen lösen
-			            if(collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]) != null) {
-			            	//element found;
-							copy.getRaster().setSample(x, y, 0, collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]));
-			            }
-			        }
-			    }
-				
-				BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-				int max = 0;
-			    for(int y = 1; y <= h; y++) {
-			        for(int x = 1; x <= w; x++) {
-						out.getRaster().setSample(x-1, y-1, 0, copy.getRaster().getPixel(x, y, (int[]) null)[0]);
+				// PASS 2 - RESOLVE LABEL COLLISIONS
+				// The table setNumber[i] indicates to which set the element i belongs:
+				// k == setNumber[e] means that e is in set k
+				int[] setNumber = new int[label];
+
+				// Initially, we assign a separate set to each element e:
+				for (int e = 0; e < label; e++) {
+					setNumber[e] = e;
+				}
+
+				// Inspect all collissions c=(a,b) one by one [note that a<b]
+				for (Collision c : collisionMap.keySet()) {
+					int A = setNumber[c.a]; // element a is currently in set A
+					int B = setNumber[c.b]; // element b is currently in set B
+					// Merge sets A and B (unless they are the same) by
+					// moving all elements of set B into set A
+					if (A != B) {
+						for (int i = 0; i < label; i++) {
+							if (setNumber[i] == B)
+								setNumber[i] = A;
+						}
 					}
 				}
-								
-				ImageIO.write(out,"PNG",new File(uploadPath)); 
-				respJSON.put("labels", max-1);
 				
+				// PASS 3 - RELABEL THE IMAGE
+				// copy to output image
+					for(int y = 1; y <= h; y++) {
+						for(int x = 1; x <= w; x++) {
+							if(setNumber[copy.getRaster().getPixel(x, y, (int[]) null)[0]] != 0) {
+								//element found;
+								copy.getRaster().setSample(x, y, 0, setNumber[copy.getRaster().getPixel(x, y, (int[]) null)[0]]);
+							}
+						}
+					}
+				
+				
+				// Create Output-image
+				BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+				for(int y = 1; y <= h; y++) {
+					for(int x = 1; x <= w; x++) {
+						out.getRaster().setSample(x-1, y-1, 0, copy.getRaster().getPixel(x, y, (int[]) null)[0]);
+					}
+				}				
+				ImageIO.write(out,"PNG",new File(uploadPath)); 
+				
+				respJSON.put("success", "Success on processing region labeling...");
+				ImageIO.write(copy,"PNG",new File(Play.application().path().getAbsolutePath() + "/public/uploads/end.png")); 
+					
 			} catch(IOException ioe) {
 				respJSON.put("error", "Error on processing region labeling...");
 			}
