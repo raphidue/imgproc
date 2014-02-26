@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.HashSet;
 
 public class Image extends Controller {
 
@@ -78,26 +79,24 @@ public class Image extends Controller {
 		ObjectNode respJSON = Json.newObject();
 		
 		try {
-			// Bild einlesen
+			// read image
 			BufferedImage im = ImageIO.read(new File(Play.application().path().getAbsolutePath() + "/public/uploads/" + id));
 		
-			// Histogramm erstellen
+			// create histogram
 			int w = im.getWidth();
 			int h = im.getHeight();			
-			int max = 0;
+			HashSet<Integer> distinct = new HashSet<Integer>();
 			
 			for (int v = 0; v < h; v++) {
 				for (int u = 0; u < w; u++) {
-					if(im.getRaster().getPixel(u, v, (int[]) null)[0] > max) {
-						max = im.getRaster().getPixel(u, v, (int[]) null)[0]; 							
-					}				
+					distinct.add(im.getRaster().getPixel(u, v, (int[]) null)[0]); 										
 				}
-			}
-			
-			respJSON.put("labels", max-1);
+			}			
+			//-1 because of the backgroundpixel (0)
+			respJSON.put("labels", distinct.size()-1);
 			
 		} catch(IOException ioe) {
-			respJSON.put("error", "Error on creating histogram...");
+			respJSON.put("error", "Error on showLabels...");
 		}
 		return ok(respJSON);
 	}
@@ -499,22 +498,26 @@ public class Image extends Controller {
 											firstEntry = false;
 											// all other neighbours register in collisionMap 
 										} else if(tmp != neighbours[i]) {
-											// PASS 2 - RESOLVE LABEL COLLISIONS
+											System.out.println("tmp:" + tmp + ", neighbour:" + neighbours[i]);
 											if(tmp > neighbours[i]) {
-												// Registriere Kollision
+												// register collision
 												collisionMap.put(new Integer(tmp), new Integer(neighbours[i]));
 												// use of transitivity characteristic
 												for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
 													if (entry.getValue() == tmp) {
 														collisionMap.put(new Integer(entry.getKey()), new Integer(neighbours[i]));
+														System.out.println("value==tmp -->put:" + entry.getKey() + "," + neighbours[i]);
 													}
 												}
 											} else {
 												collisionMap.put(new Integer(neighbours[i]),new Integer(tmp));
+												
 												// use of transitivity characteristic
 												for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
 													if (entry.getValue() == neighbours[i]) {
 														collisionMap.put(new Integer(entry.getKey()), new Integer(tmp));
+														System.out.println("value==neighbours -->put:" + entry.getKey() + "," + tmp);
+
 													}
 												}
 											}
@@ -525,36 +528,33 @@ public class Image extends Controller {
 						}
 					}
 				}
+				System.out.println("collisionMap:" + collisionMap);
 				ImageIO.write(copy,"PNG",new File(Play.application().path().getAbsolutePath() + "/public/uploads/before.png")); 
-																					
-				// PASS 2 – RESOLVE LABEL COLLISIONS
-				for (Map.Entry<Integer, Integer> entry : collisionMap.entrySet()) {
-					System.out.println(entry.getKey() + "," + entry.getValue());
-				}
 				
-			    // PASS 3 - RELABEL THE IMAGE
-			    // copy to output image
-				for(int z = 1; z < 20; z++) {
-			    for(int y = 1; y <= h; y++) {
-			        for(int x = 1; x <= w; x++) {
-			            if(collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]) != null) {
-			            	//element found;
-							copy.getRaster().setSample(x, y, 0, collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]));
-			            }
-			        }
-			    }
-			}
-				BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
-				int max = 0;
-			    for(int y = 1; y <= h; y++) {
-			        for(int x = 1; x <= w; x++) {
-						out.getRaster().setSample(x-1, y-1, 0, copy.getRaster().getPixel(x, y, (int[]) null)[0]);
+				// PASS 3 - RELABEL THE IMAGE
+				// copy to output image
+				// ATTENTION: Not efficient algorithm, use resolve Labels(transitivity) instead of z-loop
+				for(int z = 1; z < collisionMap.size(); z++) {
+					for(int y = 1; y <= h; y++) {
+						for(int x = 1; x <= w; x++) {
+							if(collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]) != null) {
+								//element found;
+								copy.getRaster().setSample(x, y, 0, collisionMap.get(copy.getRaster().getPixel(x, y, (int[]) null)[0]));
+							}
+						}
 					}
 				}
-								
-				ImageIO.write(out,"PNG",new File(uploadPath)); 
-				respJSON.put("labels", max-1);
 				
+				// Create Output-image
+				BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+				for(int y = 1; y <= h; y++) {
+					for(int x = 1; x <= w; x++) {
+						out.getRaster().setSample(x-1, y-1, 0, copy.getRaster().getPixel(x, y, (int[]) null)[0]);
+					}
+				}				
+				ImageIO.write(out,"PNG",new File(uploadPath)); 
+				
+				respJSON.put("success", "Success on processing region labeling...");
 				ImageIO.write(copy,"PNG",new File(Play.application().path().getAbsolutePath() + "/public/uploads/end.png")); 
 				
 			} catch(IOException ioe) {
