@@ -556,9 +556,6 @@ public class Image extends Controller {
 							}
 						}
 					}
-				
-				
-				// Create Output-image
 				BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
 				for(int y = 1; y <= h; y++) {
 					for(int x = 1; x <= w; x++) {
