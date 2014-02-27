@@ -1,5 +1,6 @@
 package collision;
 
+// collision class to represent a collision of two label values
 public class Collision {
 	public int a, b;
 
