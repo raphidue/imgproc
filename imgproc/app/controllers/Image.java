@@ -21,13 +21,14 @@ import java.util.*;
 import collision.*;
 
 public class Image extends Controller {
+    // constant upload path
+    public static final String PATH = Play.application().path().getAbsolutePath() + "/public/uploads";
 
     // upload image
     public static Result upload(String id) {
         MultipartFormData body = request().body().asMultipartFormData();
         FilePart picture = body.getFile("picture");
-        String path = Play.application().path().getAbsolutePath() + "/public/uploads";
-        File theDir = new File(path);
+        File theDir = new File(PATH);
 
         // create directory if not exists
         if (!theDir.exists()) {
@@ -38,7 +39,7 @@ public class Image extends Controller {
         if (picture != null) {
             File file = picture.getFile();
 
-            String myUploadPath = path + "/" + id;
+            String myUploadPath = PATH + "/" + id;
             file.renameTo(new File(myUploadPath));
 
             try {
@@ -83,7 +84,7 @@ public class Image extends Controller {
 
         try {
             // read image
-            BufferedImage im = ImageIO.read(new File(Play.application().path().getAbsolutePath() + "/public/uploads/" + id));
+            BufferedImage im = ImageIO.read(new File(PATH + "/" + id));
 
             // create histogram
             int w = im.getWidth();
@@ -131,7 +132,7 @@ public class Image extends Controller {
 
             // convert filter-json to filter matrix
             filter = convertJsonToMatrix(json);
-            String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+            String uploadPath = PATH + "/" + id + ".png";
 
             try {
                 BufferedImage im = ImageIO.read(new File(uploadPath));
@@ -187,7 +188,7 @@ public class Image extends Controller {
             return badRequest("Expecting Json data in median-filter...");
         } else {
             String id = json.findPath("id").toString();
-            String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+            String uploadPath = PATH + "/" + id + ".png";
 
             try {
                 BufferedImage im = ImageIO.read(new File(uploadPath));
@@ -243,7 +244,7 @@ public class Image extends Controller {
             return badRequest("Expecting Json data in weighted median-filter...");
         } else {
             String id = json.findPath("id").toString();
-            String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+            String uploadPath = PATH + "/" + id + ".png";
 
             try {
                 BufferedImage im = ImageIO.read(new File(uploadPath));
@@ -298,7 +299,7 @@ public class Image extends Controller {
 
             // threshold value for manually binary conversion
             int threshold = Integer.parseInt(json.findPath("threshold").toString());
-            String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+            String uploadPath = PATH + "/" + id + ".png";
 
             try {
                 BufferedImage im = ImageIO.read(new File(uploadPath));
@@ -328,7 +329,7 @@ public class Image extends Controller {
             return badRequest("Expecting Json data in minimum-filter...");
         } else {
             String id = json.findPath("id").toString();
-            String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+            String uploadPath = PATH + "/" + id + ".png";
 
             try {
                 BufferedImage im = ImageIO.read(new File(uploadPath));
@@ -380,7 +381,7 @@ public class Image extends Controller {
             return badRequest("Expecting Json data in maximum-filter...");
         } else {
             String id = json.findPath("id").toString();
-            String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+            String uploadPath = PATH + "/" + id + ".png";
 
             try {
                 BufferedImage im = ImageIO.read(new File(uploadPath));
@@ -432,7 +433,7 @@ public class Image extends Controller {
             return badRequest("Expecting Json data in region labeling...");
         } else {
             String id = json.findPath("id").toString();
-            String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+            String uploadPath = PATH + "/" + id + ".png";
 
             try {
                 BufferedImage im = ImageIO.read(new File(uploadPath));
@@ -621,7 +622,7 @@ public class Image extends Controller {
             filter = convertBinaryJsonToMatrix(json);
 
             String id = json.findPath("id").toString();
-            String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+            String uploadPath = PATH + "/" + id + ".png";
 
             try {
                 BufferedImage im = ImageIO.read(new File(uploadPath));
@@ -691,7 +692,7 @@ public class Image extends Controller {
             filter = convertBinaryJsonToMatrix(json);
 
             String id = json.findPath("id").toString();
-            String uploadPath = Play.application().path().getAbsolutePath() + "/public/uploads/" + id + ".png";
+            String uploadPath = PATH + "/" + id + ".png";
 
             try {
                 BufferedImage im = ImageIO.read(new File(uploadPath));
@@ -757,7 +758,7 @@ public class Image extends Controller {
 
         try {
             // read image
-            BufferedImage im = ImageIO.read(new File(Play.application().path().getAbsolutePath() + "/public/uploads/" + id));
+            BufferedImage im = ImageIO.read(new File(PATH + "/" + id));
 
             int w = im.getWidth();
             int h = im.getHeight();
@@ -791,7 +792,7 @@ public class Image extends Controller {
 
         try {
             // read image
-            BufferedImage im = ImageIO.read(new File(Play.application().path().getAbsolutePath() + "/public/uploads/" + id));
+            BufferedImage im = ImageIO.read(new File(PATH + "/" + id));
 
             int w = im.getWidth();
             int h = im.getHeight();
