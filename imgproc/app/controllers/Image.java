@@ -96,7 +96,7 @@ public class Image extends Controller {
             // iterate trough image
             for (int v = 0; v < h; v++) {
                 for (int u = 0; u < w; u++) {
-                    distinct.add(im.getRaster().getPixel(u, v, (int[]) null)[0]);
+                    distinct.add(getPix(im, u, v));
                 }
             }
 
@@ -152,7 +152,7 @@ public class Image extends Controller {
                         for (int j = -1; j <= 1; j++) {
                             for (int i = -1; i <= 1; i++) {
                                 // get pixel
-                                int p = copy.getRaster().getPixel(u + i, v + j, (int[]) null)[0];
+                                int p = getPix(copy, u + i, v + j);
                                 // get the corresponding filter coefficient:
                                 double c = filter[j + 1][i + 1];
                                 sum = sum + c * p;
@@ -165,7 +165,7 @@ public class Image extends Controller {
                         q = checkPixel(q);
 
                         // set Pixel
-                        im.getRaster().setSample(u - 1, v - 1, 0, q);
+                        setPix(im, u - 1, v - 1, q);
                     }
                 }
                 ImageIO.write(im, "PNG", new File(uploadPath));
@@ -211,13 +211,13 @@ public class Image extends Controller {
                         int k = 0;
                         for (int j = -1; j <= 1; j++) {
                             for (int i = -1; i <= 1; i++) {
-                                P[k] = copy.getRaster().getPixel(u + i, v + j, (int[]) null)[0];
+                                P[k] = getPix(copy, u + i, v + j);
                                 k++;
                             }
                         }
                         // sort the pixel vector and take middle element
                         Arrays.sort(P);
-                        im.getRaster().setSample(u - 1, v - 1, 0, P[4]);
+                        setPix(im, u - 1, v - 1, P[4]);
                     }
                 }
                 ImageIO.write(im, "PNG", new File(uploadPath));
@@ -267,13 +267,13 @@ public class Image extends Controller {
                         for (int j = -1; j <= 1; j++) {
                             for (int i = -1; i <= 1; i++) {
                                 double c = filter[j + 1][i + 1];
-                                P[k] = copy.getRaster().getPixel(u + i, v + j, (int[]) null)[0] * (int) c;
+                                P[k] = getPix(copy, u + i, v + j) * (int) c;
                                 k++;
                             }
                         }
                         // sort the pixel vector and take the middle element
                         Arrays.sort(P);
-                        im.getRaster().setSample(u - 1, v - 1, 0, P[4]);
+                        setPix(im, u - 1, v - 1, P[4]);
                     }
                 }
                 ImageIO.write(im, "PNG", new File(uploadPath));
@@ -352,13 +352,13 @@ public class Image extends Controller {
                         int k = 0;
                         for (int j = -1; j <= 1; j++) {
                             for (int i = -1; i <= 1; i++) {
-                                P[k] = copy.getRaster().getPixel(u + i, v + j, (int[]) null)[0];
+                                P[k] = getPix(copy, u + i, v + j);
                                 k++;
                             }
                         }
                         // sort the pixel vector and take 1 element
                         Arrays.sort(P);
-                        im.getRaster().setSample(u - 1, v - 1, 0, P[0]);
+                        setPix(im, u - 1, v - 1, P[0]);
                     }
                 }
                 ImageIO.write(im, "PNG", new File(uploadPath));
@@ -404,13 +404,13 @@ public class Image extends Controller {
                         int k = 0;
                         for (int j = -1; j <= 1; j++) {
                             for (int i = -1; i <= 1; i++) {
-                                P[k] = copy.getRaster().getPixel(u + i, v + j, (int[]) null)[0];
+                                P[k] = getPix(copy, u + i, v + j);
                                 k++;
                             }
                         }
                         // sort the pixel vector and take the last element
                         Arrays.sort(P);
-                        im.getRaster().setSample(u - 1, v - 1, 0, P[8]);
+                        setPix(im, u - 1, v - 1, P[8]);
                     }
                 }
                 ImageIO.write(im, "PNG", new File(uploadPath));
@@ -466,7 +466,7 @@ public class Image extends Controller {
                 // copy binary to 8-bit
                 for (int y = 0; y < processing.getHeight(); y++) {
                     for (int x = 0; x < processing.getWidth(); x++) {
-                        copy.getRaster().setSample(x, y, 0, processing.getRaster().getPixel(x, y, (int[]) null)[0]);
+                        setPix(copy, x, y, getPix(processing, x, y));
                     }
                 }
 
@@ -477,7 +477,7 @@ public class Image extends Controller {
                     for (int x = 1; x <= w; x++) {
 
                         // new labelpixel reached
-                        if (copy.getRaster().getPixel(x, y, (int[]) null)[0] == 1) {
+                        if (getPix(copy, x, y) == 1) {
 
                             // reset neighbours array and count of foreground-pixels
                             foregroundPix = 0;
@@ -489,36 +489,36 @@ public class Image extends Controller {
                             // -------------------------- check Neighbours ---------------------------
 
                             // check top pixel
-                            if (copy.getRaster().getPixel(x, y - 1, (int[]) null)[0] > 1) {
+                            if (getPix(copy, x, y - 1) > 1) {
                                 foregroundPix++;
-                                neighbours[0] = copy.getRaster().getPixel(x, y - 1, (int[]) null)[0];
+                                neighbours[0] = getPix(copy, x, y - 1);
                             }
                             // check left pixel
-                            if (copy.getRaster().getPixel(x - 1, y, (int[]) null)[0] > 1) {
+                            if (getPix(copy, x - 1, y) > 1) {
                                 foregroundPix++;
-                                neighbours[1] = copy.getRaster().getPixel(x - 1, y, (int[]) null)[0];
+                                neighbours[1] = getPix(copy, x - 1, y);
                             }
                             // check topleft pixel
-                            if (copy.getRaster().getPixel(x - 1, y - 1, (int[]) null)[0] > 1) {
+                            if (getPix(copy, x - 1, y - 1) > 1) {
                                 foregroundPix++;
-                                neighbours[2] = copy.getRaster().getPixel(x - 1, y - 1, (int[]) null)[0];
+                                neighbours[2] = getPix(copy, x - 1, y - 1);
                             }
                             // check topright pixel
-                            if (copy.getRaster().getPixel(x + 1, y - 1, (int[]) null)[0] > 1) {
+                            if (getPix(copy, x + 1, y - 1) > 1) {
                                 foregroundPix++;
-                                neighbours[3] = copy.getRaster().getPixel(x + 1, y - 1, (int[]) null)[0];
+                                neighbours[3] = getPix(copy, x + 1, y - 1);
                             }
 
                             // all neighbours are background pixels
                             if (foregroundPix == 0) {
-                                copy.getRaster().setSample(x, y, 0, label);
+                                setPix(copy, x, y, label);
                                 label++;
                                 // exactly one of the neighbours has a label value, no conflict
                             } else if (foregroundPix == 1) {
                                 for (int i = 0; i < 4; i++) {
                                     // select the first value which appears in array
                                     if (neighbours[i] != 0) {
-                                        copy.getRaster().setSample(x, y, 0, neighbours[i]);
+                                        setPix(copy, x, y, neighbours[i]);
                                         break;
                                     }
                                 }
@@ -531,7 +531,7 @@ public class Image extends Controller {
                                         // select the first appaering label value
                                         if (firstEntry == true) {
                                             tmp = neighbours[i];
-                                            copy.getRaster().setSample(x, y, 0, tmp);
+                                            setPix(copy, x, y, tmp);
                                             firstEntry = false;
                                             // all other neighbours register in collisionMap
                                         } else if (tmp != neighbours[i]) {
@@ -585,8 +585,8 @@ public class Image extends Controller {
                 for (int y = 1; y <= h; y++) {
                     for (int x = 1; x <= w; x++) {
                         // relabel
-                        if (setNumber[copy.getRaster().getPixel(x, y, (int[]) null)[0]] != 0) {
-                            copy.getRaster().setSample(x, y, 0, setNumber[copy.getRaster().getPixel(x, y, (int[]) null)[0]]);
+                        if (setNumber[getPix(copy, x, y)] != 0) {
+                            setPix(copy, x, y, setNumber[getPix(copy, x, y)]);
                         }
                     }
                 }
@@ -595,7 +595,7 @@ public class Image extends Controller {
                 BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
                 for (int y = 1; y <= h; y++) {
                     for (int x = 1; x <= w; x++) {
-                        out.getRaster().setSample(x - 1, y - 1, 0, copy.getRaster().getPixel(x, y, (int[]) null)[0]);
+                        setPix(out, x - 1, y - 1, getPix(copy, x, y));
                     }
                 }
                 ImageIO.write(out, "PNG", new File(uploadPath));
@@ -653,7 +653,7 @@ public class Image extends Controller {
                                 if (filterVal == 1) {
                                     filterVal = -255;
                                 }
-                                int bufferVal = copy.getRaster().getPixel(j + l, i + k, (int[]) null)[0];
+                                int bufferVal = getPix(copy, j + l, i + k);
                                 bufferVal += filterVal;
 
                                 // check max
@@ -664,7 +664,7 @@ public class Image extends Controller {
                         }
                         // check pixel bounds
                         newValue = checkPixel(newValue);
-                        im.getRaster().setSample(j - 1, i - 1, 0, newValue);
+                        setPix(im, j - 1, i - 1, newValue);
                     }
                 }
                 ImageIO.write(im, "PNG", new File(uploadPath));
@@ -723,7 +723,7 @@ public class Image extends Controller {
                                 if (filterVal == 1) {
                                     filterVal = -255;
                                 }
-                                int bufferVal = copy.getRaster().getPixel(j + l, i + k, (int[]) null)[0];
+                                int bufferVal = getPix(copy, j + l, i + k);
                                 bufferVal -= filterVal;
 
                                 // check min
@@ -734,7 +734,7 @@ public class Image extends Controller {
                         }
                         // check pixel bounds
                         newValue = checkPixel(newValue);
-                        im.getRaster().setSample(j - 1, i - 1, 0, newValue);
+                        setPix(im, j - 1, i - 1, newValue);
                     }
                 }
                 ImageIO.write(im, "PNG", new File(uploadPath));
@@ -767,7 +767,7 @@ public class Image extends Controller {
             for (int v = 0; v < h; v++) {
                 for (int u = 0; u < w; u++) {
                     // count pixel values in array (histogram)
-                    int i = im.getRaster().getPixel(u, v, (int[]) null)[0];
+                    int i = getPix(im, u, v);
                     H[i] = H[i] + 1;
                 }
             }
@@ -801,7 +801,7 @@ public class Image extends Controller {
             for (int v = 0; v < h; v++) {
                 for (int u = 0; u < w; u++) {
                     // count pixel values in array (histogram)
-                    int i = im.getRaster().getPixel(u, v, (int[]) null)[0];
+                    int i = getPix(im, u, v);
                     H[i] = H[i] + 1;
                 }
             }
@@ -827,10 +827,10 @@ public class Image extends Controller {
         for (int v = 0; v < h; v++) {
             for (int u = 0; u < w; u++) {
                 // check lesser or greater than threshold value
-                if (greyImage.getRaster().getPixel(u, v, (int[]) null)[0] >= threshold) {
-                    binaryImage.getRaster().setSample(u, v, 0, 1);
+                if (getPix(greyImage, u, v) >= threshold) {
+                    setPix(binaryImage, u, v, 1);
                 } else {
-                    binaryImage.getRaster().setSample(u, v, 0, 0);
+                    setPix(binaryImage, u, v, 0);
                 }
             }
         }
@@ -853,13 +853,13 @@ public class Image extends Controller {
             case 0:
                 for (int v = 0; v < h + 2; v++) {
                     for (int u = 0; u < w + 2; u++) {
-                        copy.getRaster().setSample(u, v, 0, 255);
+                        setPix(copy, u, v, 255);
                     }
                 }
                 // copy image in extended image
                 for (int v = 0; v < h; v++) {
                     for (int u = 0; u < w; u++) {
-                        copy.getRaster().setSample(u + 1, v + 1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+                        setPix(copy, u + 1, v + 1, getPix(src, u, v));
                     }
                 }
                 break;
@@ -867,13 +867,13 @@ public class Image extends Controller {
             case 1:
                 for (int v = 0; v < h + 2; v++) {
                     for (int u = 0; u < w + 2; u++) {
-                        copy.getRaster().setSample(u, v, 0, 0);
+                        setPix(copy, u, v, 0);
                     }
                 }
                 // copy image in extended image
                 for (int v = 0; v < h; v++) {
                     for (int u = 0; u < w; u++) {
-                        copy.getRaster().setSample(u + 1, v + 1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+                        setPix(copy, u + 1, v + 1, getPix(src, u, v));
                     }
                 }
                 break;
@@ -882,40 +882,40 @@ public class Image extends Controller {
                 // copy image in extended image
                 for (int v = 0; v < h; v++) {
                     for (int u = 0; u < w; u++) {
-                        copy.getRaster().setSample(u + 1, v + 1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+                        setPix(copy, u + 1, v + 1, getPix(src, u, v));
                     }
                 }
                 // upper border
                 for (int u = 0; u < w + 2; u++) {
-                    copy.getRaster().setSample(u, 0, 0, copy.getRaster().getPixel(u, 1, (int[]) null)[0]);
+                    setPix(copy, u, 0, getPix(copy, u, 1));
                 }
 
                 // bottom border
                 for (int u = 0; u < w + 2; u++) {
-                    copy.getRaster().setSample(u, h + 1, 0, copy.getRaster().getPixel(u, h, (int[]) null)[0]);
+                    setPix(copy, u, h + 1, getPix(copy, u, h));
                 }
 
                 // left border
                 for (int v = 0; v < h + 2; v++) {
-                    copy.getRaster().setSample(0, v, 0, copy.getRaster().getPixel(1, v, (int[]) null)[0]);
+                    setPix(copy, 0, v, getPix(copy, 1, v));
                 }
 
                 // right border
                 for (int v = 0; v < h + 2; v++) {
-                    copy.getRaster().setSample(w + 1, v, 0, copy.getRaster().getPixel(w, v, (int[]) null)[0]);
+                    setPix(copy, w + 1, v, getPix(copy, w, v));
                 }
 
                 // left upper corner
-                copy.getRaster().setSample(0, 0, 0, copy.getRaster().getPixel(1, 1, (int[]) null)[0]);
+                setPix(copy, 0, 0, getPix(copy, 1, 1));
 
                 // left lower corner
-                copy.getRaster().setSample(0, h + 1, 0, copy.getRaster().getPixel(1, h, (int[]) null)[0]);
+                setPix(copy, 0, h + 1, getPix(copy, 1, h));
 
                 // right upper corner
-                copy.getRaster().setSample(w + 1, 0, 0, copy.getRaster().getPixel(w, 1, (int[]) null)[0]);
+                setPix(copy, w + 1, 0, getPix(copy, w, 1));
 
                 // right lower corner
-                copy.getRaster().setSample(w + 1, h + 1, 0, copy.getRaster().getPixel(w, h, (int[]) null)[0]);
+                setPix(copy, w + 1, h + 1, getPix(copy, w, h));
                 break;
             default:
         }
@@ -939,13 +939,13 @@ public class Image extends Controller {
             case 0:
                 for (int v = 0; v < h + 2; v++) {
                     for (int u = 0; u < w + 2; u++) {
-                        copy.getRaster().setSample(u, v, 0, 1);
+                        setPix(copy, u, v, 1);
                     }
                 }
                 // copy image to extended image
                 for (int v = 0; v < h; v++) {
                     for (int u = 0; u < w; u++) {
-                        copy.getRaster().setSample(u + 1, v + 1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+                        setPix(copy, u + 1, v + 1, getPix(src, u, v));
                     }
                 }
                 break;
@@ -953,13 +953,13 @@ public class Image extends Controller {
             case 1:
                 for (int v = 0; v < h + 2; v++) {
                     for (int u = 0; u < w + 2; u++) {
-                        copy.getRaster().setSample(u, v, 0, 0);
+                        setPix(copy, u, v, 0);
                     }
                 }
                 // copy image to extended image
                 for (int v = 0; v < h; v++) {
                     for (int u = 0; u < w; u++) {
-                        copy.getRaster().setSample(u + 1, v + 1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+                        setPix(copy, u + 1, v + 1, getPix(src, u, v));
                     }
                 }
                 break;
@@ -968,41 +968,41 @@ public class Image extends Controller {
                 // copy image to extended image
                 for (int v = 0; v < h; v++) {
                     for (int u = 0; u < w; u++) {
-                        copy.getRaster().setSample(u + 1, v + 1, 0, src.getRaster().getPixel(u, v, (int[]) null)[0]);
+                        setPix(copy, u + 1, v + 1, getPix(src, u, v));
                     }
                 }
 
                 // upper border
                 for (int u = 0; u < w + 2; u++) {
-                    copy.getRaster().setSample(u, 0, 0, copy.getRaster().getPixel(u, 1, (int[]) null)[0]);
+                    setPix(copy, u, 0, getPix(copy, u, 1));
                 }
 
                 // lower border
                 for (int u = 0; u < w + 2; u++) {
-                    copy.getRaster().setSample(u, h + 1, 0, copy.getRaster().getPixel(u, h, (int[]) null)[0]);
+                    setPix(copy, u, h + 1, getPix(copy, u, h));
                 }
 
                 // left border
                 for (int v = 0; v < h + 2; v++) {
-                    copy.getRaster().setSample(0, v, 0, copy.getRaster().getPixel(1, v, (int[]) null)[0]);
+                    setPix(copy, 0, v, getPix(copy, 1, v));
                 }
 
                 // right border
                 for (int v = 0; v < h + 2; v++) {
-                    copy.getRaster().setSample(w + 1, v, 0, copy.getRaster().getPixel(w, v, (int[]) null)[0]);
+                    setPix(copy, w + 1, v, getPix(copy, w, v));
                 }
 
                 // upper left corner
-                copy.getRaster().setSample(0, 0, 0, copy.getRaster().getPixel(1, 1, (int[]) null)[0]);
+                setPix(copy, 0, 0, getPix(copy, 1, 1));
 
                 // lower left corner
-                copy.getRaster().setSample(0, h + 1, 0, copy.getRaster().getPixel(1, h, (int[]) null)[0]);
+                setPix(copy, 0, h + 1, getPix(copy, 1, h));
 
                 // upper right corner
-                copy.getRaster().setSample(w + 1, 0, 0, copy.getRaster().getPixel(w, 1, (int[]) null)[0]);
+                setPix(copy, w + 1, 0, getPix(copy, w, 1));
 
                 // lower right corner
-                copy.getRaster().setSample(w + 1, h + 1, 0, copy.getRaster().getPixel(w, h, (int[]) null)[0]);
+                setPix(copy, w + 1, h + 1, getPix(copy, w, h));
                 break;
             default:
         }
@@ -1063,5 +1063,13 @@ public class Image extends Controller {
         }
 
         return intMode;
+    }
+
+    private static void setPix(BufferedImage im, int x, int y, int value) {
+        im.getRaster().setSample(x, y, 0, value);
+    }
+
+    private static int getPix(BufferedImage im, int x, int y) {
+        return im.getRaster().getPixel(x, y, (int[]) null)[0];
     }
 }
