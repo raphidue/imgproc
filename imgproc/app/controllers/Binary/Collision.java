@@ -1,4 +1,4 @@
-package collision;
+package controllers.Binary;
 
 // collision class to represent a collision of two label values
 public class Collision {

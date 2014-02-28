@@ -1,5 +1,6 @@
 package controllers;
 
+import controllers.Binary.Collision;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Http.MultipartFormData;
@@ -16,9 +17,6 @@ import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 import java.util.*;
-
-// region labeling
-import collision.*;
 
 public class Image extends Controller {
     // constant upload path
