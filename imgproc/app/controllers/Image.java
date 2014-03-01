@@ -2,6 +2,7 @@ package controllers;
 
 import controllers.Helper;
 import controllers.Binary.*;
+import controllers.Grayscale.*;
 
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -322,53 +323,12 @@ public class Image extends Controller {
 
     public static Result maximum() {
         // catch post-request as json object
-        ObjectNode respJSON = Json.newObject();
         JsonNode json = request().body().asJson();
 
         if (json == null) {
-            return badRequest("Expecting Json data in maximum-filter...");
+            return badRequest("Expecting Json data");
         } else {
-            String id = json.findPath("id").toString();
-            String uploadPath = PATH + "/" + id + ".png";
-
-            try {
-                BufferedImage im = ImageIO.read(new File(uploadPath));
-
-                // create histogram
-                int w = im.getWidth();
-                int h = im.getHeight();
-
-                // border extension
-                BufferedImage copy;
-                copy = Helper.copyImage(im, "BLACK");
-
-                // filter operation
-                int[] P = new int[9];
-
-                for (int v = 1; v <= h; v++) {
-                    for (int u = 1; u <= w; u++) {
-
-                        // fill the pixel vector P for filter position (u,v)
-                        int k = 0;
-                        for (int j = -1; j <= 1; j++) {
-                            for (int i = -1; i <= 1; i++) {
-                                P[k] = Helper.getPix(copy, u + i, v + j);
-                                k++;
-                            }
-                        }
-                        // sort the pixel vector and take the last element
-                        Arrays.sort(P);
-                        Helper.setPix(im, u - 1, v - 1, P[8]);
-                    }
-                }
-                ImageIO.write(im, "PNG", new File(uploadPath));
-
-                // create histogram
-                respJSON = Helper.generateHisto(id + ".png");
-            } catch (IOException ioe) {
-                respJSON.put("error", "Error on processing maximum filter...");
-            }
-            return ok(respJSON);
+            return ok(ConfigurableFilter.processing(json, PATH));
         }
     }
 
