@@ -8,7 +8,7 @@ public class Collision {
 		a = label_a;
 		b = label_b;
 	}
-	
+
     public boolean equals(Object obj) {
             if (obj instanceof Collision) {
                     Collision c = (Collision) obj;
