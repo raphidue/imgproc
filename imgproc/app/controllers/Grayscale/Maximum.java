@@ -12,7 +12,7 @@ import java.io.*;
 import javax.imageio.*;
 import java.util.*;
 
-public class Median {
+public class Maximum {
     public static ObjectNode processing(JsonNode json, String PATH) {
         // catch post-request as json object
         ObjectNode respJSON = Json.newObject();
@@ -29,7 +29,7 @@ public class Median {
 
             // border extension
             BufferedImage copy;
-            copy = Helper.copyImage(im, "CONTINUE");
+            copy = Helper.copyImage(im, "BLACK");
 
             // filter operation
             int[] P = new int[9];
@@ -45,17 +45,17 @@ public class Median {
                             k++;
                         }
                     }
-                    // sort the pixel vector and take middle element
+                    // sort the pixel vector and take the last element
                     Arrays.sort(P);
-                    Helper.setPix(im, u - 1, v - 1, P[4]);
+                    Helper.setPix(im, u - 1, v - 1, P[8]);
                 }
             }
             ImageIO.write(im, "PNG", new File(uploadPath));
 
-            // generate histogram as json
+            // create histogram
             respJSON = Helper.generateHisto(id + ".png");
         } catch (IOException ioe) {
-            respJSON.put("error", "Error on processing median filter...");
+            respJSON.put("error", "Error on processing maximum filter...");
         }
         return respJSON;
 

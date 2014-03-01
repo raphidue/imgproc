@@ -70,254 +70,56 @@ public class Image extends Controller {
 
     public static Result smoothing() {
         // catch post-request as json object
-        ObjectNode respJSON = Json.newObject();
         JsonNode json = request().body().asJson();
 
         if (json == null) {
-            return badRequest("Expecting Json data in smoothing-filter...");
+            return badRequest("Expecting Json data");
         } else {
-            double[][] filter;
-            String id = json.findPath("id").toString();
-
-            // convert filter-json to filter matrix
-            filter = Helper.convertJsonToMatrix(json);
-            String uploadPath = PATH + "/" + id + ".png";
-
-            try {
-                BufferedImage im = ImageIO.read(new File(uploadPath));
-
-                // create histogram
-                int w = im.getWidth();
-                int h = im.getHeight();
-
-                // border extenstion
-                BufferedImage copy;
-                copy = Helper.copyImage(im, "BLACK");
-
-                // apply filter
-                for (int v = 1; v <= h; v++) {
-                    for (int u = 1; u <= w; u++) {
-                        double sum = 0;
-                        for (int j = -1; j <= 1; j++) {
-                            for (int i = -1; i <= 1; i++) {
-                                // get pixel
-                                int p = Helper.getPix(copy, u + i, v + j);
-                                // get the corresponding filter coefficient:
-                                double c = filter[j + 1][i + 1];
-                                sum = sum + c * p;
-                            }
-                        }
-
-                        int q = (int) Math.round(sum);
-
-                        // check pixel bounds
-                        q = Helper.checkPixel(q);
-
-                        // set Pixel
-                        Helper.setPix(im, u - 1, v - 1, q);
-                    }
-                }
-                ImageIO.write(im, "PNG", new File(uploadPath));
-
-                // generate histogram as json
-                respJSON = Helper.generateHisto(id + ".png");
-            } catch (IOException ioe) {
-                respJSON.put("error", "Error on processing smoothing-filter...");
-            }
-            return ok(respJSON);
+            return ok(Configurable.processing(json, PATH));
         }
     }
 
     public static Result median() {
         // catch post-request as json object
-        ObjectNode respJSON = Json.newObject();
         JsonNode json = request().body().asJson();
 
         if (json == null) {
-            return badRequest("Expecting Json data in median-filter...");
+            return badRequest("Expecting Json data");
         } else {
-            String id = json.findPath("id").toString();
-            String uploadPath = PATH + "/" + id + ".png";
-
-            try {
-                BufferedImage im = ImageIO.read(new File(uploadPath));
-
-                // create histogram
-                int w = im.getWidth();
-                int h = im.getHeight();
-
-                // border extension
-                BufferedImage copy;
-                copy = Helper.copyImage(im, "CONTINUE");
-
-                // filter operation
-                int[] P = new int[9];
-
-                for (int v = 1; v <= h; v++) {
-                    for (int u = 1; u <= w; u++) {
-
-                        // fill the pixel vector P for filter position (u,v)
-                        int k = 0;
-                        for (int j = -1; j <= 1; j++) {
-                            for (int i = -1; i <= 1; i++) {
-                                P[k] = Helper.getPix(copy, u + i, v + j);
-                                k++;
-                            }
-                        }
-                        // sort the pixel vector and take middle element
-                        Arrays.sort(P);
-                        Helper.setPix(im, u - 1, v - 1, P[4]);
-                    }
-                }
-                ImageIO.write(im, "PNG", new File(uploadPath));
-
-                // generate histogram as json
-                respJSON = Helper.generateHisto(id + ".png");
-            } catch (IOException ioe) {
-                respJSON.put("error", "Error on processing median filter...");
-            }
-            return ok(respJSON);
+            return ok(Median.processing(json, PATH));
         }
     }
 
     public static Result weightedMedian() {
         // catch post-request as json object
-        ObjectNode respJSON = Json.newObject();
         JsonNode json = request().body().asJson();
 
-        // convert json to matrix
-        double[][] filter;
-        filter = Helper.convertJsonToMatrix(json);
-
         if (json == null) {
-            return badRequest("Expecting Json data in weighted median-filter...");
+            return badRequest("Expecting Json data");
         } else {
-            String id = json.findPath("id").toString();
-            String uploadPath = PATH + "/" + id + ".png";
-
-            try {
-                BufferedImage im = ImageIO.read(new File(uploadPath));
-
-                int w = im.getWidth();
-                int h = im.getHeight();
-
-                // border extension
-                BufferedImage copy;
-                copy = Helper.copyImage(im, "CONTINUE");
-
-                // filter operation
-                int[] P = new int[9];
-
-                for (int v = 1; v <= h; v++) {
-                    for (int u = 1; u <= w; u++) {
-
-                        // fill the pixel vector P for filter position (u,v)
-                        int k = 0;
-                        for (int j = -1; j <= 1; j++) {
-                            for (int i = -1; i <= 1; i++) {
-                                double c = filter[j + 1][i + 1];
-                                P[k] = Helper.getPix(copy, u + i, v + j) * (int) c;
-                                k++;
-                            }
-                        }
-                        // sort the pixel vector and take the middle element
-                        Arrays.sort(P);
-                        Helper.setPix(im, u - 1, v - 1, P[4]);
-                    }
-                }
-                ImageIO.write(im, "PNG", new File(uploadPath));
-
-                // create histogram
-                respJSON = Helper.generateHisto(id + ".png");
-            } catch (IOException ioe) {
-                respJSON.put("error", "Error on processing weighted median-filter...");
-            }
-            return ok(respJSON);
+            return ok(WeightedMedian.processing(json, PATH));
         }
     }
 
     public static Result toBinary() {
         // catch post-request as json object
-        ObjectNode respJSON = Json.newObject();
         JsonNode json = request().body().asJson();
 
         if (json == null) {
-            return badRequest("Expecting Json data in toBinary()...");
+            return badRequest("Expecting Json data");
         } else {
-            String id = json.findPath("id").toString();
-
-            // threshold value for manually binary conversion
-            int threshold = Integer.parseInt(json.findPath("threshold").toString());
-            String uploadPath = PATH + "/" + id + ".png";
-
-            try {
-                BufferedImage im = ImageIO.read(new File(uploadPath));
-
-                // check if 8-bit image
-                if (im.getType() == 10) {
-                    // convert to binary by the threshold-value
-                    im = Helper.getBinaryImage(threshold, im);
-                }
-                ImageIO.write(im, "PNG", new File(uploadPath));
-
-                // create histogram
-                respJSON = Helper.generateBinaryHisto(id + ".png");
-            } catch (IOException ioe) {
-                respJSON.put("error", "Error on processing to convert to binary...");
-            }
-            return ok(respJSON);
+            return ok(ConvertToBinary.processing(json, PATH));
         }
     }
 
     public static Result minimum() {
         // catch post-request as json object
-        ObjectNode respJSON = Json.newObject();
         JsonNode json = request().body().asJson();
 
         if (json == null) {
-            return badRequest("Expecting Json data in minimum-filter...");
+            return badRequest("Expecting Json data");
         } else {
-            String id = json.findPath("id").toString();
-            String uploadPath = PATH + "/" + id + ".png";
-
-            try {
-                BufferedImage im = ImageIO.read(new File(uploadPath));
-
-                // create histogram
-                int w = im.getWidth();
-                int h = im.getHeight();
-
-                // border extension
-                BufferedImage copy;
-                copy = Helper.copyImage(im, "WHITE");
-
-                // filter operation
-                int[] P = new int[9];
-
-                for (int v = 1; v <= h; v++) {
-                    for (int u = 1; u <= w; u++) {
-
-                        // fill the pixel vector P for filter position (u,v)
-                        int k = 0;
-                        for (int j = -1; j <= 1; j++) {
-                            for (int i = -1; i <= 1; i++) {
-                                P[k] = Helper.getPix(copy, u + i, v + j);
-                                k++;
-                            }
-                        }
-                        // sort the pixel vector and take 1 element
-                        Arrays.sort(P);
-                        Helper.setPix(im, u - 1, v - 1, P[0]);
-                    }
-                }
-                ImageIO.write(im, "PNG", new File(uploadPath));
-
-                // create histogram
-                respJSON = Helper.generateHisto(id + ".png");
-            } catch (IOException ioe) {
-                respJSON.put("error", "Error on processing minimum filter...");
-            }
-            return ok(respJSON);
+            return ok(Minimum.processing(json, PATH));
         }
     }
 
@@ -328,7 +130,7 @@ public class Image extends Controller {
         if (json == null) {
             return badRequest("Expecting Json data");
         } else {
-            return ok(ConfigurableFilter.processing(json, PATH));
+            return ok(Maximum.processing(json, PATH));
         }
     }
 
