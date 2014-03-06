@@ -23,7 +23,7 @@ import java.util.*;
 
 public class Image extends Controller {
     // constant upload path
-    public static final String PATH = Play.application().path().getAbsolutePath() + "/public/uploads";
+    public static final String PATH = Play.application().path().getAbsolutePath() + "/tmp";
 
     // upload image
     public static Result upload(String id) {
@@ -56,7 +56,6 @@ public class Image extends Controller {
 
                 // write image to filesystem
                 ImageIO.write(im, "PNG", new File(myUploadPath));
-
             } catch (IOException ioe) {
             }
             return ok(views.html.image.render(id));

@@ -13,7 +13,7 @@ import javax.imageio.*;
 public class Helper {
 
     // constant upload path
-    public static final String PATH = Play.application().path().getAbsolutePath() + "/public/uploads";
+    public static final String PATH = Play.application().path().getAbsolutePath() + "/tmp";
 
     // generate a histogram for 8-bit images
     public static ObjectNode generateHisto(String id) {
