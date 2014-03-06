@@ -4,6 +4,8 @@ resolvers += "webjars" at "http://webjars.github.com/m2"
                                        
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
+name := "imgproc"
+
 version := "1.0-SNAPSHOT"
 
 libraryDependencies ++= Seq(
