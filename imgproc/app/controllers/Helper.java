@@ -10,10 +10,33 @@ import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 
+import plugins.S3Plugin;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+
 public class Helper {
 
     // constant upload path
     public static final String PATH = Play.application().path().getAbsolutePath() + "/tmp";
+
+    public static String uploadBufferedImageToAws(BufferedImage im, String id) {
+        try {
+            String url;
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(im, "png", os);
+            byte[] buffer = os.toByteArray();
+            InputStream is = new ByteArrayInputStream(buffer);
+            
+            ObjectMetadata meta = new ObjectMetadata();
+            meta.setContentLength(buffer.length);
+            S3Plugin.amazonS3.putObject(new PutObjectRequest(S3Plugin.s3Bucket, id, is, meta));
+            url = "http://imgproc.s3.amazonaws.com/" + id;
+            return url;
+        } catch (IOException ioe) {
+        }
+
+        return "ERROR OCCURED! (uploadBufferedImageToAws)";
+    }
 
     // generate a histogram for 8-bit images
     public static ObjectNode generateHisto(String id) {
