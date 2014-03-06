@@ -36,27 +36,14 @@ public class Image extends Controller {
         MultipartFormData body = request().body().asMultipartFormData();
         FilePart picture = body.getFile("picture");
         
-        /*
-        File theDir = new File(PATH);
-        // create directory if not exists
-        if (!theDir.exists()) {
-            theDir.mkdir();
-        }
-        */
-
-
         if (picture != null) {
 
             //here starts the aws fun
             S3File s3file = new S3File();
             s3file.name = id;
             s3file.file = picture.getFile();
-            //s3file.save();
-
-            //String myUploadPath = PATH + "/" + id;
-            //file.renameTo(new File(myUploadPath));
-
-
+            String imgUrl = null;
+            
             try {
 
                 // read image
@@ -69,22 +56,11 @@ public class Image extends Controller {
                 // convert image to 8-bit image
                 g2d.drawImage(input, 0, 0, null);
 
-                // write image to filesystem
-                //ImageIO.write(im, "PNG", new File(myUploadPath));
-
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                ImageIO.write(im, "png", os);
-                byte[] buffer = os.toByteArray();
-                InputStream is = new ByteArrayInputStream(buffer);
-                
-                ObjectMetadata meta = new ObjectMetadata();
-                meta.setContentLength(buffer.length);
-                S3Plugin.amazonS3.putObject(new PutObjectRequest(S3Plugin.s3Bucket, id, is, meta));
-
+                imgUrl = Helper.uploadBufferedImageToAws(im, id);
             } catch (IOException ioe) {
             }
 
-            return ok(views.html.image.render("http://imgproc.s3.amazonaws.com/" + id));
+            return ok(views.html.image.render(imgUrl));
         } else {
             flash("error", "Missing file");
 
@@ -244,3 +220,4 @@ public class Image extends Controller {
         return ok(respJSON);
     }
 }
+
