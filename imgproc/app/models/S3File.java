@@ -31,7 +31,7 @@ public class S3File extends Model {
         return new URL("https://s3.amazonaws.com/" + bucket + "/" + getActualFileName());
     }
 
-    private String getActualFileName() {
+    public String getActualFileName() {
         return id + "/" + name;
     }
 

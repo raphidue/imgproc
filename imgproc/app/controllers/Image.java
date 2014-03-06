@@ -1,5 +1,8 @@
 package controllers;
 
+import models.S3File;
+import plugins.S3Plugin;
+import play.db.ebean.Model;
 import controllers.Helper;
 import controllers.Binary.*;
 import controllers.Grayscale.*;
@@ -13,6 +16,9 @@ import play.*;
 import play.libs.Json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 
 //for buffered image
 import java.awt.Graphics2D;
@@ -29,23 +35,32 @@ public class Image extends Controller {
     public static Result upload(String id) {
         MultipartFormData body = request().body().asMultipartFormData();
         FilePart picture = body.getFile("picture");
+        
+        /*
         File theDir = new File(PATH);
-
         // create directory if not exists
         if (!theDir.exists()) {
             theDir.mkdir();
         }
+        */
 
 
         if (picture != null) {
-            File file = picture.getFile();
 
-            String myUploadPath = PATH + "/" + id;
-            file.renameTo(new File(myUploadPath));
+            //here starts the aws fun
+            S3File s3file = new S3File();
+            s3file.name = id;
+            s3file.file = picture.getFile();
+            //s3file.save();
+
+            //String myUploadPath = PATH + "/" + id;
+            //file.renameTo(new File(myUploadPath));
+
 
             try {
+
                 // read image
-                BufferedImage input = ImageIO.read(new File(myUploadPath));
+                BufferedImage input = ImageIO.read(s3file.file);
 
                 // 8-bit image
                 BufferedImage im = new BufferedImage(input.getWidth(), input.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
@@ -55,10 +70,21 @@ public class Image extends Controller {
                 g2d.drawImage(input, 0, 0, null);
 
                 // write image to filesystem
-                ImageIO.write(im, "PNG", new File(myUploadPath));
+                //ImageIO.write(im, "PNG", new File(myUploadPath));
+
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                ImageIO.write(im, "png", os);
+                byte[] buffer = os.toByteArray();
+                InputStream is = new ByteArrayInputStream(buffer);
+                
+                ObjectMetadata meta = new ObjectMetadata();
+                meta.setContentLength(buffer.length);
+                S3Plugin.amazonS3.putObject(new PutObjectRequest(S3Plugin.s3Bucket, id, is, meta));
+
             } catch (IOException ioe) {
             }
-            return ok(views.html.image.render(id));
+
+            return ok(views.html.image.render("http://imgproc.s3.amazonaws.com/" + id));
         } else {
             flash("error", "Missing file");
 
