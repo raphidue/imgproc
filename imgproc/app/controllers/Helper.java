@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 //for buffered image
 import java.awt.image.*;
 import java.io.*;
+import java.net.*;
 import javax.imageio.*;
 
 import plugins.S3Plugin;
@@ -17,7 +18,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 public class Helper {
 
     // constant upload path
-    public static final String PATH = Play.application().path().getAbsolutePath() + "/tmp";
+    public static final String PATH = "http://imgproc.s3.amazonaws.com/";
 
     public static String uploadBufferedImageToAws(BufferedImage im, String id) {
         try {
@@ -47,7 +48,7 @@ public class Helper {
 
         try {
             // read image
-            BufferedImage im = ImageIO.read(new File(PATH + "/" + id));
+            BufferedImage im = ImageIO.read(new URL(PATH + id));
 
             int w = im.getWidth();
             int h = im.getHeight();
@@ -66,8 +67,8 @@ public class Helper {
                 tmp = tmpInt.toString();
                 respJSON.put(tmp, new Integer(H[i]));
             }
-        } catch (IOException ioe) {
-            respJSON.put("error", "Error on generating a histogram...");
+        } catch (Exception ioe) {
+            respJSON.put("error", "Error on generating a histogram..." + ioe);
         }
         return respJSON;
     }
@@ -80,8 +81,11 @@ public class Helper {
         ObjectNode respJSON = Json.newObject();
 
         try {
+            
+            System.out.println("++++++++++++++++++++++++++++++++ URL: " + PATH + id);
+
             // read image
-            BufferedImage im = ImageIO.read(new File(PATH + "/" + id));
+            BufferedImage im = ImageIO.read(new URL(PATH + id));
 
             int w = im.getWidth();
             int h = im.getHeight();
@@ -95,13 +99,16 @@ public class Helper {
                 }
             }
             // convert histogram to json object
+            System.out.println("++++++++++++++++++++++++++++++++ H.length: " + H.length);
             for (int i = 0; i < H.length; i++) {
+                System.out.println("++++++++++++++++++++++++++++++++ i: " + i);
+                System.out.println("++++++++++++++++++++++++++++++++ H[i]: " + H[i]);
                 tmpInt = new Integer(i);
                 tmp = tmpInt.toString();
                 respJSON.put(tmp, new Integer(H[i]));
             }
-        } catch (IOException ioe) {
-            respJSON.put("error", "Error on generating a binary histogram...");
+        } catch (Exception ioe) {
+            respJSON.put("error", "Error on generating a binary histogram..." + ioe);
         }
         return respJSON;
     }

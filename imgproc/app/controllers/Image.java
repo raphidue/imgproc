@@ -21,6 +21,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
 //for buffered image
+import java.net.URL;
 import java.awt.Graphics2D;
 import java.awt.image.*;
 import java.io.*;
@@ -29,7 +30,7 @@ import java.util.*;
 
 public class Image extends Controller {
     // constant upload path
-    public static final String PATH = Play.application().path().getAbsolutePath() + "/tmp";
+    public static final String PATH = "http://imgproc.s3.amazonaws.com/";
 
     // upload image
     public static Result upload(String id) {
@@ -192,10 +193,9 @@ public class Image extends Controller {
     public static Result showLabels(String id) {
 
         ObjectNode respJSON = Json.newObject();
-
         try {
             // read image
-            BufferedImage im = ImageIO.read(new File(PATH + "/" + id));
+            BufferedImage im = ImageIO.read(new URL(PATH + id));
 
             // create histogram
             int w = im.getWidth();
