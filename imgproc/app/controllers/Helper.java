@@ -81,9 +81,6 @@ public class Helper {
         ObjectNode respJSON = Json.newObject();
 
         try {
-            
-            System.out.println("++++++++++++++++++++++++++++++++ URL: " + PATH + id);
-
             // read image
             BufferedImage im = ImageIO.read(new URL(PATH + id));
 
@@ -99,10 +96,7 @@ public class Helper {
                 }
             }
             // convert histogram to json object
-            System.out.println("++++++++++++++++++++++++++++++++ H.length: " + H.length);
             for (int i = 0; i < H.length; i++) {
-                System.out.println("++++++++++++++++++++++++++++++++ i: " + i);
-                System.out.println("++++++++++++++++++++++++++++++++ H[i]: " + H[i]);
                 tmpInt = new Integer(i);
                 tmp = tmpInt.toString();
                 respJSON.put(tmp, new Integer(H[i]));

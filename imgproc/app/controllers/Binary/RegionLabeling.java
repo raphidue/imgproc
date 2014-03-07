@@ -10,16 +10,18 @@ import javax.imageio.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import play.libs.Json;
 import java.util.*;
+import java.net.URL;
+
 
 public class RegionLabeling {
     public static ObjectNode processing(JsonNode json, String PATH) {
         ObjectNode respJSON = Json.newObject();
 
         String id = json.findPath("id").toString();
-        String uploadPath = PATH + "/" + id + ".png";
+        String uploadPath = PATH + id + ".png";
 
         try {
-            BufferedImage im = ImageIO.read(new File(uploadPath));
+            BufferedImage im = ImageIO.read(new URL(uploadPath));
 
             // check if a 8-bit image
             if (im.getType() == 10) {
@@ -181,7 +183,7 @@ public class RegionLabeling {
                     Helper.setPix(out, x - 1, y - 1, Helper.getPix(copy, x, y));
                 }
             }
-            ImageIO.write(out, "PNG", new File(uploadPath));
+            Helper.uploadBufferedImageToAws(im, id + ".png");
 
             respJSON.put("success", "Success on processing region labeling...");
         } catch (IOException ioe) {
