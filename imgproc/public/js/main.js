@@ -175,7 +175,7 @@ $(function() {
 				// timeout to get histogram data
 				setTimeout(function () {
 					showHistogram("GET", "minimum/" + global_ID + ".png");		
-				}, 10000);
+				}, 1000);
 			
 				// refreshing image after using filter
 				refreshImage();
@@ -194,7 +194,7 @@ $(function() {
 				// timeout to get histogram data
 				setTimeout(function () { 
 					showHistogram("GET", "maximum/" + global_ID + ".png");		
-				}, 10000);
+				}, 1000);
 			
 				// refreshing image after using filter
 				refreshImage();
@@ -272,7 +272,6 @@ $(function() {
 			
 			    // post image to region-path and display histogram
 				sendJson("POST", "/region", JSON.stringify({id: global_ID}));
-			
 				// timeout to get histogram data
 				setTimeout(function () { 
 					$.ajax({
@@ -377,7 +376,7 @@ function refreshImage() {
         function(){
             var img = document.getElementById("uploadedImage");
             img.setAttribute('src', img.getAttribute('src') + "?ts=" + new Date().getTime());
-        }, 1000
+        }, 5000
     );
 }
 

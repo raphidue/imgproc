@@ -183,7 +183,7 @@ public class RegionLabeling {
                     Helper.setPix(out, x - 1, y - 1, Helper.getPix(copy, x, y));
                 }
             }
-            Helper.uploadBufferedImageToAws(im, id + ".png");
+            Helper.uploadBufferedImageToAws(out, id + ".png");
 
             respJSON.put("success", "Success on processing region labeling...");
         } catch (IOException ioe) {
