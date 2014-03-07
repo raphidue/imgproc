@@ -7,6 +7,8 @@ import java.io.*;
 import javax.imageio.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import play.libs.Json;
+import java.net.URL;
+
 
 
 public class Dilate {
@@ -20,10 +22,10 @@ public class Dilate {
         filter = Helper.convertBinaryJsonToMatrix(json);
 
         String id = json.findPath("id").toString();
-        String uploadPath = PATH + "/" + id + ".png";
+        String uploadPath = PATH + id + ".png";
 
         try {
-            BufferedImage im = ImageIO.read(new File(uploadPath));
+            BufferedImage im = ImageIO.read(new URL(uploadPath));
 
             // check if 8-bit image
             if (im.getType() == 10) {
@@ -62,10 +64,10 @@ public class Dilate {
                     }
                     // check pixel bounds
                     newValue = Helper.checkPixel(newValue);
-                    im.getRaster().setSample(j - 1, i - 1, 0, newValue);
+                    Helper.setPix(im, j - 1, i - 1, newValue);
                 }
             }
-            ImageIO.write(im, "PNG", new File(uploadPath));
+            Helper.uploadBufferedImageToAws(im, id + ".png");
 
             // generate histogram as JSON
             respJSON = Helper.generateBinaryHisto(id + ".png");

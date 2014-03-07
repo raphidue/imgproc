@@ -24,7 +24,6 @@ public class ConvertToBinary {
         String uploadPath = PATH + id + ".png";
 
         try {
-            System.out.println("================================================" + uploadPath);
             BufferedImage im = ImageIO.read(new URL(uploadPath));
 
             // check if 8-bit image
@@ -32,8 +31,7 @@ public class ConvertToBinary {
                 // convert to binary by the threshold-value
                 im = Helper.getBinaryImage(threshold, im);
             }
-            String idPlusPng = id + ".png";
-            Helper.uploadBufferedImageToAws(im, idPlusPng);
+            Helper.uploadBufferedImageToAws(im, id + ".png");
             // create histogram
             respJSON = Helper.generateBinaryHisto(id + ".png");
         } catch (Exception ioe) {
