@@ -11,6 +11,8 @@ import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 import java.util.*;
+import java.net.URL;
+
 
 public class Configurable {
     public static ObjectNode processing(JsonNode json, String PATH) {
@@ -22,10 +24,10 @@ public class Configurable {
 
         // convert filter-json to filter matrix
         filter = Helper.convertJsonToMatrix(json);
-        String uploadPath = PATH + "/" + id + ".png";
+        String uploadPath = PATH + id + ".png";
 
         try {
-            BufferedImage im = ImageIO.read(new File(uploadPath));
+            BufferedImage im = ImageIO.read(new URL(uploadPath));
 
             // create histogram
             int w = im.getWidth();
@@ -58,7 +60,7 @@ public class Configurable {
                     Helper.setPix(im, u - 1, v - 1, q);
                 }
             }
-            ImageIO.write(im, "PNG", new File(uploadPath));
+            Helper.uploadBufferedImageToAws(im, id + ".png");
 
             // generate histogram as json
             respJSON = Helper.generateHisto(id + ".png");

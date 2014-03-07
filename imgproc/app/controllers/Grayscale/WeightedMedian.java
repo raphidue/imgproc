@@ -11,6 +11,8 @@ import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 import java.util.*;
+import java.net.URL;
+
 
 public class WeightedMedian {
     public static ObjectNode processing(JsonNode json, String PATH) {
@@ -22,10 +24,10 @@ public class WeightedMedian {
         filter = Helper.convertJsonToMatrix(json);
 
         String id = json.findPath("id").toString();
-        String uploadPath = PATH + "/" + id + ".png";
+        String uploadPath = PATH + id + ".png";
 
         try {
-            BufferedImage im = ImageIO.read(new File(uploadPath));
+            BufferedImage im = ImageIO.read(new URL(uploadPath));
 
             int w = im.getWidth();
             int h = im.getHeight();
@@ -54,7 +56,7 @@ public class WeightedMedian {
                     Helper.setPix(im, u - 1, v - 1, P[4]);
                 }
             }
-            ImageIO.write(im, "PNG", new File(uploadPath));
+            Helper.uploadBufferedImageToAws(im, id + ".png");
 
             // create histogram
             respJSON = Helper.generateHisto(id + ".png");
