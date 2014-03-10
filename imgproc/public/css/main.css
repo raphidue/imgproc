@@ -127,6 +127,12 @@ fieldset[disabled] .btn-custom.active {
 		left: 50%;
 }
 
+#instruction-panel {
+    background-color: #5BC0DE;
+    padding: 20px;
+    color: #FFFFFF !important;
+}
+
 #uploadedImage {
 	display: block; 
 	margin-left: auto; 
