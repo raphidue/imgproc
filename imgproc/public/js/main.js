@@ -668,3 +668,9 @@ function showBinaryHistogram(typ, path) {
 
     });
 }
+
+$(function() {
+    $("#close-instruction").click(function(){
+        $("#instruction-panel").fadeOut();
+    });
+});
