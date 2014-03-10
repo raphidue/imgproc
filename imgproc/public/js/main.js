@@ -124,154 +124,102 @@ $(function() {
 		if(checkIfImageIsUploaded()) {
 			if ($("#glaett").hasClass("active")) {
 			    // post image to smoothing-path and display histogram
-				if(!sendJson("POST", "/smoothing", JSON.stringify({id: global_ID})))
+				if(!sendJson("POST", "/smoothing", JSON.stringify({id: global_ID}), "hist_normal"))
 				return;
-			
-				// timeout to get histogram data
-				setTimeout(function () { 
-					showHistogram("GET", "smoothing/" + global_ID + ".png");		
-				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();	
-			
 			} 
 			else if ($("#diff").hasClass("active")) {
 			    // post image to difference-path and display histogram
-				if(!sendJson("POST", "/difference", JSON.stringify({id: global_ID})))
+				if(!sendJson("POST", "/difference", JSON.stringify({id: global_ID}), "hist_normal"))
 				return;
-
-				// timeout to get histogram data
-				setTimeout(function () {
-					showHistogram("GET", "difference/" + global_ID + ".png");		
-				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();	
 			}
 			else if ($("#config-filter").hasClass("active")) {
 			    // post image to free-config-path and display histogram
-				if(!sendJson("POST", "/free-config", JSON.stringify({id: global_ID})))
+				if(!sendJson("POST", "/free-config", JSON.stringify({id: global_ID}), "hist_normal"))
 				return;
-
-			    // timeout to get histogram data
-				setTimeout(function () {
-					showHistogram("GET", "free-config/" + global_ID + ".png");		
-				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();	
 			}
 			else if ($("#min").hasClass("active")) {
+
+				var img = document.getElementById("uploadedImage");
+			    $('#main-image-panel').html('<img id="ajax-loader-rel" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
+
 			    // post image to minimum-path and display histogram
 				$.ajax({
 					type: "POST",
 					data: JSON.stringify({id: global_ID}),
 					contentType: 'application/json',
 					dataType: 'json',
-					url: "/minimum"
+					url: "/minimum",
+			        success: function (d) {
+			        	 // replace div's content with returned data
+			        	 img.setAttribute('src', img.getAttribute('src') + "?ts=" + new Date().getTime());
+			        	  $('#main-image-panel').html(img);
+			        	  showHistogram("GET", "minimum/" + global_ID + ".png");
+			        	 }
 				});
-
-				// timeout to get histogram data
-				setTimeout(function () {
-					showHistogram("GET", "minimum/" + global_ID + ".png");		
-				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();
-			
 			}
 			else if ($("#max").hasClass("active")) {
+			    
+				var img = document.getElementById("uploadedImage");
+			    $('#main-image-panel').html('<img id="ajax-loader-rel" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
+			    
 			    // post image to max-path and display histogram
 				$.ajax({
 					type: "POST",
 					data: JSON.stringify({id: global_ID}),
 					contentType: 'application/json',
 					dataType: 'json',
-					url: "/maximum"
-				});
+					url: "/maximum",
+			        success: function (d) {
+			        	 // replace div's content with returned data
+			        	 img.setAttribute('src', img.getAttribute('src') + "?ts=" + new Date().getTime());
+			        	  $('#main-image-panel').html(img);
+			        	  showHistogram("GET", "maximum/" + global_ID + ".png");
+			        	 }
 
-				// timeout to get histogram data
-				setTimeout(function () { 
-					showHistogram("GET", "maximum/" + global_ID + ".png");		
-				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();
+				});
 			}
 			else if ($("#median").hasClass("active")) {
 			    // post image to median-path and display histogram
-				sendJson("POST", "/median", JSON.stringify({id: global_ID}));
-			
-				// timeout to get histogram data
-				setTimeout(function () { 
-					showHistogram("GET", "median/" + global_ID + ".png");		
-				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();
-			
+				sendJson("POST", "/median", JSON.stringify({id: global_ID}), "hist_normal");
 			}
 			else if ($("#gewMedian").hasClass("active")) {
 			    // post image to weighted-median-path and display histogram
-				sendJson("POST", "/weighted-median", JSON.stringify({id: global_ID}));
-			
-				// timeout to get histogram data
-				setTimeout(function () { 
-					showHistogram("GET", "weighted-median/" + global_ID + ".png");		
-				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();
+				sendJson("POST", "/weighted-median", JSON.stringify({id: global_ID}), "hist_normal");
 			}
 			else if ($("#toBinary").hasClass("active")) {
 				data = '[' + JSON.stringify({id: global_ID}) + ', {"threshold":' + global_Threshold +'}]';
+			    
+				var img = document.getElementById("uploadedImage");
+			    $('#main-image-panel').html('<img id="ajax-loader-rel" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
+
 			    // post image to toBinary-path and display histogram
 				$.ajax({
 					type: "POST",
 					data: data,
 					contentType: 'application/json',
 					dataType: 'json',
-					url: "/toBinary"
+					url: "/toBinary",
+			        success: function (d) {
+			        	 // replace div's content with returned data
+			        	 img.setAttribute('src', img.getAttribute('src') + "?ts=" + new Date().getTime());
+			        	  $('#main-image-panel').html(img);
+			        	  showBinaryHistogram("GET", "toBinary/" + global_ID + ".png");
+			        	 }
 				});
-			
-				// timeout to get histogram data
-				setTimeout(function () { 
-					showBinaryHistogram("GET", "toBinary/" + global_ID + ".png");		
-				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();
+				
 			}
 			else if ($("#dilate").hasClass("active")) {
 			    // post image to dilate-path and display histogram
-				sendJson("POST", "/dilate", JSON.stringify({id: global_ID}));
-			
-				// timeout to get histogram data
-				setTimeout(function () { 
-					showBinaryHistogram("GET", "dilate/" + global_ID + ".png");		
-				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();
-			
+				sendJson("POST", "/dilate", JSON.stringify({id: global_ID}), "hist_binary");
 			}
 			else if ($("#erode").hasClass("active")) {
 			    // post image to erode-path and display histogram
-				sendJson("POST", "/erode", JSON.stringify({id: global_ID}));
-			
-				// timeout to get histogram data
-				setTimeout(function () { 
-					showBinaryHistogram("GET", "erode/" + global_ID + ".png");		
-				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();
+				sendJson("POST", "/erode", JSON.stringify({id: global_ID}), "hist_binary");
 			}
 			else if ($("#region").hasClass("active")) {
-			
+
 			    // post image to region-path and display histogram
-				sendJson("POST", "/region", JSON.stringify({id: global_ID}));
+				sendJson("POST", "/region", JSON.stringify({id: global_ID}), "hist_normal");
 				// timeout to get histogram data
 				setTimeout(function () { 
 					$.ajax({
@@ -287,9 +235,6 @@ $(function() {
 						}
 					});		
 				}, 1000);
-			
-				// refreshing image after using filter
-				refreshImage();
 			}
 		}
 	});
@@ -340,7 +285,7 @@ function getFile(){
 $(function() {
 	$('#upfile').on('change', function()
 	{
-		$("#img-content").html('');
+		//$("#img-content").html('');
 		$("#img-content").html('<img id="ajax-loader" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
 
 		// timestamp
@@ -368,16 +313,6 @@ function saveImage() {
         document.body.appendChild(iframe);
     }
     iframe.src = document.getElementById("uploadedImage").src;
-}
-
-// function to avoid caching of images
-function refreshImage() {
-    window.setTimeout(
-        function(){
-            var img = document.getElementById("uploadedImage");
-            img.setAttribute('src', img.getAttribute('src') + "?ts=" + new Date().getTime());
-        }, 5000
-    );
 }
 
 // validate matrix inputs, check if letter
@@ -513,7 +448,7 @@ function displayfilter(id) {
 }
 
 // send filtermax and ID of image as JSON
-function sendJson(typ, path, data) {
+function sendJson(typ, path, data, histType) {
     var matrix;
 
     if (path == "/dilate" || path == "/erode") {
@@ -541,14 +476,31 @@ function sendJson(typ, path, data) {
     matrix[2] + '}, {"r2c1":' + matrix[3] + '}, {"r2c2":' + matrix[4] + '}, {"r2c3":' +
     matrix[5] + '}, {"r3c1":' + matrix[6] + '}, {"r3c2":' + matrix[7] + '}, {"r3c3":' + matrix[8] + '}]';
 
+    var img = document.getElementById("uploadedImage");
+    $('#main-image-panel').html('<img id="ajax-loader-rel" src="/assets/images/ajax-loader.gif" alt="Uploading...."/>');
+
     // post/get request to controller
     $.ajax({
         type: typ,
         data: data,
         contentType: 'application/json',
         dataType: 'json',
-        url: path
+        url: path,
+        success: function (d) {
+        	 // replace div's content with returned data
+        	 img.setAttribute('src', img.getAttribute('src') + "?ts=" + new Date().getTime());
+        	  $('#main-image-panel').html(img);
+        	  var newPath = path.slice(1);
+        	  newPath = newPath + '/';
+        	  if(histType == 'hist_normal') {
+        	  	showHistogram("GET", newPath + global_ID + ".png");
+        	  } else {
+        	  	showBinaryHistogram("GET", newPath + global_ID + ".png");
+        	  }
+        	 }
     });
+
+
     return true;
 }
 

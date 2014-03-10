@@ -121,6 +121,12 @@ fieldset[disabled] .btn-custom.active {
 	    left: 50%;
 	    top: 200px;
 }
+
+#ajax-loader-rel {
+	position: relative;
+		left: 50%;
+}
+
 #uploadedImage {
 	display: block; 
 	margin-left: auto; 
