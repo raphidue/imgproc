@@ -31,12 +31,20 @@ import java.util.*;
 public class Image extends Controller {
     // constant upload path
     public static final String PATH = "http://imgproc.s3.amazonaws.com/";
-
+    public static final long MAX_FILE_SIZE = 5242880; //5mb
     // upload image
     public static Result upload(String id) {
         MultipartFormData body = request().body().asMultipartFormData();
         FilePart picture = body.getFile("picture");
         
+
+
+        if (picture.getFile().length() > MAX_FILE_SIZE) {
+            System.err.println("Error: file is too big!");
+
+            // redirect to home
+            return ok(views.html.toobigfile.render());
+        }
         if (picture != null) {
 
             //here starts the aws fun
