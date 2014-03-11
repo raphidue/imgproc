@@ -144,3 +144,10 @@ fieldset[disabled] .btn-custom.active {
 	background-color: #F5F5F5;
 	height: 40px;
 }
+
+/*================================= mobile styles ============================*/
+@media(max-width:1000px) {
+    .bs-sidebar {
+        display: none;
+    }
+}
